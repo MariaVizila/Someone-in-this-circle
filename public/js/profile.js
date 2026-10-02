@@ -99,6 +99,91 @@ if (profileForm) {
 
     const pronouns =
       document.getElementById("pronouns").value.trim();
+    
+    const profilePictureInput =
+  document.getElementById("profilePicture");
+
+let profilePicture = "";
+
+if (
+  profilePictureInput &&
+  profilePictureInput.files.length > 0
+) {
+  const selectedImage =
+    profilePictureInput.files[0];
+
+  const allowedTypes = [
+    "image/png",
+    "image/jpeg",
+    "image/webp"
+  ];
+
+  if (!allowedTypes.includes(selectedImage.type)) {
+    document.getElementById("profileMessage").textContent =
+      "Please select a PNG, JPG, or WebP image.";
+    return;
+  }
+
+  if (selectedImage.size > 5 * 1024 * 1024) {
+    document.getElementById("profileMessage").textContent =
+      "Your profile picture must be 5 MB or smaller.";
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append(
+    "file",
+    selectedImage
+  );
+
+  formData.append(
+    "upload_preset",
+    "profile_pictures"
+  );
+
+  try {
+    document.getElementById("profileMessage").textContent =
+      "Uploading profile picture...";
+
+    const cloudinaryResponse =
+      await fetch(
+        "https://api.cloudinary.com/v1_1/u77jibf4/image/upload",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+    const cloudinaryData =
+      await cloudinaryResponse.json();
+
+    if (!cloudinaryResponse.ok) {
+      console.error(
+        "Cloudinary error:",
+        cloudinaryData
+      );
+
+      throw new Error(
+        "Cloudinary upload failed."
+      );
+    }
+
+    profilePicture =
+      cloudinaryData.secure_url;
+
+  } catch (error) {
+    console.error(
+      "Cloudinary upload error:",
+      error
+    );
+
+    document.getElementById("profileMessage").textContent =
+      "Could not upload the profile picture.";
+
+    return;
+  }
+}
 
     try {
       const response = await fetch("/api/profile", {
