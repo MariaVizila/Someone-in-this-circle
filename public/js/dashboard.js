@@ -1,4 +1,5 @@
 async function loadDashboard() {
+
   try {
 
     const response =
@@ -35,6 +36,7 @@ async function loadDashboard() {
       "index.html";
 
   }
+
 }
 
 
@@ -189,6 +191,19 @@ function createAvatar(
       "'s profile picture";
 
 
+    image.onerror =
+      () => {
+
+        image.remove();
+
+        createInitials(
+          avatar,
+          displayName
+        );
+
+      };
+
+
     avatar.appendChild(
       image
     );
@@ -201,6 +216,26 @@ function createAvatar(
 
   /* INITIALS */
 
+  createInitials(
+    avatar,
+    displayName
+  );
+
+
+  return avatar;
+
+}
+
+
+/* =========================
+   AVATAR INITIALS
+========================= */
+
+function createInitials(
+  avatar,
+  displayName
+) {
+
   const name =
     displayName || "?";
 
@@ -211,7 +246,8 @@ function createAvatar(
       .split(/\s+/);
 
 
-  let initials = "";
+  let initials =
+    "";
 
 
   if (words.length >= 2) {
@@ -230,9 +266,6 @@ function createAvatar(
 
   avatar.textContent =
     initials.toUpperCase();
-
-
-  return avatar;
 
 }
 
@@ -284,9 +317,14 @@ function createFriendInfo(
     `@${username}`;
 
 
-  info.appendChild(name);
+  info.appendChild(
+    name
+  );
 
-  info.appendChild(user);
+
+  info.appendChild(
+    user
+  );
 
 
   return info;
@@ -320,10 +358,12 @@ function createEmptyState(text) {
 
 
 /* =========================
-   VIEW PROFILE
+   OPEN PROFILE
 ========================= */
 
-function openProfile(userId) {
+function openProfile(
+  userId
+) {
 
   if (!userId) {
     return;
@@ -690,7 +730,7 @@ function renderFriends(
         "friend-card";
 
 
-      /* MAKE CARD CLICKABLE */
+      /* CLICKABLE PROFILE */
 
       if (friend.user_id) {
 
@@ -712,6 +752,8 @@ function renderFriends(
       }
 
 
+      /* PROFILE PICTURE */
+
       card.appendChild(
         createAvatar(
           friend.display_name,
@@ -719,6 +761,8 @@ function renderFriends(
         )
       );
 
+
+      /* NAME + USERNAME */
 
       card.appendChild(
         createFriendInfo(
@@ -802,7 +846,8 @@ if (friendRequestForm) {
               },
 
               body: JSON.stringify({
-                username: username
+                username:
+                  username
               })
             }
           );
