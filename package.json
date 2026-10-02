@@ -10,7 +10,7 @@
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^11.10.0",
     "express": "^5.1.0",
-    "pg": "^8.16.3",
-    "express-session": "^1.18.2"
+    "express-session": "^1.18.2",
+    "pg": "^8.16.3"
   }
 }
