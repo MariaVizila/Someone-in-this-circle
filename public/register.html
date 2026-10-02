@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Create Account - Someone in this Circle
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <main class="auth-page">
+
+    <section class="auth-card">
+
+      <div class="logo">
+        SIC
+      </div>
+
+      <h1>
+        Create Account
+      </h1>
+
+      <p class="subtitle">
+        Join your circle.
+      </p>
+
+      <form id="registerForm">
+
+        <label for="username">
+          Username
+        </label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Choose a username"
+          minlength="3"
+          maxlength="20"
+          required
+        >
+
+        <label for="displayName">
+          Display Name
+        </label>
+
+        <input
+          id="displayName"
+          type="text"
+          placeholder="What should friends call you?"
+          maxlength="30"
+          required
+        >
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Create a password"
+          minlength="6"
+          required
+        >
+
+        <button type="submit">
+          Create Account
+        </button>
+
+        <p
+          id="message"
+          class="message"
+        ></p>
+
+      </form>
+
+      <div class="auth-footer">
+
+        Already have an account?
+
+        <a href="index.html">
+          Sign in
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/auth.js"></script>
+
+</body>
+
+</html>
