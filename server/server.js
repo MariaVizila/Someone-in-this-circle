@@ -447,6 +447,82 @@ app.get("/api/auth/me", async (req, res) => {
 
 });
 
+/* =========================
+   OWNER USER SEARCH
+========================= */
+
+app.get(
+  "/api/owner/users",
+  requireOwner,
+  async (req, res) => {
+
+    const username =
+      String(
+        req.query.username || ""
+      ).trim();
+
+    if (!username) {
+      return res.status(400).json({
+        error:
+          "Username is required."
+      });
+    }
+
+    try {
+
+      const result =
+        await pool.query(
+          `
+          SELECT
+            id,
+            username,
+            display_name,
+            bio,
+            status,
+            pronouns,
+            profile_picture,
+            role,
+            created_at
+          FROM users
+          WHERE LOWER(username) = LOWER($1)
+          LIMIT 1
+          `,
+          [username]
+        );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error:
+            "User not found."
+        });
+      }
+
+      res.json(
+        result.rows[0]
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Owner user search error:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          "Could not search for user."
+      });
+
+    }
+
+  }
+);
+
+
+/* =========================
+   UPDATE PROFILE
+========================= */
+
 
 /* =========================
    UPDATE PROFILE
