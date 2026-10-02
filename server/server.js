@@ -35,12 +35,12 @@ app.use(
     saveUninitialized: false,
 
     cookie: {
-  httpOnly: true,
-  secure: true,
-  sameSite: "lax",
-  path: "/",
-  maxAge: 1000 * 60 * 60 * 24 * 7
-}
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 24 * 7
+    }
   })
 );
 
@@ -133,7 +133,6 @@ app.post("/api/auth/register", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
@@ -148,7 +147,6 @@ app.post("/api/auth/register", async (req, res) => {
 
 app.post("/api/auth/login", async (req, res) => {
   try {
-
     const {
       username,
       password
@@ -202,7 +200,6 @@ app.post("/api/auth/login", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
@@ -224,7 +221,6 @@ app.get("/api/auth/me", async (req, res) => {
   }
 
   try {
-
     const result =
       await pool.query(
         `
@@ -248,7 +244,6 @@ app.get("/api/auth/me", async (req, res) => {
     res.json(result.rows[0]);
 
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
@@ -291,7 +286,6 @@ app.patch("/api/profile", async (req, res) => {
   }
 
   try {
-
     await pool.query(
       `
       UPDATE users
@@ -309,7 +303,6 @@ app.patch("/api/profile", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
@@ -355,7 +348,6 @@ app.patch(
     }
 
     try {
-
       const result =
         await pool.query(
           `
@@ -408,7 +400,6 @@ app.patch(
       });
 
     } catch (error) {
-
       console.error(error);
 
       res.status(500).json({
@@ -435,7 +426,6 @@ app.post(
     });
   }
 );
-
 
 
 /* FRIEND REQUESTS */
@@ -475,7 +465,8 @@ app.post("/api/friends/request", async (req, res) => {
 
     if (receiver.id === req.session.userId) {
       return res.status(400).json({
-        error: "You cannot send a friend request to yourself."
+        error:
+          "You cannot send a friend request to yourself."
       });
     }
 
@@ -493,7 +484,8 @@ app.post("/api/friends/request", async (req, res) => {
 
     if (existing.rows.length > 0) {
       return res.status(400).json({
-        error: "A friend request or friendship already exists."
+        error:
+          "A friend request or friendship already exists."
       });
     }
 
@@ -512,7 +504,10 @@ app.post("/api/friends/request", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Friend request error:", error);
+    console.error(
+      "Friend request error:",
+      error
+    );
 
     res.status(500).json({
       error: "Something went wrong."
@@ -520,6 +515,8 @@ app.post("/api/friends/request", async (req, res) => {
   }
 });
 
+
+/* GET FRIENDS AND REQUESTS */
 
 app.get("/api/friends", async (req, res) => {
   try {
@@ -529,64 +526,77 @@ app.get("/api/friends", async (req, res) => {
       });
     }
 
-    const userId = req.session.userId;
+    const userId =
+      req.session.userId;
 
-    const requests = await pool.query(
-      `
-      SELECT
-        friendships.id,
-        users.username,
-        users.display_name,
-        friendships.created_at
-      FROM friendships
-      JOIN users
-        ON users.id = friendships.requester_id
-      WHERE friendships.receiver_id = $1
-        AND friendships.status = 'pending'
-      ORDER BY friendships.created_at DESC
-      `,
-      [userId]
-    );
+    const requests =
+      await pool.query(
+        `
+        SELECT
+          friendships.id,
+          users.username,
+          users.display_name,
+          friendships.created_at
+        FROM friendships
+        JOIN users
+          ON users.id =
+            friendships.requester_id
+        WHERE
+          friendships.receiver_id = $1
+          AND friendships.status = 'pending'
+        ORDER BY
+          friendships.created_at DESC
+        `,
+        [userId]
+      );
 
-    const friends = await pool.query(
-      `
-      SELECT
-        friendships.id,
-        users.username,
-        users.display_name
-      FROM friendships
-      JOIN users
-        ON users.id =
-          CASE
-            WHEN friendships.requester_id = $1
-            THEN friendships.receiver_id
-            ELSE friendships.requester_id
-          END
-      WHERE
-        (friendships.requester_id = $1
-         OR friendships.receiver_id = $1)
-        AND friendships.status = 'accepted'
-      ORDER BY users.display_name ASC
-      `,
-      [userId]
-    );
+    const friends =
+      await pool.query(
+        `
+        SELECT
+          friendships.id,
+          users.username,
+          users.display_name
+        FROM friendships
+        JOIN users
+          ON users.id =
+            CASE
+              WHEN friendships.requester_id = $1
+              THEN friendships.receiver_id
+              ELSE friendships.requester_id
+            END
+        WHERE
+          (
+            friendships.requester_id = $1
+            OR friendships.receiver_id = $1
+          )
+          AND friendships.status = 'accepted'
+        ORDER BY
+          users.display_name ASC
+        `,
+        [userId]
+      );
 
-    const sent = await pool.query(
-      `
-      SELECT
-        friendships.id,
-        users.username,
-        users.display_name,
-        friendships.created_at
-      FROM friendships
-      JOIN users
-        ON users.id = friendships.receiver_id
-      WHERE friendships.requester_id = $1
-        AND friendships.status = 'pending'
-      ORDER BY friendships.created_at DESC
-      `,
-      [userId]
-    );
+    const sent =
+      await pool.query(
+        `
+        SELECT
+          friendships.id,
+          users.username,
+          users.display_name,
+          friendships.created_at
+        FROM friendships
+        JOIN users
+          ON users.id =
+            friendships.receiver_id
+        WHERE
+          friendships.requester_id = $1
+          AND friendships.status = 'pending'
+        ORDER BY
+          friendships.created_at DESC
+        `,
+        [userId]
+      );
 
     res.json({
       requests: requests.rows,
@@ -595,7 +605,10 @@ app.get("/api/friends", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Friends error:", error);
+    console.error(
+      "Friends error:",
+      error
+    );
 
     res.status(500).json({
       error: "Something went wrong."
@@ -604,11 +617,143 @@ app.get("/api/friends", async (req, res) => {
 });
 
 
+/* ACCEPT FRIEND REQUEST */
+
+app.post(
+  "/api/friends/request/:id/accept",
+  async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+      const requestId =
+        Number(req.params.id);
+
+      if (!Number.isInteger(requestId)) {
+        return res.status(400).json({
+          error:
+            "Invalid friend request."
+        });
+      }
+
+      const result =
+        await pool.query(
+          `
+          UPDATE friendships
+          SET status = 'accepted'
+          WHERE
+            id = $1
+            AND receiver_id = $2
+            AND status = 'pending'
+          RETURNING id
+          `,
+          [
+            requestId,
+            req.session.userId
+          ]
+        );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error:
+            "Friend request not found."
+        });
+      }
+
+      res.json({
+        message:
+          "Friend request accepted!"
+      });
+
+    } catch (error) {
+      console.error(
+        "Accept friend request error:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          "Something went wrong."
+      });
+    }
+  }
+);
+
+
+/* DECLINE FRIEND REQUEST */
+
+app.post(
+  "/api/friends/request/:id/decline",
+  async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+      const requestId =
+        Number(req.params.id);
+
+      if (!Number.isInteger(requestId)) {
+        return res.status(400).json({
+          error:
+            "Invalid friend request."
+        });
+      }
+
+      const result =
+        await pool.query(
+          `
+          DELETE FROM friendships
+          WHERE
+            id = $1
+            AND receiver_id = $2
+            AND status = 'pending'
+          RETURNING id
+          `,
+          [
+            requestId,
+            req.session.userId
+          ]
+        );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error:
+            "Friend request not found."
+        });
+      }
+
+      res.json({
+        message:
+          "Friend request declined."
+      });
+
+    } catch (error) {
+      console.error(
+        "Decline friend request error:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          "Something went wrong."
+      });
+    }
+  }
+);
+
+
 /* TEST API */
 
 app.get("/api/test", (req, res) => {
   res.json({
-    message: "Someone in this Circle API is working!"
+    message:
+      "Someone in this Circle API is working!"
   });
 });
 
