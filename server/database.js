@@ -10,15 +10,27 @@ const pool = new Pool({
 async function initializeDatabase() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  username TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  display_name TEXT NOT NULL,
-  bio TEXT NOT NULL DEFAULT '',
-  status TEXT NOT NULL DEFAULT '',
-  pronouns TEXT NOT NULL DEFAULT '',
-  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
+      id SERIAL PRIMARY KEY,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      bio TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT '',
+      pronouns TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  /*
+    Add new profile fields to existing accounts.
+    IF NOT EXISTS makes this safe to run on every deployment.
+  */
+
+  await pool.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS pronouns TEXT NOT NULL DEFAULT '';
   `);
 
   await pool.query(`
