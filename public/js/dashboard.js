@@ -1,22 +1,39 @@
 async function loadDashboard() {
   try {
-    const response = await fetch("/api/auth/me");
+
+    const response =
+      await fetch("/api/auth/me");
+
 
     if (!response.ok) {
-      window.location.href = "index.html";
+
+      window.location.href =
+        "index.html";
+
       return;
     }
 
-    const user = await response.json();
 
-    document.getElementById("displayName").textContent =
+    const user =
+      await response.json();
+
+
+    document.getElementById(
+      "displayName"
+    ).textContent =
       user.display_name;
+
 
     await loadFriends();
 
+
   } catch (error) {
+
     console.error(error);
-    window.location.href = "index.html";
+
+    window.location.href =
+      "index.html";
+
   }
 }
 
@@ -26,18 +43,36 @@ async function loadDashboard() {
 ========================= */
 
 async function loadFriends() {
+
   try {
-    const response = await fetch("/api/friends");
+
+    const response =
+      await fetch("/api/friends");
+
 
     if (!response.ok) {
       return;
     }
 
-    const data = await response.json();
 
-    renderFriendRequests(data.requests || []);
-    renderSentRequests(data.sent || []);
-    renderFriends(data.friends || []);
+    const data =
+      await response.json();
+
+
+    renderFriendRequests(
+      data.requests || []
+    );
+
+
+    renderSentRequests(
+      data.sent || []
+    );
+
+
+    renderFriends(
+      data.friends || []
+    );
+
 
     updateFriendCounts(
       data.requests || [],
@@ -45,12 +80,16 @@ async function loadFriends() {
       data.friends || []
     );
 
+
   } catch (error) {
+
     console.error(
       "Could not load friends:",
       error
     );
+
   }
+
 }
 
 
@@ -63,33 +102,52 @@ function updateFriendCounts(
   sent,
   friends
 ) {
+
   const friendCount =
-    document.getElementById("friendCount");
+    document.getElementById(
+      "friendCount"
+    );
+
 
   const requestCount =
-    document.getElementById("requestCount");
+    document.getElementById(
+      "requestCount"
+    );
+
 
   const sentCount =
-    document.getElementById("sentCount");
+    document.getElementById(
+      "sentCount"
+    );
+
 
   if (friendCount) {
+
     friendCount.textContent =
       `${friends.length} ${
         friends.length === 1
           ? "Friend"
           : "Friends"
       }`;
+
   }
+
 
   if (requestCount) {
+
     requestCount.textContent =
       requests.length;
+
   }
 
+
   if (sentCount) {
+
     sentCount.textContent =
       sent.length;
+
   }
+
 }
 
 
@@ -97,33 +155,85 @@ function updateFriendCounts(
    AVATAR
 ========================= */
 
-function createAvatar(displayName) {
-  const avatar =
-    document.createElement("div");
+function createAvatar(
+  displayName,
+  profilePicture
+) {
 
-  avatar.className = "friend-avatar";
+  const avatar =
+    document.createElement(
+      "div"
+    );
+
+
+  avatar.className =
+    "friend-avatar";
+
+
+  /* PROFILE PICTURE */
+
+  if (profilePicture) {
+
+    const image =
+      document.createElement(
+        "img"
+      );
+
+
+    image.src =
+      profilePicture;
+
+
+    image.alt =
+      displayName +
+      "'s profile picture";
+
+
+    avatar.appendChild(
+      image
+    );
+
+
+    return avatar;
+
+  }
+
+
+  /* INITIALS */
 
   const name =
     displayName || "?";
 
+
   const words =
-    name.trim().split(/\s+/);
+    name
+      .trim()
+      .split(/\s+/);
+
 
   let initials = "";
 
+
   if (words.length >= 2) {
+
     initials =
       words[0][0] +
       words[1][0];
+
   } else {
+
     initials =
       words[0].slice(0, 2);
+
   }
+
 
   avatar.textContent =
     initials.toUpperCase();
 
+
   return avatar;
+
 }
 
 
@@ -135,34 +245,52 @@ function createFriendInfo(
   displayName,
   username
 ) {
+
   const info =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   info.className =
     "friend-info";
 
+
   const name =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   name.className =
     "friend-name";
 
+
   name.textContent =
     displayName;
 
+
   const user =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   user.className =
     "friend-username";
 
+
   user.textContent =
     `@${username}`;
 
+
   info.appendChild(name);
+
   info.appendChild(user);
 
+
   return info;
+
 }
 
 
@@ -171,16 +299,40 @@ function createFriendInfo(
 ========================= */
 
 function createEmptyState(text) {
+
   const empty =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   empty.className =
     "friend-empty";
 
+
   empty.textContent =
     text;
 
+
   return empty;
+
+}
+
+
+/* =========================
+   VIEW PROFILE
+========================= */
+
+function openProfile(userId) {
+
+  if (!userId) {
+    return;
+  }
+
+
+  window.location.href =
+    `view-profile.html?id=${userId}`;
+
 }
 
 
@@ -188,112 +340,154 @@ function createEmptyState(text) {
    INCOMING REQUESTS
 ========================= */
 
-function renderFriendRequests(requests) {
+function renderFriendRequests(
+  requests
+) {
+
   const container =
     document.getElementById(
       "friendRequests"
     );
 
-  if (!container) return;
 
-  container.innerHTML = "";
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "";
+
 
   if (requests.length === 0) {
+
     container.appendChild(
       createEmptyState(
         "No new friend requests."
       )
     );
 
+
     return;
+
   }
 
-  requests.forEach((request) => {
 
-    const item =
-      document.createElement("div");
+  requests.forEach(
+    (request) => {
 
-    item.className =
-      "friend-item";
-
-    item.appendChild(
-      createAvatar(
-        request.display_name
-      )
-    );
-
-    item.appendChild(
-      createFriendInfo(
-        request.display_name,
-        request.username
-      )
-    );
-
-    const actions =
-      document.createElement("div");
-
-    actions.className =
-      "friend-actions";
-
-
-    const acceptButton =
-      document.createElement("button");
-
-    acceptButton.textContent =
-      "Accept";
-
-    acceptButton.className =
-      "friend-action accept";
-
-
-    acceptButton.addEventListener(
-      "click",
-      async () => {
-
-        await handleFriendRequest(
-          request.id,
-          "accept"
+      const item =
+        document.createElement(
+          "div"
         );
 
-      }
-    );
+
+      item.className =
+        "friend-item";
 
 
-    const declineButton =
-      document.createElement("button");
-
-    declineButton.textContent =
-      "Decline";
-
-    declineButton.className =
-      "friend-action decline";
+      item.appendChild(
+        createAvatar(
+          request.display_name,
+          request.profile_picture
+        )
+      );
 
 
-    declineButton.addEventListener(
-      "click",
-      async () => {
+      item.appendChild(
+        createFriendInfo(
+          request.display_name,
+          request.username
+        )
+      );
 
-        await handleFriendRequest(
-          request.id,
-          "decline"
+
+      const actions =
+        document.createElement(
+          "div"
         );
 
-      }
-    );
+
+      actions.className =
+        "friend-actions";
 
 
-    actions.appendChild(
-      acceptButton
-    );
+      const acceptButton =
+        document.createElement(
+          "button"
+        );
 
-    actions.appendChild(
-      declineButton
-    );
 
-    item.appendChild(actions);
+      acceptButton.textContent =
+        "Accept";
 
-    container.appendChild(item);
-  });
+
+      acceptButton.className =
+        "friend-action accept";
+
+
+      acceptButton.addEventListener(
+        "click",
+        async () => {
+
+          await handleFriendRequest(
+            request.id,
+            "accept"
+          );
+
+        }
+      );
+
+
+      const declineButton =
+        document.createElement(
+          "button"
+        );
+
+
+      declineButton.textContent =
+        "Decline";
+
+
+      declineButton.className =
+        "friend-action decline";
+
+
+      declineButton.addEventListener(
+        "click",
+        async () => {
+
+          await handleFriendRequest(
+            request.id,
+            "decline"
+          );
+
+        }
+      );
+
+
+      actions.appendChild(
+        acceptButton
+      );
+
+
+      actions.appendChild(
+        declineButton
+      );
+
+
+      item.appendChild(
+        actions
+      );
+
+
+      container.appendChild(
+        item
+      );
+
+    }
+  );
+
 }
 
 
@@ -305,6 +499,7 @@ async function handleFriendRequest(
   requestId,
   action
 ) {
+
   try {
 
     const response =
@@ -315,28 +510,38 @@ async function handleFriendRequest(
         }
       );
 
+
     const data =
       await response.json();
 
+
     if (!response.ok) {
+
       alert(
         data.error ||
         "Something went wrong."
       );
 
+
       return;
+
     }
 
+
     await loadFriends();
+
 
   } catch (error) {
 
     console.error(error);
 
+
     alert(
       "Something went wrong."
     );
+
   }
+
 }
 
 
@@ -344,16 +549,24 @@ async function handleFriendRequest(
    SENT REQUESTS
 ========================= */
 
-function renderSentRequests(requests) {
+function renderSentRequests(
+  requests
+) {
 
   const container =
     document.getElementById(
       "sentRequests"
     );
 
-  if (!container) return;
 
-  container.innerHTML = "";
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "";
+
 
   if (requests.length === 0) {
 
@@ -363,49 +576,67 @@ function renderSentRequests(requests) {
       )
     );
 
+
     return;
+
   }
 
 
-  requests.forEach((request) => {
+  requests.forEach(
+    (request) => {
 
-    const item =
-      document.createElement("div");
-
-    item.className =
-      "friend-item";
-
-
-    item.appendChild(
-      createAvatar(
-        request.display_name
-      )
-    );
+      const item =
+        document.createElement(
+          "div"
+        );
 
 
-    item.appendChild(
-      createFriendInfo(
-        request.display_name,
-        request.username
-      )
-    );
+      item.className =
+        "friend-item";
 
 
-    const status =
-      document.createElement("span");
-
-    status.className =
-      "friend-status";
-
-    status.textContent =
-      "Pending";
+      item.appendChild(
+        createAvatar(
+          request.display_name,
+          request.profile_picture
+        )
+      );
 
 
-    item.appendChild(status);
+      item.appendChild(
+        createFriendInfo(
+          request.display_name,
+          request.username
+        )
+      );
 
-    container.appendChild(item);
 
-  });
+      const status =
+        document.createElement(
+          "span"
+        );
+
+
+      status.className =
+        "friend-status";
+
+
+      status.textContent =
+        "Pending";
+
+
+      item.appendChild(
+        status
+      );
+
+
+      container.appendChild(
+        item
+      );
+
+    }
+  );
+
 }
 
 
@@ -413,16 +644,23 @@ function renderSentRequests(requests) {
    FRIEND LIST
 ========================= */
 
-function renderFriends(friends) {
+function renderFriends(
+  friends
+) {
 
   const container =
     document.getElementById(
       "friendsList"
     );
 
-  if (!container) return;
 
-  container.innerHTML = "";
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "";
 
 
   if (friends.length === 0) {
@@ -433,37 +671,70 @@ function renderFriends(friends) {
       )
     );
 
+
     return;
+
   }
 
 
-  friends.forEach((friend) => {
+  friends.forEach(
+    (friend) => {
 
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "friend-card";
-
-
-    card.appendChild(
-      createAvatar(
-        friend.display_name
-      )
-    );
+      const card =
+        document.createElement(
+          "div"
+        );
 
 
-    card.appendChild(
-      createFriendInfo(
-        friend.display_name,
-        friend.username
-      )
-    );
+      card.className =
+        "friend-card";
 
 
-    container.appendChild(card);
+      /* MAKE CARD CLICKABLE */
 
-  });
+      if (friend.user_id) {
+
+        card.style.cursor =
+          "pointer";
+
+
+        card.addEventListener(
+          "click",
+          () => {
+
+            openProfile(
+              friend.user_id
+            );
+
+          }
+        );
+
+      }
+
+
+      card.appendChild(
+        createAvatar(
+          friend.display_name,
+          friend.profile_picture
+        )
+      );
+
+
+      card.appendChild(
+        createFriendInfo(
+          friend.display_name,
+          friend.username
+        )
+      );
+
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
+
 }
 
 
@@ -507,7 +778,9 @@ if (friendRequestForm) {
         message.textContent =
           "Please enter a username.";
 
+
         return;
+
       }
 
 
@@ -545,7 +818,9 @@ if (friendRequestForm) {
             data.error ||
             "Something went wrong.";
 
+
           return;
+
         }
 
 
@@ -553,14 +828,17 @@ if (friendRequestForm) {
           "Friend request sent!";
 
 
-        input.value = "";
+        input.value =
+          "";
 
 
         await loadFriends();
 
+
       } catch (error) {
 
         console.error(error);
+
 
         message.textContent =
           "Something went wrong. Please try again.";
@@ -598,11 +876,13 @@ if (logoutButton) {
           }
         );
 
+
       } catch (error) {
 
         console.error(error);
 
       }
+
 
       window.location.href =
         "index.html";
