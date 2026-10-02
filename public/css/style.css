@@ -747,12 +747,33 @@ a {
 ======================================== */
 
 #userResult {
-  margin-top: 20px;
+  display: none;
+  margin-top: 24px;
+}
+
+#userResult .profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
 }
 
 #ownerAvatar {
+  width: 90px;
+  height: 90px;
+  min-width: 90px;
+  border-radius: 50%;
   overflow: hidden;
-  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #1e293b;
+  color: #f9fafb;
+
+  font-size: 28px;
+  font-weight: 700;
 }
 
 #ownerAvatar img {
@@ -762,13 +783,53 @@ a {
   object-fit: cover;
 }
 
+#ownerDisplayName {
+  margin: 0 0 5px;
+}
+
+#ownerUsername {
+  margin: 0;
+  color: #94a3b8;
+}
+
+#userResult .profile-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+#userResult .profile-info-item {
+  padding: 16px;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  background: #111827;
+}
+
+#userResult .profile-info-item strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+#userResult .profile-info-item p {
+  margin: 0;
+  color: #f9fafb;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 #roleSelect {
   width: 100%;
   padding: 12px 14px;
+
   border: 1px solid #334155;
   border-radius: 8px;
-  background: #111827;
+
+  background: #0f172a;
   color: #f9fafb;
+
   outline: none;
 }
 
@@ -789,4 +850,22 @@ a {
 
 #ownerMessage {
   margin-top: 12px;
+  color: #94a3b8;
+}
+
+
+/* ========================================
+   OWNER PANEL MOBILE
+======================================== */
+
+@media (max-width: 700px) {
+
+  #userResult .profile-info {
+    grid-template-columns: 1fr;
+  }
+
+  #userResult .profile-header {
+    align-items: flex-start;
+  }
+
 }
