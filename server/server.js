@@ -3,7 +3,10 @@ const session = require("express-session");
 const bcrypt = require("bcryptjs");
 const path = require("path");
 
-const db = require("./database");
+const {
+  pool,
+  initializeDatabase
+} = require("./database");
 
 const app = express();
 
@@ -23,18 +26,21 @@ app.use(
 
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7
     }
   })
 );
 
-app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(
+  express.static(
+    path.join(__dirname, "..", "public")
+  )
+);
 
 
-/* =========================
-   REGISTER
-========================= */
+/* REGISTER */
 
 app.post("/api/auth/register", async (req, res) => {
   try {
@@ -52,47 +58,64 @@ app.post("/api/auth/register", async (req, res) => {
 
     if (username.length < 3 || username.length > 20) {
       return res.status(400).json({
-        error: "Username must be between 3 and 20 characters."
+        error:
+          "Username must be between 3 and 20 characters."
       });
     }
 
     if (password.length < 6) {
       return res.status(400).json({
-        error: "Password must be at least 6 characters."
+        error:
+          "Password must be at least 6 characters."
       });
     }
 
-    const existingUser = db
-      .prepare(
-        "SELECT id FROM users WHERE username = ?"
-      )
-      .get(username);
+    if (displayName.trim().length < 1) {
+      return res.status(400).json({
+        error: "Display name cannot be empty."
+      });
+    }
 
-    if (existingUser) {
+    if (displayName.trim().length > 30) {
+      return res.status(400).json({
+        error:
+          "Display name must be 30 characters or fewer."
+      });
+    }
+
+    const existingUser =
+      await pool.query(
+        "SELECT id FROM users WHERE username = $1",
+        [username]
+      );
+
+    if (existingUser.rows.length > 0) {
       return res.status(409).json({
-        error: "That username is already taken."
+        error:
+          "That username is already taken."
       });
     }
 
-    const passwordHash = await bcrypt.hash(
-      password,
-      12
-    );
+    const passwordHash =
+      await bcrypt.hash(password, 12);
 
-    const result = db
-      .prepare(`
+    const result =
+      await pool.query(
+        `
         INSERT INTO users
         (username, password_hash, display_name)
-        VALUES (?, ?, ?)
-      `)
-      .run(
-        username,
-        passwordHash,
-        displayName
+        VALUES ($1, $2, $3)
+        RETURNING id
+        `,
+        [
+          username,
+          passwordHash,
+          displayName.trim()
+        ]
       );
 
     req.session.userId =
-      result.lastInsertRowid;
+      result.rows[0].id;
 
     res.json({
       success: true
@@ -103,15 +126,14 @@ app.post("/api/auth/register", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      error: "Something went wrong while creating your account."
+      error:
+        "Something went wrong while creating your account."
     });
   }
 });
 
 
-/* =========================
-   LOGIN
-========================= */
+/* LOGIN */
 
 app.post("/api/auth/login", async (req, res) => {
   try {
@@ -123,21 +145,30 @@ app.post("/api/auth/login", async (req, res) => {
 
     if (!username || !password) {
       return res.status(400).json({
-        error: "Enter your username and password."
+        error:
+          "Enter your username and password."
       });
     }
 
-    const user = db
-      .prepare(
-        "SELECT * FROM users WHERE username = ?"
-      )
-      .get(username);
+    const result =
+      await pool.query(
+        `
+        SELECT *
+        FROM users
+        WHERE username = $1
+        `,
+        [username]
+      );
 
-    if (!user) {
+    if (result.rows.length === 0) {
       return res.status(401).json({
-        error: "Incorrect username or password."
+        error:
+          "Incorrect username or password."
       });
     }
+
+    const user =
+      result.rows[0];
 
     const passwordMatches =
       await bcrypt.compare(
@@ -147,11 +178,13 @@ app.post("/api/auth/login", async (req, res) => {
 
     if (!passwordMatches) {
       return res.status(401).json({
-        error: "Incorrect username or password."
+        error:
+          "Incorrect username or password."
       });
     }
 
-    req.session.userId = user.id;
+    req.session.userId =
+      user.id;
 
     res.json({
       success: true
@@ -162,17 +195,16 @@ app.post("/api/auth/login", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      error: "Something went wrong while logging in."
+      error:
+        "Something went wrong while logging in."
     });
   }
 });
 
 
-/* =========================
-   CURRENT USER
-========================= */
+/* CURRENT USER */
 
-app.get("/api/auth/me", (req, res) => {
+app.get("/api/auth/me", async (req, res) => {
 
   if (!req.session.userId) {
     return res.status(401).json({
@@ -180,33 +212,45 @@ app.get("/api/auth/me", (req, res) => {
     });
   }
 
-  const user = db
-    .prepare(`
-      SELECT
-        id,
-        username,
-        display_name,
-        created_at
-      FROM users
-      WHERE id = ?
-    `)
-    .get(req.session.userId);
+  try {
 
-  if (!user) {
-    return res.status(401).json({
-      error: "User not found."
+    const result =
+      await pool.query(
+        `
+        SELECT
+          id,
+          username,
+          display_name,
+          created_at
+        FROM users
+        WHERE id = $1
+        `,
+        [req.session.userId]
+      );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        error: "User not found."
+      });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error:
+        "Something went wrong."
     });
   }
-
-  res.json(user);
 });
 
 
-/* =========================
-   UPDATE PROFILE
-========================= */
+/* UPDATE PROFILE */
 
-app.patch("/api/profile", (req, res) => {
+app.patch("/api/profile", async (req, res) => {
 
   if (!req.session.userId) {
     return res.status(401).json({
@@ -223,34 +267,49 @@ app.patch("/api/profile", (req, res) => {
     displayName.trim().length < 1
   ) {
     return res.status(400).json({
-      error: "Display name cannot be empty."
+      error:
+        "Display name cannot be empty."
     });
   }
 
-  if (displayName.length > 30) {
+  if (displayName.trim().length > 30) {
     return res.status(400).json({
-      error: "Display name must be 30 characters or fewer."
+      error:
+        "Display name must be 30 characters or fewer."
     });
   }
 
-  db.prepare(`
-    UPDATE users
-    SET display_name = ?
-    WHERE id = ?
-  `).run(
-    displayName.trim(),
-    req.session.userId
-  );
+  try {
 
-  res.json({
-    success: true
-  });
+    await pool.query(
+      `
+      UPDATE users
+      SET display_name = $1
+      WHERE id = $2
+      `,
+      [
+        displayName.trim(),
+        req.session.userId
+      ]
+    );
+
+    res.json({
+      success: true
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      error:
+        "Something went wrong."
+    });
+  }
 });
 
 
-/* =========================
-   CHANGE PASSWORD
-========================= */
+/* CHANGE PASSWORD */
 
 app.patch(
   "/api/profile/password",
@@ -272,7 +331,8 @@ app.patch(
       !newPassword
     ) {
       return res.status(400).json({
-        error: "Enter both passwords."
+        error:
+          "Enter both passwords."
       });
     }
 
@@ -283,49 +343,73 @@ app.patch(
       });
     }
 
-    const user = db
-      .prepare(
-        "SELECT password_hash FROM users WHERE id = ?"
-      )
-      .get(req.session.userId);
+    try {
 
-    const matches =
-      await bcrypt.compare(
-        currentPassword,
-        user.password_hash
+      const result =
+        await pool.query(
+          `
+          SELECT password_hash
+          FROM users
+          WHERE id = $1
+          `,
+          [req.session.userId]
+        );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error: "User not found."
+        });
+      }
+
+      const matches =
+        await bcrypt.compare(
+          currentPassword,
+          result.rows[0].password_hash
+        );
+
+      if (!matches) {
+        return res.status(401).json({
+          error:
+            "Current password is incorrect."
+        });
+      }
+
+      const newHash =
+        await bcrypt.hash(
+          newPassword,
+          12
+        );
+
+      await pool.query(
+        `
+        UPDATE users
+        SET password_hash = $1
+        WHERE id = $2
+        `,
+        [
+          newHash,
+          req.session.userId
+        ]
       );
 
-    if (!matches) {
-      return res.status(401).json({
-        error: "Current password is incorrect."
+      res.json({
+        success: true
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        error:
+          "Something went wrong."
       });
     }
-
-    const newHash =
-      await bcrypt.hash(
-        newPassword,
-        12
-      );
-
-    db.prepare(`
-      UPDATE users
-      SET password_hash = ?
-      WHERE id = ?
-    `).run(
-      newHash,
-      req.session.userId
-    );
-
-    res.json({
-      success: true
-    });
   }
 );
 
 
-/* =========================
-   LOGOUT
-========================= */
+/* LOGOUT */
 
 app.post(
   "/api/auth/logout",
@@ -342,14 +426,28 @@ app.post(
 );
 
 
-/* =========================
-   START SERVER
-========================= */
+/* START */
 
-app.listen(PORT, () => {
+initializeDatabase()
+  .then(() => {
 
-  console.log(
-    `Someone in this Circle is running on port ${PORT}`
-  );
+    app.listen(PORT, () => {
 
-});
+      console.log(
+        `Someone in this Circle is running on port ${PORT}`
+      );
+
+    });
+
+  })
+  .catch((error) => {
+
+    console.error(
+      "Database initialization failed:",
+      error
+    );
+
+  });
+
+
+module.exports = app;
