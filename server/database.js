@@ -22,6 +22,7 @@ async function initializeDatabase() {
       status TEXT NOT NULL DEFAULT '',
       pronouns TEXT NOT NULL DEFAULT '',
       profile_picture TEXT NOT NULL DEFAULT '',
+      role TEXT NOT NULL DEFAULT 'user',
       created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `);
@@ -34,7 +35,8 @@ async function initializeDatabase() {
     ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '',
     ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT '',
     ADD COLUMN IF NOT EXISTS pronouns TEXT NOT NULL DEFAULT '',
-    ADD COLUMN IF NOT EXISTS profile_picture TEXT NOT NULL DEFAULT '';
+    ADD COLUMN IF NOT EXISTS profile_picture TEXT NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user';
   `);
 
 
