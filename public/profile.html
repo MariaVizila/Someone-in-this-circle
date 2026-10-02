@@ -33,27 +33,18 @@
     <header class="topbar">
 
       <div class="brand">
-
-        <div class="logo small">
-          SIC
-        </div>
-
-        <span>
-          Someone in this Circle
-        </span>
-
+        Someone in this Circle
       </div>
 
-
-      <nav>
+      <nav class="nav">
 
         <a href="dashboard.html">
           Home
         </a>
 
         <a
-          class="active"
           href="profile.html"
+          class="active"
         >
           Profile
         </a>
@@ -64,195 +55,155 @@
 
         <a href="#">
           Games
-          <small>SOON</small>
+          <span class="soon">
+            SOON
+          </span>
         </a>
 
       </nav>
-
-
-      <button
-        id="logoutButton"
-        class="logout"
-      >
-        Log Out
-      </button>
 
     </header>
 
 
     <!-- =========================
-         PROFILE
+         MAIN
     ========================== -->
 
-    <main class="dashboard">
+    <main class="main">
 
+      <section class="profile-page">
 
-      <!-- PROFILE HEADER -->
+        <!-- =========================
+             PROFILE HEADER
+        ========================== -->
 
-      <section class="profile-header">
+        <div class="profile-header">
 
-        <div
-          class="avatar"
-          id="avatar"
-        >
-          ?
-        </div>
+          <div
+            class="avatar"
+            id="avatar"
+          >
+            ?
+          </div>
 
+          <div>
 
-        <div>
+            <h1 id="profileName">
+              Loading...
+            </h1>
 
-          <p class="eyebrow">
-            PROFILE
-          </p>
-
-          <h1 id="profileName">
-            Loading...
-          </h1>
-
-          <p id="profileUsername">
-            @loading
-          </p>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================
-           PROFILE INFORMATION
-      ========================== -->
-
-      <section class="profile-info-grid">
-
-
-        <!-- ABOUT -->
-
-        <div class="profile-info-card">
-
-          <div class="profile-card-heading">
-
-            <div>
-
-              <p class="eyebrow">
-                ABOUT
-              </p>
-
-              <h2>
-                About Me
-              </h2>
-
-            </div>
+            <p
+              class="username"
+              id="profileUsername"
+            >
+              @username
+            </p>
 
           </div>
 
+        </div>
 
-          <p
-            id="profileBio"
-            class="profile-bio"
-          >
+
+        <!-- =========================
+             ABOUT ME
+        ========================== -->
+
+        <div class="profile-card">
+
+          <h2>
+            About Me
+          </h2>
+
+          <p id="profileBio">
             No bio yet.
           </p>
 
         </div>
 
 
-        <!-- STATUS -->
+        <!-- =========================
+             STATUS
+        ========================== -->
 
-        <div class="profile-info-card">
+        <div class="profile-card">
 
-          <p class="eyebrow">
-            STATUS
-          </p>
+          <h2>
+            Status
+          </h2>
 
-          <div
-            id="profileStatus"
-            class="profile-status"
-          >
+          <p id="profileStatus">
             No status set.
+          </p>
+
+        </div>
+
+
+        <!-- =========================
+             DETAILS
+        ========================== -->
+
+        <div class="profile-card">
+
+          <h2>
+            Details
+          </h2>
+
+          <div class="profile-details">
+
+            <div>
+
+              <span class="detail-label">
+                Pronouns
+              </span>
+
+              <span id="profilePronouns">
+                Not specified
+              </span>
+
+            </div>
+
+
+            <div>
+
+              <span class="detail-label">
+                Friends
+              </span>
+
+              <span id="profileFriendCount">
+                0
+              </span>
+
+            </div>
+
+
+            <div>
+
+              <span class="detail-label">
+                Joined
+              </span>
+
+              <span id="profileJoined">
+                Unknown
+              </span>
+
+            </div>
+
           </div>
 
         </div>
 
 
-        <!-- DETAILS -->
+        <!-- =========================
+             EDIT PROFILE
+        ========================== -->
 
-        <div class="profile-info-card">
-
-          <p class="eyebrow">
-            DETAILS
-          </p>
-
-
-          <div class="profile-detail">
-
-            <span>
-              Pronouns
-            </span>
-
-            <strong id="profilePronouns">
-              Not specified
-            </strong>
-
-          </div>
-
-
-          <div class="profile-detail">
-
-            <span>
-              Friends
-            </span>
-
-            <strong id="profileFriendCount">
-              0
-            </strong>
-
-          </div>
-
-
-          <div class="profile-detail">
-
-            <span>
-              Joined
-            </span>
-
-            <strong id="profileJoined">
-              Loading...
-            </strong>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================
-           SETTINGS
-      ========================== -->
-
-      <section class="settings-grid">
-
-
-        <!-- PROFILE SETTINGS -->
-
-        <div class="settings-card">
-
-          <p class="eyebrow">
-            SETTINGS
-          </p>
+        <div class="profile-card">
 
           <h2>
             Edit Profile
           </h2>
 
-          <p>
-            Update the information people
-            in your circle see.
-          </p>
-
-
           <form id="profileForm">
-
 
             <label for="displayName">
               Display Name
@@ -272,8 +223,8 @@
 
             <textarea
               id="bio"
-              maxlength="250"
-              rows="5"
+              maxlength="500"
+              rows="4"
               placeholder="Tell people a little about yourself..."
             ></textarea>
 
@@ -285,7 +236,7 @@
             <input
               id="status"
               type="text"
-              maxlength="60"
+              maxlength="100"
               placeholder="What are you up to?"
             >
 
@@ -298,32 +249,30 @@
               id="pronouns"
               type="text"
               maxlength="30"
-              placeholder="Optional"
+              placeholder="e.g. he/him"
             >
 
 
-            <!-- PROFILE PICTURE -->
-
             <label for="profilePicture">
-              Profile Picture URL
+              Profile Picture
             </label>
 
             <input
               id="profilePicture"
-              type="url"
-              maxlength="500"
-              placeholder="https://example.com/image.png"
+              type="file"
+              accept="image/png, image/jpeg, image/webp"
             >
 
 
-            <button type="submit">
+            <button
+              type="submit"
+            >
               Save Profile
             </button>
 
-
             <p
               id="profileMessage"
-              class="message"
+              class="form-message"
             ></p>
 
           </form>
@@ -331,25 +280,17 @@
         </div>
 
 
-        <!-- PASSWORD -->
+        <!-- =========================
+             SECURITY
+        ========================== -->
 
-        <div class="settings-card">
-
-          <p class="eyebrow">
-            SECURITY
-          </p>
+        <div class="profile-card">
 
           <h2>
-            Change Password
+            Security
           </h2>
 
-          <p>
-            Update your account password.
-          </p>
-
-
           <form id="passwordForm">
-
 
             <label for="currentPassword">
               Current Password
@@ -369,19 +310,20 @@
             <input
               id="newPassword"
               type="password"
-              minlength="6"
+              minlength="8"
               required
             >
 
 
-            <button type="submit">
-              Update Password
+            <button
+              type="submit"
+            >
+              Change Password
             </button>
-
 
             <p
               id="passwordMessage"
-              class="message"
+              class="form-message"
             ></p>
 
           </form>
@@ -389,8 +331,23 @@
         </div>
 
 
-      </section>
+        <!-- =========================
+             LOGOUT
+        ========================== -->
 
+        <div class="profile-card logout-card">
+
+          <button
+            id="logoutButton"
+            class="danger-button"
+            type="button"
+          >
+            Log Out
+          </button>
+
+        </div>
+
+      </section>
 
     </main>
 
@@ -403,3 +360,5 @@
 
 </html>
 ```
+
+**Don't test saving the picture yet.** The HTML now lets you select an image, but the JavaScript still expects a URL, so the next step is updating `profile.js` to handle the selected file.
