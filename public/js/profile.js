@@ -1,4 +1,3 @@
-```js
 async function loadProfile() {
   try {
     const response = await fetch("/api/auth/me");
