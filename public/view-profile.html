@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Profile - Someone in this Circle
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <header class="topbar">
+
+      <div class="brand">
+        Someone in this Circle
+      </div>
+
+      <nav class="nav">
+
+        <a href="dashboard.html">
+          Home
+        </a>
+
+        <a href="profile.html">
+          Profile
+        </a>
+
+        <a
+          href="dashboard.html#friends"
+          class="active"
+        >
+          Friends
+        </a>
+
+        <a href="#">
+          Games
+          <span class="soon">
+            SOON
+          </span>
+        </a>
+
+      </nav>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="dashboard">
+
+      <div class="profile-header">
+
+        <div
+          class="avatar"
+          id="avatar"
+        >
+          ?
+        </div>
+
+        <div>
+
+          <h1 id="profileName">
+            Loading...
+          </h1>
+
+          <p id="profileUsername">
+            @username
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- PROFILE INFORMATION -->
+
+      <div class="profile-info-grid">
+
+
+        <div class="profile-info-card">
+
+          <div class="profile-card-heading">
+
+            <div>
+
+              <p class="eyebrow">
+                ABOUT ME
+              </p>
+
+              <h2>
+                Bio
+              </h2>
+
+            </div>
+
+          </div>
+
+          <p
+            id="profileBio"
+            class="profile-bio"
+          >
+            Loading...
+          </p>
+
+        </div>
+
+
+        <div class="profile-info-card">
+
+          <div class="profile-card-heading">
+
+            <div>
+
+              <p class="eyebrow">
+                STATUS
+              </p>
+
+              <h2>
+                Current Status
+              </h2>
+
+            </div>
+
+          </div>
+
+          <div
+            id="profileStatus"
+            class="profile-status"
+          >
+            Loading...
+          </div>
+
+        </div>
+
+
+        <div class="profile-info-card">
+
+          <div class="profile-card-heading">
+
+            <div>
+
+              <p class="eyebrow">
+                DETAILS
+              </p>
+
+              <h2>
+                Information
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <div class="profile-detail">
+
+            <span>
+              Pronouns
+            </span>
+
+            <strong id="profilePronouns">
+              Loading...
+            </strong>
+
+          </div>
+
+
+          <div class="profile-detail">
+
+            <span>
+              Joined
+            </span>
+
+            <strong id="profileJoined">
+              Loading...
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- BACK BUTTON -->
+
+      <div
+        class="settings-card"
+        style="margin-top: 20px;"
+      >
+
+        <button
+          type="button"
+          onclick="history.back()"
+        >
+          ← Back
+        </button>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <script src="js/view-profile.js"></script>
+
+</body>
+
+</html>
