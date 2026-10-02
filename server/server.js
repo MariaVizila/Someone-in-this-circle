@@ -520,8 +520,141 @@ app.get(
 
 
 /* =========================
-   UPDATE PROFILE
+   OWNER CHANGE USER ROLE
 ========================= */
+
+app.patch(
+  "/api/owner/users/:id/role",
+  requireOwner,
+  async (req, res) => {
+
+    const userId =
+      Number(req.params.id);
+
+    const role =
+      String(
+        req.body.role || ""
+      ).toLowerCase().trim();
+
+
+    if (!Number.isInteger(userId)) {
+
+      return res.status(400).json({
+        error:
+          "Invalid user ID."
+      });
+
+    }
+
+
+    const allowedRoles = [
+      "user",
+      "mod",
+      "admin"
+    ];
+
+
+    if (!allowedRoles.includes(role)) {
+
+      return res.status(400).json({
+        error:
+          "Invalid role."
+      });
+
+    }
+
+
+    try {
+
+      const target =
+        await pool.query(
+          `
+          SELECT
+            id,
+            username,
+            role
+          FROM users
+          WHERE id = $1
+          `,
+          [userId]
+        );
+
+
+      if (target.rows.length === 0) {
+
+        return res.status(404).json({
+          error:
+            "User not found."
+        });
+
+      }
+
+
+      const targetUser =
+        target.rows[0];
+
+
+      /*
+        The owner account cannot
+        be changed through this panel.
+      */
+
+      if (
+        targetUser.username.toLowerCase() ===
+        "miyowa"
+      ) {
+
+        return res.status(403).json({
+          error:
+            "The owner account cannot be changed."
+        });
+
+      }
+
+
+      const updated =
+        await pool.query(
+          `
+          UPDATE users
+          SET role = $1
+          WHERE id = $2
+          RETURNING
+            id,
+            username,
+            display_name,
+            bio,
+            status,
+            pronouns,
+            profile_picture,
+            role,
+            created_at
+          `,
+          [role, userId]
+        );
+
+
+      res.json(
+        updated.rows[0]
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Owner role update error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not update user role."
+      });
+
+    }
+
+  }
+);
 
 
 /* =========================
