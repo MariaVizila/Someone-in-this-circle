@@ -426,28 +426,13 @@ app.post(
 );
 
 
-/* START */
+/* TEST API */
 
-initializeDatabase()
-  .then(() => {
-
-    app.listen(PORT, () => {
-
-      console.log(
-        `Someone in this Circle is running on port ${PORT}`
-      );
-
-    });
-
-  })
-  .catch((error) => {
-
-    console.error(
-      "Database initialization failed:",
-      error
-    );
-
+app.get("/api/test", (req, res) => {
+  res.json({
+    message: "Someone in this Circle API is working!"
   });
+});
 
 
 module.exports = app;
