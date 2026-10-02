@@ -271,6 +271,7 @@ app.get("/api/auth/me", async (req, res) => {
           bio,
           status,
           pronouns,
+          profile_picture,
           created_at
         FROM users
         WHERE id = $1
@@ -320,7 +321,8 @@ app.patch("/api/profile", async (req, res) => {
     displayName,
     bio,
     status,
-    pronouns
+    pronouns,
+    profilePicture
   } = req.body;
 
 
@@ -393,6 +395,22 @@ app.patch("/api/profile", async (req, res) => {
   }
 
 
+  /* PROFILE PICTURE */
+
+  const cleanProfilePicture =
+    typeof profilePicture === "string"
+      ? profilePicture.trim()
+      : "";
+
+
+  if (cleanProfilePicture.length > 500) {
+    return res.status(400).json({
+      error:
+        "Profile picture URL must be 500 characters or fewer."
+    });
+  }
+
+
   try {
 
     await pool.query(
@@ -402,14 +420,16 @@ app.patch("/api/profile", async (req, res) => {
         display_name = $1,
         bio = $2,
         status = $3,
-        pronouns = $4
-      WHERE id = $5
+        pronouns = $4,
+        profile_picture = $5
+      WHERE id = $6
       `,
       [
         displayName.trim(),
         cleanBio,
         cleanStatus,
         cleanPronouns,
+        cleanProfilePicture,
         req.session.userId
       ]
     );
