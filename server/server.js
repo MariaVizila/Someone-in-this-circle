@@ -57,6 +57,7 @@ app.use(
 ========================= */
 
 app.post("/api/auth/register", async (req, res) => {
+
   try {
 
     const {
@@ -67,9 +68,12 @@ app.post("/api/auth/register", async (req, res) => {
 
 
     if (!username || !password || !displayName) {
+
       return res.status(400).json({
-        error: "Please fill in every field."
+        error:
+          "Please fill in every field."
       });
+
     }
 
 
@@ -77,34 +81,42 @@ app.post("/api/auth/register", async (req, res) => {
       username.length < 3 ||
       username.length > 20
     ) {
+
       return res.status(400).json({
         error:
           "Username must be between 3 and 20 characters."
       });
+
     }
 
 
     if (password.length < 6) {
+
       return res.status(400).json({
         error:
           "Password must be at least 6 characters."
       });
+
     }
 
 
     if (displayName.trim().length < 1) {
+
       return res.status(400).json({
         error:
           "Display name cannot be empty."
       });
+
     }
 
 
     if (displayName.trim().length > 30) {
+
       return res.status(400).json({
         error:
           "Display name must be 30 characters or fewer."
       });
+
     }
 
 
@@ -116,10 +128,12 @@ app.post("/api/auth/register", async (req, res) => {
 
 
     if (existingUser.rows.length > 0) {
+
       return res.status(409).json({
         error:
           "That username is already taken."
       });
+
     }
 
 
@@ -162,6 +176,7 @@ app.post("/api/auth/register", async (req, res) => {
     });
 
   }
+
 });
 
 
@@ -170,6 +185,7 @@ app.post("/api/auth/register", async (req, res) => {
 ========================= */
 
 app.post("/api/auth/login", async (req, res) => {
+
   try {
 
     const {
@@ -179,10 +195,12 @@ app.post("/api/auth/login", async (req, res) => {
 
 
     if (!username || !password) {
+
       return res.status(400).json({
         error:
           "Enter your username and password."
       });
+
     }
 
 
@@ -198,10 +216,12 @@ app.post("/api/auth/login", async (req, res) => {
 
 
     if (result.rows.length === 0) {
+
       return res.status(401).json({
         error:
           "Incorrect username or password."
       });
+
     }
 
 
@@ -217,10 +237,12 @@ app.post("/api/auth/login", async (req, res) => {
 
 
     if (!passwordMatches) {
+
       return res.status(401).json({
         error:
           "Incorrect username or password."
       });
+
     }
 
 
@@ -243,6 +265,7 @@ app.post("/api/auth/login", async (req, res) => {
     });
 
   }
+
 });
 
 
@@ -253,9 +276,12 @@ app.post("/api/auth/login", async (req, res) => {
 app.get("/api/auth/me", async (req, res) => {
 
   if (!req.session.userId) {
+
     return res.status(401).json({
-      error: "Not logged in."
+      error:
+        "Not logged in."
     });
+
   }
 
 
@@ -281,13 +307,18 @@ app.get("/api/auth/me", async (req, res) => {
 
 
     if (result.rows.length === 0) {
+
       return res.status(401).json({
-        error: "User not found."
+        error:
+          "User not found."
       });
+
     }
 
 
-    res.json(result.rows[0]);
+    res.json(
+      result.rows[0]
+    );
 
 
   } catch (error) {
@@ -311,9 +342,12 @@ app.get("/api/auth/me", async (req, res) => {
 app.patch("/api/profile", async (req, res) => {
 
   if (!req.session.userId) {
+
     return res.status(401).json({
-      error: "Not logged in."
+      error:
+        "Not logged in."
     });
+
   }
 
 
@@ -332,18 +366,22 @@ app.patch("/api/profile", async (req, res) => {
     !displayName ||
     displayName.trim().length < 1
   ) {
+
     return res.status(400).json({
       error:
         "Display name cannot be empty."
     });
+
   }
 
 
   if (displayName.trim().length > 30) {
+
     return res.status(400).json({
       error:
         "Display name must be 30 characters or fewer."
     });
+
   }
 
 
@@ -356,10 +394,12 @@ app.patch("/api/profile", async (req, res) => {
 
 
   if (cleanBio.length > 250) {
+
     return res.status(400).json({
       error:
         "Bio must be 250 characters or fewer."
     });
+
   }
 
 
@@ -372,10 +412,12 @@ app.patch("/api/profile", async (req, res) => {
 
 
   if (cleanStatus.length > 60) {
+
     return res.status(400).json({
       error:
         "Status must be 60 characters or fewer."
     });
+
   }
 
 
@@ -388,10 +430,12 @@ app.patch("/api/profile", async (req, res) => {
 
 
   if (cleanPronouns.length > 30) {
+
     return res.status(400).json({
       error:
         "Pronouns must be 30 characters or fewer."
     });
+
   }
 
 
@@ -404,10 +448,12 @@ app.patch("/api/profile", async (req, res) => {
 
 
   if (cleanProfilePicture.length > 500) {
+
     return res.status(400).json({
       error:
         "Profile picture URL must be 500 characters or fewer."
     });
+
   }
 
 
@@ -455,6 +501,80 @@ app.patch("/api/profile", async (req, res) => {
 
 
 /* =========================
+   PUBLIC USER PROFILE
+========================= */
+
+app.get("/api/users/:id", async (req, res) => {
+
+  try {
+
+    const userId =
+      Number(req.params.id);
+
+
+    if (!Number.isInteger(userId)) {
+
+      return res.status(400).json({
+        error:
+          "Invalid user ID."
+      });
+
+    }
+
+
+    const result =
+      await pool.query(
+        `
+        SELECT
+          id,
+          username,
+          display_name,
+          bio,
+          status,
+          pronouns,
+          profile_picture,
+          created_at
+        FROM users
+        WHERE id = $1
+        `,
+        [userId]
+      );
+
+
+    if (result.rows.length === 0) {
+
+      return res.status(404).json({
+        error:
+          "User not found."
+      });
+
+    }
+
+
+    res.json(
+      result.rows[0]
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Public profile error:",
+      error
+    );
+
+
+    res.status(500).json({
+      error:
+        "Could not load profile."
+    });
+
+  }
+
+});
+
+
+/* =========================
    CHANGE PASSWORD
 ========================= */
 
@@ -463,9 +583,12 @@ app.patch(
   async (req, res) => {
 
     if (!req.session.userId) {
+
       return res.status(401).json({
-        error: "Not logged in."
+        error:
+          "Not logged in."
       });
+
     }
 
 
@@ -479,18 +602,22 @@ app.patch(
       !currentPassword ||
       !newPassword
     ) {
+
       return res.status(400).json({
         error:
           "Enter both passwords."
       });
+
     }
 
 
     if (newPassword.length < 6) {
+
       return res.status(400).json({
         error:
           "New password must be at least 6 characters."
       });
+
     }
 
 
@@ -508,10 +635,12 @@ app.patch(
 
 
       if (result.rows.length === 0) {
+
         return res.status(404).json({
           error:
             "User not found."
         });
+
       }
 
 
@@ -523,10 +652,12 @@ app.patch(
 
 
       if (!matches) {
+
         return res.status(401).json({
           error:
             "Current password is incorrect."
         });
+
       }
 
 
@@ -594,85 +725,119 @@ app.post(
    FRIEND REQUESTS
 ========================= */
 
-app.post("/api/friends/request", async (req, res) => {
+app.post(
+  "/api/friends/request",
+  async (req, res) => {
 
-  try {
+    try {
 
-    if (!req.session.userId) {
-      return res.status(401).json({
-        error:
-          "You must be logged in."
-      });
-    }
+      if (!req.session.userId) {
 
+        return res.status(401).json({
+          error:
+            "You must be logged in."
+        });
 
-    const {
-      username
-    } = req.body;
-
-
-    if (!username) {
-      return res.status(400).json({
-        error:
-          "Username is required."
-      });
-    }
+      }
 
 
-    const target =
+      const {
+        username
+      } = req.body;
+
+
+      if (!username) {
+
+        return res.status(400).json({
+          error:
+            "Username is required."
+        });
+
+      }
+
+
+      const target =
+        await pool.query(
+          `
+          SELECT
+            id,
+            username,
+            display_name
+          FROM users
+          WHERE username = $1
+          `,
+          [username.trim()]
+        );
+
+
+      if (target.rows.length === 0) {
+
+        return res.status(404).json({
+          error:
+            "User not found."
+        });
+
+      }
+
+
+      const receiver =
+        target.rows[0];
+
+
+      if (
+        receiver.id ===
+        req.session.userId
+      ) {
+
+        return res.status(400).json({
+          error:
+            "You cannot send a friend request to yourself."
+        });
+
+      }
+
+
+      const existing =
+        await pool.query(
+          `
+          SELECT
+            id,
+            status
+          FROM friendships
+          WHERE
+            (
+              requester_id = $1
+              AND receiver_id = $2
+            )
+            OR
+            (
+              requester_id = $2
+              AND receiver_id = $1
+            )
+          `,
+          [
+            req.session.userId,
+            receiver.id
+          ]
+        );
+
+
+      if (existing.rows.length > 0) {
+
+        return res.status(400).json({
+          error:
+            "A friend request or friendship already exists."
+        });
+
+      }
+
+
       await pool.query(
         `
-        SELECT
-          id,
-          username,
-          display_name
-        FROM users
-        WHERE username = $1
-        `,
-        [username.trim()]
-      );
-
-
-    if (target.rows.length === 0) {
-      return res.status(404).json({
-        error:
-          "User not found."
-      });
-    }
-
-
-    const receiver =
-      target.rows[0];
-
-
-    if (
-      receiver.id ===
-      req.session.userId
-    ) {
-      return res.status(400).json({
-        error:
-          "You cannot send a friend request to yourself."
-      });
-    }
-
-
-    const existing =
-      await pool.query(
-        `
-        SELECT
-          id,
-          status
-        FROM friendships
-        WHERE
-          (
-            requester_id = $1
-            AND receiver_id = $2
-          )
-          OR
-          (
-            requester_id = $2
-            AND receiver_id = $1
-          )
+        INSERT INTO friendships
+          (requester_id, receiver_id, status)
+        VALUES
+          ($1, $2, 'pending')
         `,
         [
           req.session.userId,
@@ -681,167 +846,151 @@ app.post("/api/friends/request", async (req, res) => {
       );
 
 
-    if (existing.rows.length > 0) {
-      return res.status(400).json({
-        error:
-          "A friend request or friendship already exists."
+      res.json({
+        message:
+          "Friend request sent!"
       });
+
+
+    } catch (error) {
+
+      console.error(
+        "Friend request error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Something went wrong."
+      });
+
     }
 
-
-    await pool.query(
-      `
-      INSERT INTO friendships
-        (requester_id, receiver_id, status)
-      VALUES
-        ($1, $2, 'pending')
-      `,
-      [
-        req.session.userId,
-        receiver.id
-      ]
-    );
-
-
-    res.json({
-      message:
-        "Friend request sent!"
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "Friend request error:",
-      error
-    );
-
-
-    res.status(500).json({
-      error:
-        "Something went wrong."
-    });
-
   }
-
-});
+);
 
 
 /* =========================
    GET FRIENDS AND REQUESTS
 ========================= */
 
-app.get("/api/friends", async (req, res) => {
+app.get(
+  "/api/friends",
+  async (req, res) => {
 
-  try {
+    try {
 
-    if (!req.session.userId) {
-      return res.status(401).json({
-        error:
-          "You must be logged in."
+      if (!req.session.userId) {
+
+        return res.status(401).json({
+          error:
+            "You must be logged in."
+        });
+
+      }
+
+
+      const userId =
+        req.session.userId;
+
+
+      const requests =
+        await pool.query(
+          `
+          SELECT
+            friendships.id,
+            users.username,
+            users.display_name,
+            friendships.created_at
+          FROM friendships
+          JOIN users
+            ON users.id =
+              friendships.requester_id
+          WHERE
+            friendships.receiver_id = $1
+            AND friendships.status = 'pending'
+          ORDER BY
+            friendships.created_at DESC
+          `,
+          [userId]
+        );
+
+
+      const friends =
+        await pool.query(
+          `
+          SELECT
+            friendships.id,
+            users.username,
+            users.display_name
+          FROM friendships
+          JOIN users
+            ON users.id =
+              CASE
+                WHEN friendships.requester_id = $1
+                THEN friendships.receiver_id
+                ELSE friendships.requester_id
+              END
+          WHERE
+            (
+              friendships.requester_id = $1
+              OR friendships.receiver_id = $1
+            )
+            AND friendships.status = 'accepted'
+          ORDER BY
+            users.display_name ASC
+          `,
+          [userId]
+        );
+
+
+      const sent =
+        await pool.query(
+          `
+          SELECT
+            friendships.id,
+            users.username,
+            users.display_name,
+            friendships.created_at
+          FROM friendships
+          JOIN users
+            ON users.id =
+              friendships.receiver_id
+          WHERE
+            friendships.requester_id = $1
+            AND friendships.status = 'pending'
+          ORDER BY
+            friendships.created_at DESC
+          `,
+          [userId]
+        );
+
+
+      res.json({
+        requests: requests.rows,
+        friends: friends.rows,
+        sent: sent.rows
       });
+
+
+    } catch (error) {
+
+      console.error(
+        "Friends error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Something went wrong."
+      });
+
     }
 
-
-    const userId =
-      req.session.userId;
-
-
-    const requests =
-      await pool.query(
-        `
-        SELECT
-          friendships.id,
-          users.username,
-          users.display_name,
-          friendships.created_at
-        FROM friendships
-        JOIN users
-          ON users.id =
-            friendships.requester_id
-        WHERE
-          friendships.receiver_id = $1
-          AND friendships.status = 'pending'
-        ORDER BY
-          friendships.created_at DESC
-        `,
-        [userId]
-      );
-
-
-    const friends =
-      await pool.query(
-        `
-        SELECT
-          friendships.id,
-          users.username,
-          users.display_name
-        FROM friendships
-        JOIN users
-          ON users.id =
-            CASE
-              WHEN friendships.requester_id = $1
-              THEN friendships.receiver_id
-              ELSE friendships.requester_id
-            END
-        WHERE
-          (
-            friendships.requester_id = $1
-            OR friendships.receiver_id = $1
-          )
-          AND friendships.status = 'accepted'
-        ORDER BY
-          users.display_name ASC
-        `,
-        [userId]
-      );
-
-
-    const sent =
-      await pool.query(
-        `
-        SELECT
-          friendships.id,
-          users.username,
-          users.display_name,
-          friendships.created_at
-        FROM friendships
-        JOIN users
-          ON users.id =
-            friendships.receiver_id
-        WHERE
-          friendships.requester_id = $1
-          AND friendships.status = 'pending'
-        ORDER BY
-          friendships.created_at DESC
-        `,
-        [userId]
-      );
-
-
-    res.json({
-      requests: requests.rows,
-      friends: friends.rows,
-      sent: sent.rows
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "Friends error:",
-      error
-    );
-
-
-    res.status(500).json({
-      error:
-        "Something went wrong."
-    });
-
   }
-
-});
+);
 
 
 /* =========================
@@ -855,10 +1004,12 @@ app.post(
     try {
 
       if (!req.session.userId) {
+
         return res.status(401).json({
           error:
             "You must be logged in."
         });
+
       }
 
 
@@ -867,10 +1018,12 @@ app.post(
 
 
       if (!Number.isInteger(requestId)) {
+
         return res.status(400).json({
           error:
             "Invalid friend request."
         });
+
       }
 
 
@@ -893,10 +1046,12 @@ app.post(
 
 
       if (result.rows.length === 0) {
+
         return res.status(404).json({
           error:
             "Friend request not found."
         });
+
       }
 
 
@@ -936,10 +1091,12 @@ app.post(
     try {
 
       if (!req.session.userId) {
+
         return res.status(401).json({
           error:
             "You must be logged in."
         });
+
       }
 
 
@@ -948,10 +1105,12 @@ app.post(
 
 
       if (!Number.isInteger(requestId)) {
+
         return res.status(400).json({
           error:
             "Invalid friend request."
         });
+
       }
 
 
@@ -973,10 +1132,12 @@ app.post(
 
 
       if (result.rows.length === 0) {
+
         return res.status(404).json({
           error:
             "Friend request not found."
         });
+
       }
 
 
