@@ -44,6 +44,7 @@ app.use(
   })
 );
 
+
 app.use(
   express.static(
     path.join(__dirname, "..", "public")
@@ -51,15 +52,19 @@ app.use(
 );
 
 
-/* REGISTER */
+/* =========================
+   REGISTER
+========================= */
 
 app.post("/api/auth/register", async (req, res) => {
   try {
+
     const {
       username,
       password,
       displayName
     } = req.body;
+
 
     if (!username || !password || !displayName) {
       return res.status(400).json({
@@ -67,12 +72,17 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
-    if (username.length < 3 || username.length > 20) {
+
+    if (
+      username.length < 3 ||
+      username.length > 20
+    ) {
       return res.status(400).json({
         error:
           "Username must be between 3 and 20 characters."
       });
     }
+
 
     if (password.length < 6) {
       return res.status(400).json({
@@ -81,11 +91,14 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
+
     if (displayName.trim().length < 1) {
       return res.status(400).json({
-        error: "Display name cannot be empty."
+        error:
+          "Display name cannot be empty."
       });
     }
+
 
     if (displayName.trim().length > 30) {
       return res.status(400).json({
@@ -94,11 +107,13 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
+
     const existingUser =
       await pool.query(
         "SELECT id FROM users WHERE username = $1",
         [username]
       );
+
 
     if (existingUser.rows.length > 0) {
       return res.status(409).json({
@@ -107,8 +122,10 @@ app.post("/api/auth/register", async (req, res) => {
       });
     }
 
+
     const passwordHash =
       await bcrypt.hash(password, 12);
+
 
     const result =
       await pool.query(
@@ -125,32 +142,41 @@ app.post("/api/auth/register", async (req, res) => {
         ]
       );
 
+
     req.session.userId =
       result.rows[0].id;
+
 
     res.json({
       success: true
     });
 
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       error:
         "Something went wrong while creating your account."
     });
+
   }
 });
 
 
-/* LOGIN */
+/* =========================
+   LOGIN
+========================= */
 
 app.post("/api/auth/login", async (req, res) => {
   try {
+
     const {
       username,
       password
     } = req.body;
+
 
     if (!username || !password) {
       return res.status(400).json({
@@ -158,6 +184,7 @@ app.post("/api/auth/login", async (req, res) => {
           "Enter your username and password."
       });
     }
+
 
     const result =
       await pool.query(
@@ -169,6 +196,7 @@ app.post("/api/auth/login", async (req, res) => {
         [username]
       );
 
+
     if (result.rows.length === 0) {
       return res.status(401).json({
         error:
@@ -176,14 +204,17 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
+
     const user =
       result.rows[0];
+
 
     const passwordMatches =
       await bcrypt.compare(
         password,
         user.password_hash
       );
+
 
     if (!passwordMatches) {
       return res.status(401).json({
@@ -192,25 +223,32 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
+
     req.session.userId =
       user.id;
+
 
     res.json({
       success: true
     });
 
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       error:
         "Something went wrong while logging in."
     });
+
   }
 });
 
 
-/* CURRENT USER */
+/* =========================
+   CURRENT USER
+========================= */
 
 app.get("/api/auth/me", async (req, res) => {
 
@@ -220,7 +258,9 @@ app.get("/api/auth/me", async (req, res) => {
     });
   }
 
+
   try {
+
     const result =
       await pool.query(
         `
@@ -228,6 +268,9 @@ app.get("/api/auth/me", async (req, res) => {
           id,
           username,
           display_name,
+          bio,
+          status,
+          pronouns,
           created_at
         FROM users
         WHERE id = $1
@@ -235,26 +278,34 @@ app.get("/api/auth/me", async (req, res) => {
         [req.session.userId]
       );
 
+
     if (result.rows.length === 0) {
       return res.status(401).json({
         error: "User not found."
       });
     }
 
+
     res.json(result.rows[0]);
 
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       error:
         "Something went wrong."
     });
+
   }
+
 });
 
 
-/* UPDATE PROFILE */
+/* =========================
+   UPDATE PROFILE
+========================= */
 
 app.patch("/api/profile", async (req, res) => {
 
@@ -264,9 +315,16 @@ app.patch("/api/profile", async (req, res) => {
     });
   }
 
+
   const {
-    displayName
+    displayName,
+    bio,
+    status,
+    pronouns
   } = req.body;
+
+
+  /* DISPLAY NAME */
 
   if (
     !displayName ||
@@ -278,6 +336,7 @@ app.patch("/api/profile", async (req, res) => {
     });
   }
 
+
   if (displayName.trim().length > 30) {
     return res.status(400).json({
       error:
@@ -285,35 +344,99 @@ app.patch("/api/profile", async (req, res) => {
     });
   }
 
+
+  /* BIO */
+
+  const cleanBio =
+    typeof bio === "string"
+      ? bio.trim()
+      : "";
+
+
+  if (cleanBio.length > 250) {
+    return res.status(400).json({
+      error:
+        "Bio must be 250 characters or fewer."
+    });
+  }
+
+
+  /* STATUS */
+
+  const cleanStatus =
+    typeof status === "string"
+      ? status.trim()
+      : "";
+
+
+  if (cleanStatus.length > 60) {
+    return res.status(400).json({
+      error:
+        "Status must be 60 characters or fewer."
+    });
+  }
+
+
+  /* PRONOUNS */
+
+  const cleanPronouns =
+    typeof pronouns === "string"
+      ? pronouns.trim()
+      : "";
+
+
+  if (cleanPronouns.length > 30) {
+    return res.status(400).json({
+      error:
+        "Pronouns must be 30 characters or fewer."
+    });
+  }
+
+
   try {
+
     await pool.query(
       `
       UPDATE users
-      SET display_name = $1
-      WHERE id = $2
+      SET
+        display_name = $1,
+        bio = $2,
+        status = $3,
+        pronouns = $4
+      WHERE id = $5
       `,
       [
         displayName.trim(),
+        cleanBio,
+        cleanStatus,
+        cleanPronouns,
         req.session.userId
       ]
     );
+
 
     res.json({
       success: true
     });
 
+
   } catch (error) {
+
     console.error(error);
 
     res.status(500).json({
       error:
         "Something went wrong."
     });
+
   }
+
 });
 
 
-/* CHANGE PASSWORD */
+/* =========================
+   CHANGE PASSWORD
+========================= */
 
 app.patch(
   "/api/profile/password",
@@ -325,10 +448,12 @@ app.patch(
       });
     }
 
+
     const {
       currentPassword,
       newPassword
     } = req.body;
+
 
     if (
       !currentPassword ||
@@ -340,6 +465,7 @@ app.patch(
       });
     }
 
+
     if (newPassword.length < 6) {
       return res.status(400).json({
         error:
@@ -347,7 +473,9 @@ app.patch(
       });
     }
 
+
     try {
+
       const result =
         await pool.query(
           `
@@ -358,17 +486,21 @@ app.patch(
           [req.session.userId]
         );
 
+
       if (result.rows.length === 0) {
         return res.status(404).json({
-          error: "User not found."
+          error:
+            "User not found."
         });
       }
+
 
       const matches =
         await bcrypt.compare(
           currentPassword,
           result.rows[0].password_hash
         );
+
 
       if (!matches) {
         return res.status(401).json({
@@ -377,11 +509,13 @@ app.patch(
         });
       }
 
+
       const newHash =
         await bcrypt.hash(
           newPassword,
           12
         );
+
 
       await pool.query(
         `
@@ -395,23 +529,30 @@ app.patch(
         ]
       );
 
+
       res.json({
         success: true
       });
 
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
         error:
           "Something went wrong."
       });
+
     }
+
   }
 );
 
 
-/* LOGOUT */
+/* =========================
+   LOGOUT
+========================= */
 
 app.post(
   "/api/auth/logout",
@@ -424,63 +565,101 @@ app.post(
       });
 
     });
+
   }
 );
 
 
-/* FRIEND REQUESTS */
+/* =========================
+   FRIEND REQUESTS
+========================= */
 
 app.post("/api/friends/request", async (req, res) => {
+
   try {
+
     if (!req.session.userId) {
       return res.status(401).json({
-        error: "You must be logged in."
+        error:
+          "You must be logged in."
       });
     }
 
-    const { username } = req.body;
+
+    const {
+      username
+    } = req.body;
+
 
     if (!username) {
       return res.status(400).json({
-        error: "Username is required."
+        error:
+          "Username is required."
       });
     }
 
-    const target = await pool.query(
-      `
-      SELECT id, username, display_name
-      FROM users
-      WHERE username = $1
-      `,
-      [username.trim()]
-    );
+
+    const target =
+      await pool.query(
+        `
+        SELECT
+          id,
+          username,
+          display_name
+        FROM users
+        WHERE username = $1
+        `,
+        [username.trim()]
+      );
+
 
     if (target.rows.length === 0) {
       return res.status(404).json({
-        error: "User not found."
+        error:
+          "User not found."
       });
     }
 
-    const receiver = target.rows[0];
 
-    if (receiver.id === req.session.userId) {
+    const receiver =
+      target.rows[0];
+
+
+    if (
+      receiver.id ===
+      req.session.userId
+    ) {
       return res.status(400).json({
         error:
           "You cannot send a friend request to yourself."
       });
     }
 
-    const existing = await pool.query(
-      `
-      SELECT id, status
-      FROM friendships
-      WHERE
-        (requester_id = $1 AND receiver_id = $2)
-        OR
-        (requester_id = $2 AND receiver_id = $1)
-      `,
-      [req.session.userId, receiver.id]
-    );
+
+    const existing =
+      await pool.query(
+        `
+        SELECT
+          id,
+          status
+        FROM friendships
+        WHERE
+          (
+            requester_id = $1
+            AND receiver_id = $2
+          )
+          OR
+          (
+            requester_id = $2
+            AND receiver_id = $1
+          )
+        `,
+        [
+          req.session.userId,
+          receiver.id
+        ]
+      );
+
 
     if (existing.rows.length > 0) {
       return res.status(400).json({
@@ -489,6 +668,7 @@ app.post("/api/friends/request", async (req, res) => {
       });
     }
 
+
     await pool.query(
       `
       INSERT INTO friendships
@@ -496,38 +676,56 @@ app.post("/api/friends/request", async (req, res) => {
       VALUES
         ($1, $2, 'pending')
       `,
-      [req.session.userId, receiver.id]
+      [
+        req.session.userId,
+        receiver.id
+      ]
     );
 
+
     res.json({
-      message: "Friend request sent!"
+      message:
+        "Friend request sent!"
     });
 
+
   } catch (error) {
+
     console.error(
       "Friend request error:",
       error
     );
 
+
     res.status(500).json({
-      error: "Something went wrong."
+      error:
+        "Something went wrong."
     });
+
   }
+
 });
 
 
-/* GET FRIENDS AND REQUESTS */
+/* =========================
+   GET FRIENDS AND REQUESTS
+========================= */
 
 app.get("/api/friends", async (req, res) => {
+
   try {
+
     if (!req.session.userId) {
       return res.status(401).json({
-        error: "You must be logged in."
+        error:
+          "You must be logged in."
       });
     }
 
+
     const userId =
       req.session.userId;
+
 
     const requests =
       await pool.query(
@@ -549,6 +747,7 @@ app.get("/api/friends", async (req, res) => {
         `,
         [userId]
       );
+
 
     const friends =
       await pool.query(
@@ -577,6 +776,7 @@ app.get("/api/friends", async (req, res) => {
         [userId]
       );
 
+
     const sent =
       await pool.query(
         `
@@ -598,39 +798,53 @@ app.get("/api/friends", async (req, res) => {
         [userId]
       );
 
+
     res.json({
       requests: requests.rows,
       friends: friends.rows,
       sent: sent.rows
     });
 
+
   } catch (error) {
+
     console.error(
       "Friends error:",
       error
     );
 
+
     res.status(500).json({
-      error: "Something went wrong."
+      error:
+        "Something went wrong."
     });
+
   }
+
 });
 
 
-/* ACCEPT FRIEND REQUEST */
+/* =========================
+   ACCEPT FRIEND REQUEST
+========================= */
 
 app.post(
   "/api/friends/request/:id/accept",
   async (req, res) => {
+
     try {
+
       if (!req.session.userId) {
         return res.status(401).json({
-          error: "You must be logged in."
+          error:
+            "You must be logged in."
         });
       }
 
+
       const requestId =
         Number(req.params.id);
+
 
       if (!Number.isInteger(requestId)) {
         return res.status(400).json({
@@ -638,6 +852,7 @@ app.post(
             "Invalid friend request."
         });
       }
+
 
       const result =
         await pool.query(
@@ -656,6 +871,7 @@ app.post(
           ]
         );
 
+
       if (result.rows.length === 0) {
         return res.status(404).json({
           error:
@@ -663,40 +879,53 @@ app.post(
         });
       }
 
+
       res.json({
         message:
           "Friend request accepted!"
       });
 
+
     } catch (error) {
+
       console.error(
         "Accept friend request error:",
         error
       );
 
+
       res.status(500).json({
         error:
           "Something went wrong."
       });
+
     }
+
   }
 );
 
 
-/* DECLINE FRIEND REQUEST */
+/* =========================
+   DECLINE FRIEND REQUEST
+========================= */
 
 app.post(
   "/api/friends/request/:id/decline",
   async (req, res) => {
+
     try {
+
       if (!req.session.userId) {
         return res.status(401).json({
-          error: "You must be logged in."
+          error:
+            "You must be logged in."
         });
       }
 
+
       const requestId =
         Number(req.params.id);
+
 
       if (!Number.isInteger(requestId)) {
         return res.status(400).json({
@@ -704,6 +933,7 @@ app.post(
             "Invalid friend request."
         });
       }
+
 
       const result =
         await pool.query(
@@ -721,6 +951,7 @@ app.post(
           ]
         );
 
+
       if (result.rows.length === 0) {
         return res.status(404).json({
           error:
@@ -728,33 +959,43 @@ app.post(
         });
       }
 
+
       res.json({
         message:
           "Friend request declined."
       });
 
+
     } catch (error) {
+
       console.error(
         "Decline friend request error:",
         error
       );
 
+
       res.status(500).json({
         error:
           "Something went wrong."
       });
+
     }
+
   }
 );
 
 
-/* TEST API */
+/* =========================
+   TEST API
+========================= */
 
 app.get("/api/test", (req, res) => {
+
   res.json({
     message:
       "Someone in this Circle API is working!"
   });
+
 });
 
 
