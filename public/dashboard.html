@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -18,7 +17,6 @@
     rel="stylesheet"
     href="css/style.css"
   >
-
 </head>
 
 <body>
@@ -75,6 +73,8 @@
 
     <main class="dashboard">
 
+      <!-- WELCOME -->
+
       <section class="welcome-card">
 
         <p class="eyebrow">
@@ -83,13 +83,11 @@
 
         <h1>
           Welcome,
-          <span id="displayName">
-            ...
-          </span>!
+          <span id="displayName">...</span>!
         </h1>
 
         <p>
-          Someone in this Circle starts here.
+          Your circle is waiting for you.
         </p>
 
       </section>
@@ -98,22 +96,33 @@
       <!-- FRIENDS -->
 
       <section
-        id="friends"
         class="friends-section"
+        id="friends"
       >
 
-        <div class="section-header">
+        <div class="friends-heading">
 
           <div>
 
             <p class="eyebrow">
-              YOUR CIRCLE
+              CONNECTIONS
             </p>
 
             <h2>
-              Friends
+              Your Friends
             </h2>
 
+            <p>
+              Connect with people and build your circle.
+            </p>
+
+          </div>
+
+          <div
+            class="friend-count"
+            id="friendCount"
+          >
+            0 Friends
           </div>
 
         </div>
@@ -124,28 +133,29 @@
         <div class="friend-add-card">
 
           <h3>
-            Add a Friend
+            Add someone to your circle
           </h3>
 
           <p>
-            Enter someone's username to
-            send them a friend request.
+            Enter their username to send them a friend request.
           </p>
 
-          <form id="friendRequestForm">
+          <form
+            id="friendRequestForm"
+            class="friend-add-form"
+          >
 
             <input
-              type="text"
               id="friendUsername"
-              placeholder="Username"
+              type="text"
+              placeholder="Enter a username..."
+              autocomplete="off"
               maxlength="20"
               required
             >
 
-            <button
-              type="submit"
-            >
-              Send Request
+            <button type="submit">
+              Add Friend
             </button>
 
           </form>
@@ -158,38 +168,57 @@
         </div>
 
 
-        <!-- FRIEND REQUESTS -->
+        <!-- REQUESTS -->
 
-        <div class="friend-column">
+        <div class="friend-columns">
 
-          <h3>
-            Friend Requests
-          </h3>
 
-          <div id="friendRequests">
+          <!-- INCOMING -->
 
-            <p class="empty-message">
-              No pending friend requests.
-            </p>
+          <div class="friend-panel">
+
+            <div class="friend-panel-header">
+
+              <h3>
+                Friend Requests
+              </h3>
+
+              <span id="requestCount">
+                0
+              </span>
+
+            </div>
+
+            <div
+              id="friendRequests"
+              class="friend-list"
+            >
+            </div>
 
           </div>
 
-        </div>
 
+          <!-- SENT -->
 
-        <!-- SENT REQUESTS -->
+          <div class="friend-panel">
 
-        <div class="friend-column">
+            <div class="friend-panel-header">
 
-          <h3>
-            Sent Requests
-          </h3>
+              <h3>
+                Sent Requests
+              </h3>
 
-          <div id="sentRequests">
+              <span id="sentCount">
+                0
+              </span>
 
-            <p class="empty-message">
-              No sent requests.
-            </p>
+            </div>
+
+            <div
+              id="sentRequests"
+              class="friend-list"
+            >
+            </div>
 
           </div>
 
@@ -198,18 +227,28 @@
 
         <!-- FRIEND LIST -->
 
-        <div class="friend-column">
+        <div class="friend-panel friends-list-panel">
 
-          <h3>
-            Your Friends
-          </h3>
+          <div class="friend-panel-header">
 
-          <div id="friendsList">
+            <div>
 
-            <p class="empty-message">
-              You don't have any friends yet.
-            </p>
+              <h3>
+                People in Your Circle
+              </h3>
 
+              <span>
+                Your accepted friends
+              </span>
+
+            </div>
+
+          </div>
+
+          <div
+            id="friendsList"
+            class="friends-grid"
+          >
           </div>
 
         </div>
@@ -232,8 +271,7 @@
           </h2>
 
           <p>
-            Create or join games with
-            people in your circle.
+            Create or join games with people in your circle.
           </p>
 
           <span class="coming-soon">
@@ -254,8 +292,28 @@
           </h2>
 
           <p>
-            Talk with people in your
-            private circle.
+            Talk with people in your private circle.
+          </p>
+
+          <span class="coming-soon">
+            COMING SOON
+          </span>
+
+        </article>
+
+
+        <article class="feature-card">
+
+          <div class="feature-icon">
+            🎲
+          </div>
+
+          <h2>
+            Circle Games
+          </h2>
+
+          <p>
+            Play the Someone in this Circle guessing game.
           </p>
 
           <span class="coming-soon">
