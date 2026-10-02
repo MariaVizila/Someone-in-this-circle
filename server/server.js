@@ -298,6 +298,7 @@ app.get("/api/auth/me", async (req, res) => {
           status,
           pronouns,
           profile_picture,
+          role,
           created_at
         FROM users
         WHERE id = $1
@@ -316,8 +317,40 @@ app.get("/api/auth/me", async (req, res) => {
     }
 
 
+    const user =
+      result.rows[0];
+
+
+    /*
+      MIYOWA IS THE OWNER.
+      This is enforced by the server.
+    */
+
+    if (
+      user.username.toLowerCase() ===
+      "miyowa"
+    ) {
+
+      if (user.role !== "owner") {
+
+        await pool.query(
+          `
+          UPDATE users
+          SET role = 'owner'
+          WHERE id = $1
+          `,
+          [user.id]
+        );
+
+        user.role =
+          "owner";
+      }
+
+    }
+
+
     res.json(
-      result.rows[0]
+      user
     );
 
 
@@ -533,6 +566,7 @@ app.get("/api/users/:id", async (req, res) => {
           status,
           pronouns,
           profile_picture,
+          role,
           created_at
         FROM users
         WHERE id = $1
@@ -904,6 +938,7 @@ app.get(
             users.username,
             users.display_name,
             users.profile_picture,
+            users.role,
             friendships.created_at
           FROM friendships
           JOIN users
@@ -927,7 +962,8 @@ app.get(
             users.id AS user_id,
             users.username,
             users.display_name,
-            users.profile_picture
+            users.profile_picture,
+            users.role
           FROM friendships
           JOIN users
             ON users.id =
@@ -958,6 +994,7 @@ app.get(
             users.username,
             users.display_name,
             users.profile_picture,
+            users.role,
             friendships.created_at
           FROM friendships
           JOIN users
