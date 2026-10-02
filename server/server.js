@@ -18,6 +18,12 @@ app.use(express.json());
 
 app.use(
   session({
+    store: new pgSession({
+      pool: pool,
+      tableName: "user_sessions",
+      createTableIfMissing: true
+    }),
+
     secret:
       process.env.SESSION_SECRET ||
       "change-this-secret-before-production",
