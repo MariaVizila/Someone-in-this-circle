@@ -12,6 +12,8 @@ const {
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -33,11 +35,12 @@ app.use(
     saveUninitialized: false,
 
     cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7
-    }
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  path: "/",
+  maxAge: 1000 * 60 * 60 * 24 * 7
+}
   })
 );
 
