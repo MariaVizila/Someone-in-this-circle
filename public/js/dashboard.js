@@ -13,6 +13,7 @@ async function loadDashboard() {
       user.display_name;
 
     await loadFriends();
+
   } catch (error) {
     console.error(error);
     window.location.href = "index.html";
@@ -37,9 +38,149 @@ async function loadFriends() {
     renderFriendRequests(data.requests || []);
     renderSentRequests(data.sent || []);
     renderFriends(data.friends || []);
+
+    updateFriendCounts(
+      data.requests || [],
+      data.sent || [],
+      data.friends || []
+    );
+
   } catch (error) {
-    console.error("Could not load friends:", error);
+    console.error(
+      "Could not load friends:",
+      error
+    );
   }
+}
+
+
+/* =========================
+   COUNTS
+========================= */
+
+function updateFriendCounts(
+  requests,
+  sent,
+  friends
+) {
+  const friendCount =
+    document.getElementById("friendCount");
+
+  const requestCount =
+    document.getElementById("requestCount");
+
+  const sentCount =
+    document.getElementById("sentCount");
+
+  if (friendCount) {
+    friendCount.textContent =
+      `${friends.length} ${
+        friends.length === 1
+          ? "Friend"
+          : "Friends"
+      }`;
+  }
+
+  if (requestCount) {
+    requestCount.textContent =
+      requests.length;
+  }
+
+  if (sentCount) {
+    sentCount.textContent =
+      sent.length;
+  }
+}
+
+
+/* =========================
+   AVATAR
+========================= */
+
+function createAvatar(displayName) {
+  const avatar =
+    document.createElement("div");
+
+  avatar.className = "friend-avatar";
+
+  const name =
+    displayName || "?";
+
+  const words =
+    name.trim().split(/\s+/);
+
+  let initials = "";
+
+  if (words.length >= 2) {
+    initials =
+      words[0][0] +
+      words[1][0];
+  } else {
+    initials =
+      words[0].slice(0, 2);
+  }
+
+  avatar.textContent =
+    initials.toUpperCase();
+
+  return avatar;
+}
+
+
+/* =========================
+   FRIEND INFORMATION
+========================= */
+
+function createFriendInfo(
+  displayName,
+  username
+) {
+  const info =
+    document.createElement("div");
+
+  info.className =
+    "friend-info";
+
+  const name =
+    document.createElement("div");
+
+  name.className =
+    "friend-name";
+
+  name.textContent =
+    displayName;
+
+  const user =
+    document.createElement("div");
+
+  user.className =
+    "friend-username";
+
+  user.textContent =
+    `@${username}`;
+
+  info.appendChild(name);
+  info.appendChild(user);
+
+  return info;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+function createEmptyState(text) {
+  const empty =
+    document.createElement("div");
+
+  empty.className =
+    "friend-empty";
+
+  empty.textContent =
+    text;
+
+  return empty;
 }
 
 
@@ -49,55 +190,106 @@ async function loadFriends() {
 
 function renderFriendRequests(requests) {
   const container =
-    document.getElementById("friendRequests");
+    document.getElementById(
+      "friendRequests"
+    );
 
   if (!container) return;
 
   container.innerHTML = "";
 
   if (requests.length === 0) {
-    const message = document.createElement("p");
-    message.textContent = "No pending friend requests.";
-    container.appendChild(message);
+    container.appendChild(
+      createEmptyState(
+        "No new friend requests."
+      )
+    );
+
     return;
   }
 
   requests.forEach((request) => {
-    const item = document.createElement("div");
-    item.className = "friend-item";
 
-    const name = document.createElement("span");
-    name.textContent =
-      `${request.display_name} (@${request.username})`;
+    const item =
+      document.createElement("div");
 
-    const actions = document.createElement("div");
+    item.className =
+      "friend-item";
 
-    const acceptButton = document.createElement("button");
-    acceptButton.textContent = "Accept";
-    acceptButton.className = "friend-action accept";
+    item.appendChild(
+      createAvatar(
+        request.display_name
+      )
+    );
 
-    acceptButton.addEventListener("click", async () => {
-      await handleFriendRequest(
-        request.id,
-        "accept"
-      );
-    });
+    item.appendChild(
+      createFriendInfo(
+        request.display_name,
+        request.username
+      )
+    );
 
-    const declineButton = document.createElement("button");
-    declineButton.textContent = "Decline";
-    declineButton.className = "friend-action decline";
+    const actions =
+      document.createElement("div");
 
-    declineButton.addEventListener("click", async () => {
-      await handleFriendRequest(
-        request.id,
-        "decline"
-      );
-    });
+    actions.className =
+      "friend-actions";
 
-    actions.appendChild(acceptButton);
-    actions.appendChild(declineButton);
 
-    item.appendChild(name);
+    const acceptButton =
+      document.createElement("button");
+
+    acceptButton.textContent =
+      "Accept";
+
+    acceptButton.className =
+      "friend-action accept";
+
+
+    acceptButton.addEventListener(
+      "click",
+      async () => {
+
+        await handleFriendRequest(
+          request.id,
+          "accept"
+        );
+
+      }
+    );
+
+
+    const declineButton =
+      document.createElement("button");
+
+    declineButton.textContent =
+      "Decline";
+
+    declineButton.className =
+      "friend-action decline";
+
+
+    declineButton.addEventListener(
+      "click",
+      async () => {
+
+        await handleFriendRequest(
+          request.id,
+          "decline"
+        );
+
+      }
+    );
+
+
+    actions.appendChild(
+      acceptButton
+    );
+
+    actions.appendChild(
+      declineButton
+    );
+
     item.appendChild(actions);
 
     container.appendChild(item);
@@ -109,26 +301,41 @@ function renderFriendRequests(requests) {
    ACCEPT / DECLINE
 ========================= */
 
-async function handleFriendRequest(requestId, action) {
+async function handleFriendRequest(
+  requestId,
+  action
+) {
   try {
-    const response = await fetch(
-      `/api/friends/request/${requestId}/${action}`,
-      {
-        method: "POST"
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `/api/friends/request/${requestId}/${action}`,
+        {
+          method: "POST"
+        }
+      );
+
+    const data =
+      await response.json();
 
     if (!response.ok) {
-      alert(data.error || "Something went wrong.");
+      alert(
+        data.error ||
+        "Something went wrong."
+      );
+
       return;
     }
 
     await loadFriends();
+
   } catch (error) {
+
     console.error(error);
-    alert("Something went wrong.");
+
+    alert(
+      "Something went wrong."
+    );
   }
 }
 
@@ -138,36 +345,66 @@ async function handleFriendRequest(requestId, action) {
 ========================= */
 
 function renderSentRequests(requests) {
+
   const container =
-    document.getElementById("sentRequests");
+    document.getElementById(
+      "sentRequests"
+    );
 
   if (!container) return;
 
   container.innerHTML = "";
 
   if (requests.length === 0) {
-    const message = document.createElement("p");
-    message.textContent = "No sent friend requests.";
-    container.appendChild(message);
+
+    container.appendChild(
+      createEmptyState(
+        "No pending sent requests."
+      )
+    );
+
     return;
   }
 
+
   requests.forEach((request) => {
-    const item = document.createElement("div");
-    item.className = "friend-item";
 
-    const name = document.createElement("span");
-    name.textContent =
-      `${request.display_name} (@${request.username})`;
+    const item =
+      document.createElement("div");
 
-    const status = document.createElement("span");
-    status.textContent = "Pending";
-    status.className = "friend-status";
+    item.className =
+      "friend-item";
 
-    item.appendChild(name);
+
+    item.appendChild(
+      createAvatar(
+        request.display_name
+      )
+    );
+
+
+    item.appendChild(
+      createFriendInfo(
+        request.display_name,
+        request.username
+      )
+    );
+
+
+    const status =
+      document.createElement("span");
+
+    status.className =
+      "friend-status";
+
+    status.textContent =
+      "Pending";
+
+
     item.appendChild(status);
 
     container.appendChild(item);
+
   });
 }
 
@@ -177,36 +414,55 @@ function renderSentRequests(requests) {
 ========================= */
 
 function renderFriends(friends) {
+
   const container =
-    document.getElementById("friendsList");
+    document.getElementById(
+      "friendsList"
+    );
 
   if (!container) return;
 
   container.innerHTML = "";
 
+
   if (friends.length === 0) {
-    const message = document.createElement("p");
-    message.textContent = "You don't have any friends yet.";
-    container.appendChild(message);
+
+    container.appendChild(
+      createEmptyState(
+        "Your circle is empty for now. Add someone above to get started!"
+      )
+    );
+
     return;
   }
 
+
   friends.forEach((friend) => {
-    const item = document.createElement("div");
-    item.className = "friend-item";
 
-    const name = document.createElement("span");
-    name.textContent =
-      `${friend.display_name} (@${friend.username})`;
+    const card =
+      document.createElement("div");
 
-    const status = document.createElement("span");
-    status.textContent = "Friends";
-    status.className = "friend-status";
+    card.className =
+      "friend-card";
 
-    item.appendChild(name);
-    item.appendChild(status);
 
-    container.appendChild(item);
+    card.appendChild(
+      createAvatar(
+        friend.display_name
+      )
+    );
+
+
+    card.appendChild(
+      createFriendInfo(
+        friend.display_name,
+        friend.username
+      )
+    );
+
+
+    container.appendChild(card);
+
   });
 }
 
@@ -216,67 +472,104 @@ function renderFriends(friends) {
 ========================= */
 
 const friendRequestForm =
-  document.getElementById("friendRequestForm");
+  document.getElementById(
+    "friendRequestForm"
+  );
+
 
 if (friendRequestForm) {
+
   friendRequestForm.addEventListener(
     "submit",
     async (event) => {
+
       event.preventDefault();
 
+
       const input =
-        document.getElementById("friendUsername");
+        document.getElementById(
+          "friendUsername"
+        );
+
 
       const message =
-        document.getElementById("friendMessage");
+        document.getElementById(
+          "friendMessage"
+        );
 
-      const username = input.value.trim();
+
+      const username =
+        input.value.trim();
+
 
       if (!username) {
+
         message.textContent =
           "Please enter a username.";
+
         return;
       }
+
 
       message.textContent =
         "Sending friend request...";
 
-      try {
-        const response = await fetch(
-          "/api/friends/request",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              username: username
-            })
-          }
-        );
 
-        const data = await response.json();
+      try {
+
+        const response =
+          await fetch(
+            "/api/friends/request",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                username: username
+              })
+            }
+          );
+
+
+        const data =
+          await response.json();
+
 
         if (!response.ok) {
+
           message.textContent =
-            data.error || "Something went wrong.";
+            data.error ||
+            "Something went wrong.";
+
           return;
         }
+
 
         message.textContent =
           "Friend request sent!";
 
+
         input.value = "";
 
+
         await loadFriends();
+
       } catch (error) {
+
         console.error(error);
 
         message.textContent =
           "Something went wrong. Please try again.";
+
       }
+
     }
   );
+
 }
 
 
@@ -285,23 +578,38 @@ if (friendRequestForm) {
 ========================= */
 
 const logoutButton =
-  document.getElementById("logoutButton");
+  document.getElementById(
+    "logoutButton"
+  );
+
 
 if (logoutButton) {
+
   logoutButton.addEventListener(
     "click",
     async () => {
+
       try {
-        await fetch("/api/auth/logout", {
-          method: "POST"
-        });
+
+        await fetch(
+          "/api/auth/logout",
+          {
+            method: "POST"
+          }
+        );
+
       } catch (error) {
+
         console.error(error);
+
       }
 
-      window.location.href = "index.html";
+      window.location.href =
+        "index.html";
+
     }
   );
+
 }
 
 
