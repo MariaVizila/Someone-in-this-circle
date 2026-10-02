@@ -262,19 +262,21 @@ if (profileForm) {
           );
 
 
-      /* CHECK SELECTED IMAGE */
+      let profilePicture = "";
 
-      let selectedImage = null;
 
+      /* IMAGE UPLOAD */
 
       if (
         profilePictureInput &&
         profilePictureInput.files.length > 0
       ) {
 
-        selectedImage =
+        const selectedImage =
           profilePictureInput.files[0];
 
+
+        /* FILE TYPE */
 
         const allowedTypes = [
           "image/png",
@@ -296,7 +298,7 @@ if (profileForm) {
         }
 
 
-        /* 5 MB LIMIT */
+        /* FILE SIZE */
 
         if (
           selectedImage.size >
@@ -310,62 +312,73 @@ if (profileForm) {
         }
 
 
-        /* PREVIEW IMAGE */
-
-        const reader =
-          new FileReader();
+        message.textContent =
+          "Uploading profile picture...";
 
 
-        reader.onload =
-          function () {
+        try {
 
-            const avatar =
-              document.getElementById(
-                "avatar"
-              );
+          const formData =
+            new FormData();
 
 
-            avatar.innerHTML =
-              "";
+          formData.append(
+            "file",
+            selectedImage
+          );
 
 
-            const image =
-              document.createElement(
-                "img"
-              );
+          formData.append(
+            "upload_preset",
+            "profile_pictures"
+          );
 
 
-            image.src =
-              reader.result;
-
-
-            image.alt =
-              displayName +
-              "'s profile picture";
-
-
-            avatar.appendChild(
-              image
+          const cloudinaryResponse =
+            await fetch(
+              "https://api.cloudinary.com/v1_1/u77jibf4/image/upload",
+              {
+                method: "POST",
+                body: formData
+              }
             );
 
-          };
+
+          const cloudinaryData =
+            await cloudinaryResponse.json();
 
 
-        reader.readAsDataURL(
-          selectedImage
-        );
+          if (
+            !cloudinaryResponse.ok
+          ) {
+
+            throw new Error(
+              "Cloudinary upload failed."
+            );
+          }
+
+
+          profilePicture =
+            cloudinaryData.secure_url;
+
+
+        } catch (error) {
+
+          console.error(
+            "Cloudinary upload error:",
+            error
+          );
+
+          message.textContent =
+            "Could not upload the profile picture.";
+
+          return;
+        }
 
       }
 
 
-      /*
-        TEMPORARY STEP
-
-        The image is only previewed right now.
-        Permanent image uploading will be
-        connected in the next step.
-      */
-
+      /* UPDATE PROFILE */
 
       try {
 
@@ -385,7 +398,8 @@ if (profileForm) {
                   displayName,
                   bio,
                   status,
-                  pronouns
+                  pronouns,
+                  profilePicture
                 })
             }
           );
@@ -404,21 +418,18 @@ if (profileForm) {
 
 
         message.textContent =
-          selectedImage
-            ? "Profile updated! Image preview applied."
-            : "Profile updated!";
+          "Profile updated!";
 
 
         await loadProfile();
 
 
-        /*
-          The preview will disappear after
-          loadProfile() because the image has
-          not been permanently uploaded yet.
+        if (profilePictureInput) {
 
-          That is expected for this step.
-        */
+          profilePictureInput.value =
+            "";
+        }
+
 
       } catch (error) {
 
