@@ -900,8 +900,10 @@ app.get(
           `
           SELECT
             friendships.id,
+            users.id AS user_id,
             users.username,
             users.display_name,
+            users.profile_picture,
             friendships.created_at
           FROM friendships
           JOIN users
@@ -922,8 +924,10 @@ app.get(
           `
           SELECT
             friendships.id,
+            users.id AS user_id,
             users.username,
-            users.display_name
+            users.display_name,
+            users.profile_picture
           FROM friendships
           JOIN users
             ON users.id =
@@ -950,8 +954,10 @@ app.get(
           `
           SELECT
             friendships.id,
+            users.id AS user_id,
             users.username,
             users.display_name,
+            users.profile_picture,
             friendships.created_at
           FROM friendships
           JOIN users
