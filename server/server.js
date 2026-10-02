@@ -437,6 +437,90 @@ app.post(
 );
 
 
+
+/* FRIEND REQUESTS */
+
+app.post("/api/friends/request", async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({
+        error: "You must be logged in."
+      });
+    }
+
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({
+        error: "Username is required."
+      });
+    }
+
+    const target = await pool.query(
+      `
+      SELECT id, username, display_name
+      FROM users
+      WHERE username = $1
+      `,
+      [username.trim()]
+    );
+
+    if (target.rows.length === 0) {
+      return res.status(404).json({
+        error: "User not found."
+      });
+    }
+
+    const receiver = target.rows[0];
+
+    if (receiver.id === req.session.userId) {
+      return res.status(400).json({
+        error: "You cannot send a friend request to yourself."
+      });
+    }
+
+    const existing = await pool.query(
+      `
+      SELECT id, status
+      FROM friendships
+      WHERE
+        (requester_id = $1 AND receiver_id = $2)
+        OR
+        (requester_id = $2 AND receiver_id = $1)
+      `,
+      [req.session.userId, receiver.id]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(400).json({
+        error: "A friend request or friendship already exists."
+      });
+    }
+
+    await pool.query(
+      `
+      INSERT INTO friendships
+        (requester_id, receiver_id, status)
+      VALUES
+        ($1, $2, 'pending')
+      `,
+      [req.session.userId, receiver.id]
+    );
+
+    res.json({
+      message: "Friend request sent!"
+    });
+
+  } catch (error) {
+    console.error("Friend request error:", error);
+
+    res.status(500).json({
+      error: "Something went wrong."
+    });
+  }
+});
+
+
 /* TEST API */
 
 app.get("/api/test", (req, res) => {
