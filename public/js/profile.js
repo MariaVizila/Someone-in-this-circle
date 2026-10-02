@@ -1,559 +1,216 @@
+```js
 async function loadProfile() {
-
   try {
-
-    const response =
-      await fetch("/api/auth/me");
+    const response = await fetch("/api/auth/me");
 
     if (!response.ok) {
-
-      window.location.href =
-        "index.html";
-
+      window.location.href = "index.html";
       return;
     }
 
-    const user =
-      await response.json();
+    const user = await response.json();
 
-
-    /* BASIC PROFILE */
-
-    document
-      .getElementById("profileName")
-      .textContent =
+    document.getElementById("profileName").textContent =
       user.display_name;
 
-    document
-      .getElementById("profileUsername")
-      .textContent =
+    document.getElementById("profileUsername").textContent =
       "@" + user.username;
 
-
-    /* AVATAR */
-
-    const avatar =
-      document.getElementById("avatar");
+    const avatar = document.getElementById("avatar");
 
     if (user.profile_picture) {
-
       avatar.innerHTML = "";
 
-      const image =
-        document.createElement("img");
-
-      image.src =
-        user.profile_picture;
-
-      image.alt =
-        user.display_name +
-        "'s profile picture";
+      const image = document.createElement("img");
+      image.src = user.profile_picture;
+      image.alt = user.display_name + "'s profile picture";
 
       avatar.appendChild(image);
-
     } else {
-
       avatar.textContent =
-        user.display_name
-          .charAt(0)
-          .toUpperCase();
+        user.display_name.charAt(0).toUpperCase();
     }
 
+    document.getElementById("profileBio").textContent =
+      user.bio || "No bio yet.";
 
-    /* PROFILE INFORMATION */
+    document.getElementById("profileStatus").textContent =
+      user.status || "No status set.";
 
-    document
-      .getElementById("profileBio")
-      .textContent =
-      user.bio ||
-      "No bio yet.";
-
-    document
-      .getElementById("profileStatus")
-      .textContent =
-      user.status ||
-      "No status set.";
-
-    document
-      .getElementById("profilePronouns")
-      .textContent =
-      user.pronouns ||
-      "Not specified";
-
-
-    /* JOINED DATE */
-
-    const joinedDate =
-      document.getElementById("profileJoined");
+    document.getElementById("profilePronouns").textContent =
+      user.pronouns || "Not specified";
 
     if (user.created_at) {
-
-      joinedDate.textContent =
-        new Date(
-          user.created_at
-        ).toLocaleDateString(
-          undefined,
-          {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          }
-        );
-
-    } else {
-
-      joinedDate.textContent =
-        "Unknown";
+      document.getElementById("profileJoined").textContent =
+        new Date(user.created_at).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
     }
 
-
-    /* EDIT PROFILE FORM */
-
-    document
-      .getElementById("displayName")
-      .value =
+    document.getElementById("displayName").value =
       user.display_name || "";
 
-    document
-      .getElementById("bio")
-      .value =
+    document.getElementById("bio").value =
       user.bio || "";
 
-    document
-      .getElementById("status")
-      .value =
+    document.getElementById("status").value =
       user.status || "";
 
-    document
-      .getElementById("pronouns")
-      .value =
+    document.getElementById("pronouns").value =
       user.pronouns || "";
 
-
-    /* FRIEND COUNT */
-
     try {
-
-      const friendsResponse =
-        await fetch("/api/friends");
+      const friendsResponse = await fetch("/api/friends");
 
       if (friendsResponse.ok) {
+        const friendsData = await friendsResponse.json();
 
-        const friendsData =
-          await friendsResponse.json();
-
-        document
-          .getElementById("profileFriendCount")
-          .textContent =
+        document.getElementById("profileFriendCount").textContent =
           friendsData.friends.length;
       }
-
     } catch (error) {
-
-      console.error(
-        "Could not load friends:",
-        error
-      );
+      console.error("Could not load friends:", error);
     }
 
   } catch (error) {
-
-    console.error(
-      "Could not load profile:",
-      error
-    );
+    console.error("Could not load profile:", error);
   }
 }
 
 
-/* ========================================
-   PROFILE FORM
-======================================== */
-
-const profileForm =
-  document.getElementById(
-    "profileForm"
-  );
-
+const profileForm = document.getElementById("profileForm");
 
 if (profileForm) {
+  profileForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  profileForm.addEventListener(
-    "submit",
-    async (event) => {
+    const message =
+      document.getElementById("profileMessage");
 
-      event.preventDefault();
+    const displayName =
+      document.getElementById("displayName").value.trim();
 
+    const bio =
+      document.getElementById("bio").value.trim();
 
-      const displayName =
-        document
-          .getElementById("displayName")
-          .value
-          .trim();
+    const status =
+      document.getElementById("status").value.trim();
 
-      const bio =
-        document
-          .getElementById("bio")
-          .value
-          .trim();
+    const pronouns =
+      document.getElementById("pronouns").value.trim();
 
-      const status =
-        document
-          .getElementById("status")
-          .value
-          .trim();
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
 
-      const pronouns =
-        document
-          .getElementById("pronouns")
-          .value
-          .trim();
+        headers: {
+          "Content-Type": "application/json"
+        },
 
+        body: JSON.stringify({
+          displayName,
+          bio,
+          status,
+          pronouns,
+          profilePicture: ""
+        })
+      });
 
-      const profilePictureInput =
-        document.getElementById(
-          "profilePicture"
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Could not update profile."
         );
-
-
-      const message =
-        document.getElementById(
-          "profileMessage"
-        );
-
-
-      let profilePicture = "";
-
-
-      /* ========================================
-         IMAGE UPLOAD
-      ======================================== */
-
-      if (
-        profilePictureInput &&
-        profilePictureInput.files.length > 0
-      ) {
-
-        const selectedImage =
-          profilePictureInput.files[0];
-
-
-        const allowedTypes = [
-          "image/png",
-          "image/jpeg",
-          "image/webp"
-        ];
-
-
-        if (
-          !allowedTypes.includes(
-            selectedImage.type
-          )
-        ) {
-
-          message.textContent =
-            "Please select a PNG, JPG, or WebP image.";
-
-          return;
-        }
-
-
-        /* 5 MB LIMIT */
-
-        if (
-          selectedImage.size >
-          5 * 1024 * 1024
-        ) {
-
-          message.textContent =
-            "Your profile picture must be 5 MB or smaller.";
-
-          return;
-        }
-
-
-        message.textContent =
-          "Uploading profile picture...";
-
-
-        try {
-
-          const formData =
-            new FormData();
-
-
-          formData.append(
-            "file",
-            selectedImage
-          );
-
-
-          formData.append(
-            "upload_preset",
-            "profile_pictures"
-          );
-
-
-          const cloudinaryResponse =
-            await fetch(
-              "https://api.cloudinary.com/v1_1/u77jibf4/image/upload",
-              {
-                method: "POST",
-                body: formData
-              }
-            );
-
-
-          const cloudinaryData =
-            await cloudinaryResponse.json();
-
-
-          if (
-            !cloudinaryResponse.ok
-          ) {
-
-            console.error(
-              "Cloudinary error:",
-              cloudinaryData
-            );
-
-            throw new Error(
-              "Cloudinary upload failed."
-            );
-          }
-
-
-          profilePicture =
-            cloudinaryData.secure_url;
-
-        } catch (error) {
-
-          console.error(
-            "Cloudinary upload error:",
-            error
-          );
-
-          message.textContent =
-            "Could not upload the profile picture.";
-
-          return;
-        }
       }
 
+      message.textContent = "Profile updated!";
 
-      /* ========================================
-         SAVE PROFILE
-      ======================================== */
+      await loadProfile();
 
-      try {
+    } catch (error) {
+      console.error("Profile update error:", error);
 
-        const response =
-          await fetch(
-            "/api/profile",
-            {
-              method: "PATCH",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  displayName,
-                  bio,
-                  status,
-                  pronouns,
-                  profilePicture
-                })
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error ||
-            "Could not update profile."
-          );
-        }
-
-
-        message.textContent =
-          "Profile updated!";
-
-
-        await loadProfile();
-
-
-        if (profilePictureInput) {
-
-          profilePictureInput.value =
-            "";
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Profile update error:",
-          error
-        );
-
-        message.textContent =
-          error.message;
-      }
-
+      message.textContent = error.message;
     }
-  );
+  });
 }
 
-
-/* ========================================
-   PASSWORD
-======================================== */
 
 const passwordForm =
-  document.getElementById(
-    "passwordForm"
-  );
-
+  document.getElementById("passwordForm");
 
 if (passwordForm) {
+  passwordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  passwordForm.addEventListener(
-    "submit",
-    async (event) => {
+    const message =
+      document.getElementById("passwordMessage");
 
-      event.preventDefault();
+    const currentPassword =
+      document.getElementById("currentPassword").value;
 
+    const newPassword =
+      document.getElementById("newPassword").value;
 
-      const currentPassword =
-        document
-          .getElementById(
-            "currentPassword"
-          )
-          .value;
+    try {
+      const response = await fetch(
+        "/api/profile/password",
+        {
+          method: "PATCH",
 
-      const newPassword =
-        document
-          .getElementById(
-            "newPassword"
-          )
-          .value;
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-
-      const message =
-        document.getElementById(
-          "passwordMessage"
-        );
-
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/profile/password",
-            {
-              method: "PATCH",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body:
-                JSON.stringify({
-                  currentPassword,
-                  newPassword
-                })
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error ||
-            "Could not change password."
-          );
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
         }
+      );
 
+      const data = await response.json();
 
-        message.textContent =
-          "Password updated!";
-
-        passwordForm.reset();
-
-      } catch (error) {
-
-        console.error(
-          "Password update error:",
-          error
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Could not change password."
         );
-
-        message.textContent =
-          error.message;
       }
 
+      message.textContent = "Password updated!";
+
+      passwordForm.reset();
+
+    } catch (error) {
+      console.error(
+        "Password update error:",
+        error
+      );
+
+      message.textContent = error.message;
     }
-  );
+  });
 }
 
-
-/* ========================================
-   LOGOUT
-======================================== */
 
 const logoutButton =
-  document.getElementById(
-    "logoutButton"
-  );
-
+  document.getElementById("logoutButton");
 
 if (logoutButton) {
-
-  logoutButton.addEventListener(
-    "click",
-    async () => {
-
-      try {
-
-        await fetch(
-          "/api/auth/logout",
-          {
-            method: "POST"
-          }
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Logout error:",
-          error
-        );
-
-      } finally {
-
-        window.location.href =
-          "index.html";
-      }
-
+  logoutButton.addEventListener("click", async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST"
+      });
+    } finally {
+      window.location.href = "index.html";
     }
-  );
+  });
 }
 
-
-/* ========================================
-   START
-======================================== */
 
 loadProfile();
 ```
