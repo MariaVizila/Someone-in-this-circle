@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Profile - Someone in this Circle
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+
+      <div class="brand">
+
+        <div class="logo small">
+          SIC
+        </div>
+
+        <span>
+          Someone in this Circle
+        </span>
+
+      </div>
+
+      <nav>
+
+        <a href="dashboard.html">
+          Home
+        </a>
+
+        <a
+          class="active"
+          href="profile.html"
+        >
+          Profile
+        </a>
+
+        <a href="#">
+          Friends
+          <small>SOON</small>
+        </a>
+
+        <a href="#">
+          Games
+          <small>SOON</small>
+        </a>
+
+      </nav>
+
+      <button
+        id="logoutButton"
+        class="logout"
+      >
+        Log Out
+      </button>
+
+    </header>
+
+    <main class="dashboard">
+
+      <section class="profile-header">
+
+        <div
+          class="avatar"
+          id="avatar"
+        >
+          ?
+        </div>
+
+        <div>
+
+          <p class="eyebrow">
+            PROFILE
+          </p>
+
+          <h1 id="profileName">
+            Loading...
+          </h1>
+
+          <p id="profileUsername">
+            @loading
+          </p>
+
+        </div>
+
+      </section>
+
+      <section class="settings-grid">
+
+        <div class="settings-card">
+
+          <h2>
+            Profile Settings
+          </h2>
+
+          <p>
+            Change the name people in
+            your circle see.
+          </p>
+
+          <form id="profileForm">
+
+            <label for="displayName">
+              Display Name
+            </label>
+
+            <input
+              id="displayName"
+              type="text"
+              maxlength="30"
+              required
+            >
+
+            <button type="submit">
+              Save Changes
+            </button>
+
+            <p
+              id="profileMessage"
+              class="message"
+            ></p>
+
+          </form>
+
+        </div>
+
+        <div class="settings-card">
+
+          <h2>
+            Change Password
+          </h2>
+
+          <p>
+            Update your account password.
+          </p>
+
+          <form id="passwordForm">
+
+            <label for="currentPassword">
+              Current Password
+            </label>
+
+            <input
+              id="currentPassword"
+              type="password"
+              required
+            >
+
+            <label for="newPassword">
+              New Password
+            </label>
+
+            <input
+              id="newPassword"
+              type="password"
+              minlength="6"
+              required
+            >
+
+            <button type="submit">
+              Update Password
+            </button>
+
+            <p
+              id="passwordMessage"
+              class="message"
+            ></p>
+
+          </form>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/profile.js"></script>
+
+</body>
+
+</html>
