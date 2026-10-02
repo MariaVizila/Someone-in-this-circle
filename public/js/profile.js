@@ -1,3 +1,4 @@
+```js
 async function loadProfile() {
 
   try {
@@ -35,14 +36,41 @@ async function loadProfile() {
       .textContent =
       "@" + user.username;
 
-    document
-      .getElementById(
+
+    /* AVATAR */
+
+    const avatar =
+      document.getElementById(
         "avatar"
-      )
-      .textContent =
-      user.display_name
-        .charAt(0)
-        .toUpperCase();
+      );
+
+    if (user.profile_picture) {
+
+      avatar.innerHTML = "";
+
+      const image =
+        document.createElement(
+          "img"
+        );
+
+      image.src =
+        user.profile_picture;
+
+      image.alt =
+        user.display_name +
+        "'s profile picture";
+
+      avatar.appendChild(
+        image
+      );
+
+    } else {
+
+      avatar.textContent =
+        user.display_name
+          .charAt(0)
+          .toUpperCase();
+    }
 
 
     /* PROFILE INFORMATION */
@@ -142,7 +170,7 @@ async function loadProfile() {
 
       if (friendsResponse.ok) {
 
-        const friends =
+        const friendsData =
           await friendsResponse.json();
 
         document
@@ -150,8 +178,7 @@ async function loadProfile() {
             "profileFriendCount"
           )
           .textContent =
-          friends.length;
-
+          friendsData.friends.length;
       }
 
     } catch (error) {
@@ -160,8 +187,8 @@ async function loadProfile() {
         "Could not load friends:",
         error
       );
-
     }
+
 
   } catch (error) {
 
@@ -173,7 +200,7 @@ async function loadProfile() {
 }
 
 
-/* PROFILE */
+/* PROFILE FORM */
 
 const profileForm =
   document.getElementById(
@@ -223,11 +250,122 @@ if (profileForm) {
           .trim();
 
 
+      const profilePictureInput =
+        document.getElementById(
+          "profilePicture"
+        );
+
+
       const message =
         document
           .getElementById(
             "profileMessage"
           );
+
+
+      /* CHECK SELECTED IMAGE */
+
+      let selectedImage = null;
+
+
+      if (
+        profilePictureInput &&
+        profilePictureInput.files.length > 0
+      ) {
+
+        selectedImage =
+          profilePictureInput.files[0];
+
+
+        const allowedTypes = [
+          "image/png",
+          "image/jpeg",
+          "image/webp"
+        ];
+
+
+        if (
+          !allowedTypes.includes(
+            selectedImage.type
+          )
+        ) {
+
+          message.textContent =
+            "Please select a PNG, JPG, or WebP image.";
+
+          return;
+        }
+
+
+        /* 5 MB LIMIT */
+
+        if (
+          selectedImage.size >
+          5 * 1024 * 1024
+        ) {
+
+          message.textContent =
+            "Your profile picture must be 5 MB or smaller.";
+
+          return;
+        }
+
+
+        /* PREVIEW IMAGE */
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          function () {
+
+            const avatar =
+              document.getElementById(
+                "avatar"
+              );
+
+
+            avatar.innerHTML =
+              "";
+
+
+            const image =
+              document.createElement(
+                "img"
+              );
+
+
+            image.src =
+              reader.result;
+
+
+            image.alt =
+              displayName +
+              "'s profile picture";
+
+
+            avatar.appendChild(
+              image
+            );
+
+          };
+
+
+        reader.readAsDataURL(
+          selectedImage
+        );
+
+      }
+
+
+      /*
+        TEMPORARY STEP
+
+        The image is only previewed right now.
+        Permanent image uploading will be
+        connected in the next step.
+      */
 
 
       try {
@@ -267,11 +405,21 @@ if (profileForm) {
 
 
         message.textContent =
-          "Profile updated!";
+          selectedImage
+            ? "Profile updated! Image preview applied."
+            : "Profile updated!";
 
 
         await loadProfile();
 
+
+        /*
+          The preview will disappear after
+          loadProfile() because the image has
+          not been permanently uploaded yet.
+
+          That is expected for this step.
+        */
 
       } catch (error) {
 
@@ -403,3 +551,4 @@ if (logoutButton) {
 
 
 loadProfile();
+```
