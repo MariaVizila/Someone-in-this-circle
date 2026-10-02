@@ -1,3 +1,17 @@
+/* =========================
+   OWNER PANEL
+========================= */
+
+const ownerPanelLink =
+  document.getElementById(
+    "ownerPanelLink"
+  );
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
 async function loadDashboard() {
 
   try {
@@ -17,6 +31,21 @@ async function loadDashboard() {
 
     const user =
       await response.json();
+
+
+    /* OWNER PANEL */
+
+    if (
+      ownerPanelLink &&
+      user.username.toLowerCase() ===
+        "miyowa" &&
+      user.role === "owner"
+    ) {
+
+      ownerPanelLink.style.display =
+        "inline-block";
+
+    }
 
 
     document.getElementById(
