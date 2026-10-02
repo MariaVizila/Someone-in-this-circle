@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Someone in this Circle</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <main class="auth-page">
+
+    <section class="auth-card">
+
+      <div class="logo">
+        SIC
+      </div>
+
+      <h1>
+        Someone in this Circle
+      </h1>
+
+      <p class="subtitle">
+        Your private friend circle starts here.
+      </p>
+
+      <form id="loginForm">
+
+        <label for="username">
+          Username
+        </label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          autocomplete="username"
+          required
+        >
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit">
+          Sign In
+        </button>
+
+        <p
+          id="message"
+          class="message"
+        ></p>
+
+      </form>
+
+      <div class="auth-footer">
+
+        Don't have an account?
+
+        <a href="register.html">
+          Create one
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/auth.js"></script>
+
+</body>
+
+</html>
