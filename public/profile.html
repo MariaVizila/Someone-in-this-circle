@@ -25,6 +25,10 @@
 
   <div class="app">
 
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
     <header class="topbar">
 
       <div class="brand">
@@ -39,6 +43,7 @@
 
       </div>
 
+
       <nav>
 
         <a href="dashboard.html">
@@ -52,9 +57,9 @@
           Profile
         </a>
 
-       <a href="dashboard.html#friends">
-  Friends
-</a>
+        <a href="dashboard.html#friends">
+          Friends
+        </a>
 
         <a href="#">
           Games
@@ -62,6 +67,7 @@
         </a>
 
       </nav>
+
 
       <button
         id="logoutButton"
@@ -72,7 +78,15 @@
 
     </header>
 
+
+    <!-- =========================
+         PROFILE
+    ========================== -->
+
     <main class="dashboard">
+
+
+      <!-- PROFILE HEADER -->
 
       <section class="profile-header">
 
@@ -82,6 +96,7 @@
         >
           ?
         </div>
+
 
         <div>
 
@@ -101,20 +116,142 @@
 
       </section>
 
+
+      <!-- =========================
+           PROFILE INFORMATION
+      ========================== -->
+
+      <section class="profile-info-grid">
+
+
+        <!-- ABOUT -->
+
+        <div class="profile-info-card">
+
+          <div class="profile-card-heading">
+
+            <div>
+
+              <p class="eyebrow">
+                ABOUT
+              </p>
+
+              <h2>
+                About Me
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <p
+            id="profileBio"
+            class="profile-bio"
+          >
+            No bio yet.
+          </p>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="profile-info-card">
+
+          <p class="eyebrow">
+            STATUS
+          </p>
+
+          <div
+            id="profileStatus"
+            class="profile-status"
+          >
+            No status set.
+          </div>
+
+        </div>
+
+
+        <!-- DETAILS -->
+
+        <div class="profile-info-card">
+
+          <p class="eyebrow">
+            DETAILS
+          </p>
+
+
+          <div class="profile-detail">
+
+            <span>
+              Pronouns
+            </span>
+
+            <strong id="profilePronouns">
+              Not specified
+            </strong>
+
+          </div>
+
+
+          <div class="profile-detail">
+
+            <span>
+              Friends
+            </span>
+
+            <strong id="profileFriendCount">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="profile-detail">
+
+            <span>
+              Joined
+            </span>
+
+            <strong id="profileJoined">
+              Loading...
+            </strong>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           SETTINGS
+      ========================== -->
+
       <section class="settings-grid">
+
+
+        <!-- PROFILE SETTINGS -->
 
         <div class="settings-card">
 
+          <p class="eyebrow">
+            SETTINGS
+          </p>
+
           <h2>
-            Profile Settings
+            Edit Profile
           </h2>
 
           <p>
-            Change the name people in
-            your circle see.
+            Update the information people
+            in your circle see.
           </p>
 
+
           <form id="profileForm">
+
 
             <label for="displayName">
               Display Name
@@ -127,9 +264,47 @@
               required
             >
 
+
+            <label for="bio">
+              Bio
+            </label>
+
+            <textarea
+              id="bio"
+              maxlength="250"
+              rows="5"
+              placeholder="Tell people a little about yourself..."
+            ></textarea>
+
+
+            <label for="status">
+              Status
+            </label>
+
+            <input
+              id="status"
+              type="text"
+              maxlength="60"
+              placeholder="What are you up to?"
+            >
+
+
+            <label for="pronouns">
+              Pronouns
+            </label>
+
+            <input
+              id="pronouns"
+              type="text"
+              maxlength="30"
+              placeholder="Optional"
+            >
+
+
             <button type="submit">
-              Save Changes
+              Save Profile
             </button>
+
 
             <p
               id="profileMessage"
@@ -140,7 +315,14 @@
 
         </div>
 
+
+        <!-- PASSWORD -->
+
         <div class="settings-card">
+
+          <p class="eyebrow">
+            SECURITY
+          </p>
 
           <h2>
             Change Password
@@ -150,7 +332,9 @@
             Update your account password.
           </p>
 
+
           <form id="passwordForm">
+
 
             <label for="currentPassword">
               Current Password
@@ -161,6 +345,7 @@
               type="password"
               required
             >
+
 
             <label for="newPassword">
               New Password
@@ -173,9 +358,11 @@
               required
             >
 
+
             <button type="submit">
               Update Password
             </button>
+
 
             <p
               id="passwordMessage"
@@ -186,11 +373,14 @@
 
         </div>
 
+
       </section>
+
 
     </main>
 
   </div>
+
 
   <script src="js/profile.js"></script>
 
