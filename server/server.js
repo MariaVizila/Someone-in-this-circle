@@ -14,6 +14,86 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+/* =========================
+   OWNER CHECK
+========================= */
+
+async function requireOwner(req, res, next) {
+
+  if (!req.session.userId) {
+
+    return res.status(401).json({
+      error:
+        "You must be logged in."
+    });
+
+  }
+
+
+  try {
+
+    const result =
+      await pool.query(
+        `
+        SELECT
+          id,
+          username,
+          role
+        FROM users
+        WHERE id = $1
+        `,
+        [req.session.userId]
+      );
+
+
+    if (result.rows.length === 0) {
+
+      return res.status(401).json({
+        error:
+          "User not found."
+      });
+
+    }
+
+
+    const user =
+      result.rows[0];
+
+
+    if (
+      user.username.toLowerCase() !==
+        "miyowa" ||
+      user.role !== "owner"
+    ) {
+
+      return res.status(403).json({
+        error:
+          "Owner access required."
+      });
+
+    }
+
+
+    next();
+
+
+  } catch (error) {
+
+    console.error(
+      "Owner check error:",
+      error
+    );
+
+
+    res.status(500).json({
+      error:
+        "Could not verify owner access."
+    });
+
+  }
+
+}
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
