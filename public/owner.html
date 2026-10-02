@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Owner Panel - Someone in this Circle
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <div class="app">
+
+    <main class="profile-page">
+
+      <div class="profile-header">
+
+        <div>
+
+          <h1>
+            Owner Panel 👑
+          </h1>
+
+          <p>
+            Manage user ranks and accounts.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           USER SEARCH
+      ========================== -->
+
+      <section class="profile-card">
+
+        <h2>
+          Search User
+        </h2>
+
+        <div class="profile-field">
+
+          <label for="usernameSearch">
+            Username
+          </label>
+
+          <input
+            id="usernameSearch"
+            type="text"
+            placeholder="Enter username..."
+            autocomplete="off"
+          >
+
+        </div>
+
+        <button
+          id="searchUserButton"
+          type="button"
+        >
+          Search
+        </button>
+
+        <p
+          id="ownerMessage"
+          class="profile-message"
+        ></p>
+
+      </section>
+
+
+      <!-- =========================
+           USER RESULT
+      ========================== -->
+
+      <section
+        id="userResult"
+        class="profile-card"
+        style="display: none;"
+      >
+
+        <div class="profile-header">
+
+          <div
+            id="ownerAvatar"
+            class="profile-avatar"
+          ></div>
+
+          <div>
+
+            <h2 id="ownerDisplayName">
+              User
+            </h2>
+
+            <p id="ownerUsername">
+              @username
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="profile-info">
+
+          <div class="profile-info-item">
+
+            <strong>
+              Bio
+            </strong>
+
+            <p id="ownerBio">
+              —
+            </p>
+
+          </div>
+
+
+          <div class="profile-info-item">
+
+            <strong>
+              Status
+            </strong>
+
+            <p id="ownerStatus">
+              —
+            </p>
+
+          </div>
+
+
+          <div class="profile-info-item">
+
+            <strong>
+              Pronouns
+            </strong>
+
+            <p id="ownerPronouns">
+              —
+            </p>
+
+          </div>
+
+
+          <div class="profile-info-item">
+
+            <strong>
+              Current Rank
+            </strong>
+
+            <p id="ownerCurrentRole">
+              User
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             RANK MANAGEMENT
+        ========================== -->
+
+        <div class="profile-field">
+
+          <label for="roleSelect">
+            Change Rank
+          </label>
+
+          <select id="roleSelect">
+
+            <option value="user">
+              User
+            </option>
+
+            <option value="mod">
+              Moderator
+            </option>
+
+            <option value="admin">
+              Administrator
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <button
+          id="saveRoleButton"
+          type="button"
+        >
+          Save Changes
+        </button>
+
+      </section>
+
+
+      <button
+        id="backButton"
+        type="button"
+      >
+        Back to Dashboard
+      </button>
+
+    </main>
+
+  </div>
+
+
+  <script src="js/owner.js"></script>
+
+</body>
+
+</html>
