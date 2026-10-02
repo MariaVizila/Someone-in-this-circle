@@ -1,13 +1,13 @@
-const express = require("express");
+const { initializeDatabase } = require("../server/database");
+const app = require("../server/server");
 
-const app = express();
+let initialized = false;
 
-app.use(express.json());
+module.exports = async (req, res) => {
+  if (!initialized) {
+    await initializeDatabase();
+    initialized = true;
+  }
 
-app.get("/api/test", (req, res) => {
-  res.json({
-    message: "Someone in this Circle API is working!"
-  });
-});
-
-module.exports = app;
+  return app(req, res);
+};
