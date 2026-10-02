@@ -17,6 +17,18 @@ async function initializeDatabase() {
       created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS friendships (
+      id SERIAL PRIMARY KEY,
+      requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      receiver_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+      UNIQUE (requester_id, receiver_id)
+    );
+  `);
 }
 
 module.exports = {
