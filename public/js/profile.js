@@ -18,6 +18,9 @@ async function loadProfile() {
     const user =
       await response.json();
 
+
+    /* BASIC PROFILE */
+
     document
       .getElementById(
         "profileName"
@@ -34,19 +37,131 @@ async function loadProfile() {
 
     document
       .getElementById(
-        "displayName"
-      )
-      .value =
-      user.display_name;
-
-    document
-      .getElementById(
         "avatar"
       )
       .textContent =
       user.display_name
         .charAt(0)
         .toUpperCase();
+
+
+    /* PROFILE INFORMATION */
+
+    document
+      .getElementById(
+        "profileBio"
+      )
+      .textContent =
+      user.bio ||
+      "No bio yet.";
+
+    document
+      .getElementById(
+        "profileStatus"
+      )
+      .textContent =
+      user.status ||
+      "No status set.";
+
+    document
+      .getElementById(
+        "profilePronouns"
+      )
+      .textContent =
+      user.pronouns ||
+      "Not specified";
+
+
+    /* JOINED DATE */
+
+    const joinedDate =
+      document.getElementById(
+        "profileJoined"
+      );
+
+    if (user.created_at) {
+
+      joinedDate.textContent =
+        new Date(
+          user.created_at
+        ).toLocaleDateString(
+          undefined,
+          {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          }
+        );
+
+    } else {
+
+      joinedDate.textContent =
+        "Unknown";
+    }
+
+
+    /* EDIT PROFILE FORM */
+
+    document
+      .getElementById(
+        "displayName"
+      )
+      .value =
+      user.display_name || "";
+
+    document
+      .getElementById(
+        "bio"
+      )
+      .value =
+      user.bio || "";
+
+    document
+      .getElementById(
+        "status"
+      )
+      .value =
+      user.status || "";
+
+    document
+      .getElementById(
+        "pronouns"
+      )
+      .value =
+      user.pronouns || "";
+
+
+    /* FRIEND COUNT */
+
+    try {
+
+      const friendsResponse =
+        await fetch(
+          "/api/friends"
+        );
+
+      if (friendsResponse.ok) {
+
+        const friends =
+          await friendsResponse.json();
+
+        document
+          .getElementById(
+            "profileFriendCount"
+          )
+          .textContent =
+          friends.length;
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Could not load friends:",
+        error
+      );
+
+    }
 
   } catch (error) {
 
@@ -74,6 +189,7 @@ if (profileForm) {
 
       event.preventDefault();
 
+
       const displayName =
         document
           .getElementById(
@@ -82,11 +198,37 @@ if (profileForm) {
           .value
           .trim();
 
+      const bio =
+        document
+          .getElementById(
+            "bio"
+          )
+          .value
+          .trim();
+
+      const status =
+        document
+          .getElementById(
+            "status"
+          )
+          .value
+          .trim();
+
+      const pronouns =
+        document
+          .getElementById(
+            "pronouns"
+          )
+          .value
+          .trim();
+
+
       const message =
         document
           .getElementById(
             "profileMessage"
           );
+
 
       try {
 
@@ -103,24 +245,33 @@ if (profileForm) {
 
               body:
                 JSON.stringify({
-                  displayName
+                  displayName,
+                  bio,
+                  status,
+                  pronouns
                 })
             }
           );
 
+
         const data =
           await response.json();
 
+
         if (!response.ok) {
+
           throw new Error(
             data.error
           );
         }
 
+
         message.textContent =
           "Profile updated!";
 
-        loadProfile();
+
+        await loadProfile();
+
 
       } catch (error) {
 
@@ -149,6 +300,7 @@ if (passwordForm) {
 
       event.preventDefault();
 
+
       const currentPassword =
         document
           .getElementById(
@@ -163,11 +315,13 @@ if (passwordForm) {
           )
           .value;
 
+
       const message =
         document
           .getElementById(
             "passwordMessage"
           );
+
 
       try {
 
@@ -190,19 +344,24 @@ if (passwordForm) {
             }
           );
 
+
         const data =
           await response.json();
 
+
         if (!response.ok) {
+
           throw new Error(
             data.error
           );
         }
 
+
         message.textContent =
           "Password updated!";
 
         passwordForm.reset();
+
 
       } catch (error) {
 
