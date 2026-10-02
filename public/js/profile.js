@@ -3,9 +3,7 @@ async function loadProfile() {
   try {
 
     const response =
-      await fetch(
-        "/api/auth/me"
-      );
+      await fetch("/api/auth/me");
 
     if (!response.ok) {
 
@@ -22,16 +20,12 @@ async function loadProfile() {
     /* BASIC PROFILE */
 
     document
-      .getElementById(
-        "profileName"
-      )
+      .getElementById("profileName")
       .textContent =
       user.display_name;
 
     document
-      .getElementById(
-        "profileUsername"
-      )
+      .getElementById("profileUsername")
       .textContent =
       "@" + user.username;
 
@@ -39,18 +33,14 @@ async function loadProfile() {
     /* AVATAR */
 
     const avatar =
-      document.getElementById(
-        "avatar"
-      );
+      document.getElementById("avatar");
 
     if (user.profile_picture) {
 
       avatar.innerHTML = "";
 
       const image =
-        document.createElement(
-          "img"
-        );
+        document.createElement("img");
 
       image.src =
         user.profile_picture;
@@ -59,9 +49,7 @@ async function loadProfile() {
         user.display_name +
         "'s profile picture";
 
-      avatar.appendChild(
-        image
-      );
+      avatar.appendChild(image);
 
     } else {
 
@@ -75,25 +63,19 @@ async function loadProfile() {
     /* PROFILE INFORMATION */
 
     document
-      .getElementById(
-        "profileBio"
-      )
+      .getElementById("profileBio")
       .textContent =
       user.bio ||
       "No bio yet.";
 
     document
-      .getElementById(
-        "profileStatus"
-      )
+      .getElementById("profileStatus")
       .textContent =
       user.status ||
       "No status set.";
 
     document
-      .getElementById(
-        "profilePronouns"
-      )
+      .getElementById("profilePronouns")
       .textContent =
       user.pronouns ||
       "Not specified";
@@ -102,9 +84,7 @@ async function loadProfile() {
     /* JOINED DATE */
 
     const joinedDate =
-      document.getElementById(
-        "profileJoined"
-      );
+      document.getElementById("profileJoined");
 
     if (user.created_at) {
 
@@ -130,30 +110,22 @@ async function loadProfile() {
     /* EDIT PROFILE FORM */
 
     document
-      .getElementById(
-        "displayName"
-      )
+      .getElementById("displayName")
       .value =
       user.display_name || "";
 
     document
-      .getElementById(
-        "bio"
-      )
+      .getElementById("bio")
       .value =
       user.bio || "";
 
     document
-      .getElementById(
-        "status"
-      )
+      .getElementById("status")
       .value =
       user.status || "";
 
     document
-      .getElementById(
-        "pronouns"
-      )
+      .getElementById("pronouns")
       .value =
       user.pronouns || "";
 
@@ -163,9 +135,7 @@ async function loadProfile() {
     try {
 
       const friendsResponse =
-        await fetch(
-          "/api/friends"
-        );
+        await fetch("/api/friends");
 
       if (friendsResponse.ok) {
 
@@ -173,9 +143,7 @@ async function loadProfile() {
           await friendsResponse.json();
 
         document
-          .getElementById(
-            "profileFriendCount"
-          )
+          .getElementById("profileFriendCount")
           .textContent =
           friendsData.friends.length;
       }
@@ -188,18 +156,19 @@ async function loadProfile() {
       );
     }
 
-
   } catch (error) {
 
-    console.error(error);
-
-    window.location.href =
-      "index.html";
+    console.error(
+      "Could not load profile:",
+      error
+    );
   }
 }
 
 
-/* PROFILE FORM */
+/* ========================================
+   PROFILE FORM
+======================================== */
 
 const profileForm =
   document.getElementById(
@@ -218,33 +187,25 @@ if (profileForm) {
 
       const displayName =
         document
-          .getElementById(
-            "displayName"
-          )
+          .getElementById("displayName")
           .value
           .trim();
 
       const bio =
         document
-          .getElementById(
-            "bio"
-          )
+          .getElementById("bio")
           .value
           .trim();
 
       const status =
         document
-          .getElementById(
-            "status"
-          )
+          .getElementById("status")
           .value
           .trim();
 
       const pronouns =
         document
-          .getElementById(
-            "pronouns"
-          )
+          .getElementById("pronouns")
           .value
           .trim();
 
@@ -256,16 +217,17 @@ if (profileForm) {
 
 
       const message =
-        document
-          .getElementById(
-            "profileMessage"
-          );
+        document.getElementById(
+          "profileMessage"
+        );
 
 
       let profilePicture = "";
 
 
-      /* IMAGE UPLOAD */
+      /* ========================================
+         IMAGE UPLOAD
+      ======================================== */
 
       if (
         profilePictureInput &&
@@ -275,8 +237,6 @@ if (profileForm) {
         const selectedImage =
           profilePictureInput.files[0];
 
-
-        /* FILE TYPE */
 
         const allowedTypes = [
           "image/png",
@@ -298,7 +258,7 @@ if (profileForm) {
         }
 
 
-        /* FILE SIZE */
+        /* 5 MB LIMIT */
 
         if (
           selectedImage.size >
@@ -352,6 +312,11 @@ if (profileForm) {
             !cloudinaryResponse.ok
           ) {
 
+            console.error(
+              "Cloudinary error:",
+              cloudinaryData
+            );
+
             throw new Error(
               "Cloudinary upload failed."
             );
@@ -360,7 +325,6 @@ if (profileForm) {
 
           profilePicture =
             cloudinaryData.secure_url;
-
 
         } catch (error) {
 
@@ -374,11 +338,12 @@ if (profileForm) {
 
           return;
         }
-
       }
 
 
-      /* UPDATE PROFILE */
+      /* ========================================
+         SAVE PROFILE
+      ======================================== */
 
       try {
 
@@ -412,7 +377,8 @@ if (profileForm) {
         if (!response.ok) {
 
           throw new Error(
-            data.error
+            data.error ||
+            "Could not update profile."
           );
         }
 
@@ -430,8 +396,12 @@ if (profileForm) {
             "";
         }
 
-
       } catch (error) {
+
+        console.error(
+          "Profile update error:",
+          error
+        );
 
         message.textContent =
           error.message;
@@ -442,7 +412,9 @@ if (profileForm) {
 }
 
 
-/* PASSWORD */
+/* ========================================
+   PASSWORD
+======================================== */
 
 const passwordForm =
   document.getElementById(
@@ -475,10 +447,9 @@ if (passwordForm) {
 
 
       const message =
-        document
-          .getElementById(
-            "passwordMessage"
-          );
+        document.getElementById(
+          "passwordMessage"
+        );
 
 
       try {
@@ -510,7 +481,8 @@ if (passwordForm) {
         if (!response.ok) {
 
           throw new Error(
-            data.error
+            data.error ||
+            "Could not change password."
           );
         }
 
@@ -520,8 +492,12 @@ if (passwordForm) {
 
         passwordForm.reset();
 
-
       } catch (error) {
+
+        console.error(
+          "Password update error:",
+          error
+        );
 
         message.textContent =
           error.message;
@@ -532,7 +508,9 @@ if (passwordForm) {
 }
 
 
-/* LOGOUT */
+/* ========================================
+   LOGOUT
+======================================== */
 
 const logoutButton =
   document.getElementById(
@@ -546,19 +524,36 @@ if (logoutButton) {
     "click",
     async () => {
 
-      await fetch(
-        "/api/auth/logout",
-        {
-          method: "POST"
-        }
-      );
+      try {
 
-      window.location.href =
-        "index.html";
+        await fetch(
+          "/api/auth/logout",
+          {
+            method: "POST"
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+      } finally {
+
+        window.location.href =
+          "index.html";
+      }
+
     }
   );
 }
 
+
+/* ========================================
+   START
+======================================== */
 
 loadProfile();
 ```
