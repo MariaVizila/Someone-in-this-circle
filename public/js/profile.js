@@ -109,12 +109,12 @@ if (profileForm) {
         },
 
         body: JSON.stringify({
-          displayName,
-          bio,
-          status,
-          pronouns,
-          profilePicture: ""
-        })
+  displayName,
+  bio,
+  status,
+  pronouns,
+  profilePicture
+})
       });
 
       const data = await response.json();
