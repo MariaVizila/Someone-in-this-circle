@@ -52,9 +52,8 @@
           Profile
         </a>
 
-        <a href="#">
+        <a href="#friends">
           Friends
-          <small>SOON</small>
         </a>
 
         <a href="#">
@@ -72,6 +71,7 @@
       </button>
 
     </header>
+
 
     <main class="dashboard">
 
@@ -94,28 +94,132 @@
 
       </section>
 
-      <section class="feature-grid">
 
-        <article class="feature-card">
+      <!-- FRIENDS -->
 
-          <div class="feature-icon">
-            👥
+      <section
+        id="friends"
+        class="friends-section"
+      >
+
+        <div class="section-header">
+
+          <div>
+
+            <p class="eyebrow">
+              YOUR CIRCLE
+            </p>
+
+            <h2>
+              Friends
+            </h2>
+
           </div>
 
-          <h2>
-            Friends
-          </h2>
+        </div>
+
+
+        <!-- ADD FRIEND -->
+
+        <div class="friend-add-card">
+
+          <h3>
+            Add a Friend
+          </h3>
 
           <p>
-            Add people to your circle and
-            connect with your friends.
+            Enter someone's username to
+            send them a friend request.
           </p>
 
-          <span class="coming-soon">
-            COMING SOON
-          </span>
+          <form id="friendRequestForm">
 
-        </article>
+            <input
+              type="text"
+              id="friendUsername"
+              placeholder="Username"
+              maxlength="20"
+              required
+            >
+
+            <button
+              type="submit"
+            >
+              Send Request
+            </button>
+
+          </form>
+
+          <p
+            id="friendMessage"
+            class="friend-message"
+          ></p>
+
+        </div>
+
+
+        <!-- FRIEND REQUESTS -->
+
+        <div class="friend-column">
+
+          <h3>
+            Friend Requests
+          </h3>
+
+          <div id="friendRequests">
+
+            <p class="empty-message">
+              No pending friend requests.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- SENT REQUESTS -->
+
+        <div class="friend-column">
+
+          <h3>
+            Sent Requests
+          </h3>
+
+          <div id="sentRequests">
+
+            <p class="empty-message">
+              No sent requests.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- FRIEND LIST -->
+
+        <div class="friend-column">
+
+          <h3>
+            Your Friends
+          </h3>
+
+          <div id="friendsList">
+
+            <p class="empty-message">
+              You don't have any friends yet.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- OTHER FEATURES -->
+
+      <section class="feature-grid">
 
         <article class="feature-card">
 
@@ -137,6 +241,7 @@
           </span>
 
         </article>
+
 
         <article class="feature-card">
 
@@ -164,6 +269,7 @@
     </main>
 
   </div>
+
 
   <script src="js/dashboard.js"></script>
 
