@@ -300,12 +300,92 @@ function createInitials(
 
 
 /* =========================
+   ROLE BADGE
+========================= */
+
+function createRoleBadge(
+  role
+) {
+
+  if (
+    role !== "owner" &&
+    role !== "mod" &&
+    role !== "admin"
+  ) {
+
+    return null;
+
+  }
+
+
+  const badge =
+    document.createElement(
+      "img"
+    );
+
+
+  badge.className =
+    "role-badge";
+
+
+  if (role === "owner") {
+
+    badge.src =
+      "images/roles/owner-crown.png";
+
+    badge.alt =
+      "Owner";
+
+    badge.classList.add(
+      "owner"
+    );
+
+  }
+
+
+  else if (role === "mod") {
+
+    badge.src =
+      "images/roles/moderator-shield.png";
+
+    badge.alt =
+      "Moderator";
+
+    badge.classList.add(
+      "mod"
+    );
+
+  }
+
+
+  else if (role === "admin") {
+
+    badge.src =
+      "images/roles/admin-shield.png";
+
+    badge.alt =
+      "Administrator";
+
+    badge.classList.add(
+      "admin"
+    );
+
+  }
+
+
+  return badge;
+
+}
+
+
+/* =========================
    FRIEND INFORMATION
 ========================= */
 
 function createFriendInfo(
   displayName,
-  username
+  username,
+  role
 ) {
 
   const info =
@@ -330,6 +410,23 @@ function createFriendInfo(
 
   name.textContent =
     displayName;
+
+
+  /* ROLE BADGE */
+
+  const badge =
+    createRoleBadge(
+      role
+    );
+
+
+  if (badge) {
+
+    name.appendChild(
+      badge
+    );
+
+  }
 
 
   const user =
@@ -365,7 +462,9 @@ function createFriendInfo(
    EMPTY STATE
 ========================= */
 
-function createEmptyState(text) {
+function createEmptyState(
+  text
+) {
 
   const empty =
     document.createElement(
@@ -466,7 +565,8 @@ function renderFriendRequests(
       item.appendChild(
         createFriendInfo(
           request.display_name,
-          request.username
+          request.username,
+          request.role
         )
       );
 
@@ -675,7 +775,8 @@ function renderSentRequests(
       item.appendChild(
         createFriendInfo(
           request.display_name,
-          request.username
+          request.username,
+          request.role
         )
       );
 
@@ -791,12 +892,13 @@ function renderFriends(
       );
 
 
-      /* NAME + USERNAME */
+      /* NAME + USERNAME + ROLE */
 
       card.appendChild(
         createFriendInfo(
           friend.display_name,
-          friend.username
+          friend.username,
+          friend.role
         )
       );
 
