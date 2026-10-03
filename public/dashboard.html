@@ -1,9 +1,7 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -19,130 +17,249 @@
     rel="stylesheet"
     href="css/style.css"
   >
-
 </head>
 
 <body>
 
   <div class="app">
 
-    <!-- =========================
-         TOP NAVIGATION
-    ========================= -->
-
     <header class="topbar">
 
       <div class="brand">
-        Someone in this Circle
+
+        <div class="logo small">
+          SIC
+        </div>
+
+        <span>
+          Someone in this Circle
+        </span>
+
       </div>
 
-      <nav class="topbar-actions">
+      <nav>
 
         <a
+          class="active"
           href="dashboard.html"
-          class="nav-link active"
         >
-          Dashboard
+          Home
         </a>
 
-        <a
-          href="profile.html"
-          class="nav-link"
-        >
+        <a href="profile.html">
           Profile
         </a>
 
-        <a
-          href="owner.html"
-          id="ownerPanelLink"
-          class="nav-link"
-          style="display: none;"
-        >
-          Owner Panel 👑
+        <a href="#friends">
+          Friends
         </a>
 
-        <button
-          id="logoutButton"
-          type="button"
-          class="nav-button"
+        <a href="#">
+          Games
+          <small>SOON</small>
+        </a>
+
+        <!-- OWNER PANEL -->
+
+        <a
+          id="ownerPanelLink"
+          href="owner.html"
+          style="display: none;"
         >
-          Logout
-        </button>
+          👑 Owner Panel
+        </a>
 
       </nav>
+
+      <button
+        id="logoutButton"
+        class="logout"
+      >
+        Log Out
+      </button>
 
     </header>
 
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================= -->
-
     <main class="dashboard">
 
-      <!-- =========================
-           WELCOME
-      ========================= -->
+      <!-- WELCOME -->
 
-      <section class="welcome-section">
+      <section class="welcome-card">
 
         <p class="eyebrow">
           YOUR CIRCLE
         </p>
 
         <h1>
-          Welcome, <span id="displayName">User</span>
+          Welcome,
+          <span id="displayName">...</span>!
         </h1>
 
         <p>
-          See who's around, connect with your friends,
-          and start a game together.
+          Your circle is waiting for you.
         </p>
 
       </section>
 
 
-      <!-- =========================
-           FRIENDS
-      ========================= -->
+      <!-- FRIENDS -->
 
-      <section class="dashboard-section">
+      <section
+        class="friends-section"
+        id="friends"
+      >
 
-        <div class="section-header">
+        <div class="friends-heading">
 
           <div>
 
             <p class="eyebrow">
-              YOUR CIRCLE
+              CONNECTIONS
             </p>
 
             <h2>
-              Friends
+              Your Friends
             </h2>
+
+            <p>
+              Connect with people and build your circle.
+            </p>
 
           </div>
 
-          <div class="friend-count">
+          <div
+            class="friend-count"
+            id="friendCount"
+          >
+            0 Friends
+          </div>
 
-            <span id="friendCount">
-              0
-            </span>
+        </div>
 
-            Friends
+
+        <!-- ADD FRIEND -->
+
+        <div class="friend-add-card">
+
+          <h3>
+            Add someone to your circle
+          </h3>
+
+          <p>
+            Enter their username to send them a friend request.
+          </p>
+
+          <form
+            id="friendRequestForm"
+            class="friend-add-form"
+          >
+
+            <input
+              id="friendUsername"
+              type="text"
+              placeholder="Enter a username..."
+              autocomplete="off"
+              maxlength="20"
+              required
+            >
+
+            <button type="submit">
+              Add Friend
+            </button>
+
+          </form>
+
+          <p
+            id="friendMessage"
+            class="friend-message"
+          ></p>
+
+        </div>
+
+
+        <!-- REQUESTS -->
+
+        <div class="friend-columns">
+
+
+          <!-- INCOMING -->
+
+          <div class="friend-panel">
+
+            <div class="friend-panel-header">
+
+              <h3>
+                Friend Requests
+              </h3>
+
+              <span id="requestCount">
+                0
+              </span>
+
+            </div>
+
+            <div
+              id="friendRequests"
+              class="friend-list"
+            >
+            </div>
+
+          </div>
+
+
+          <!-- SENT -->
+
+          <div class="friend-panel">
+
+            <div class="friend-panel-header">
+
+              <h3>
+                Sent Requests
+              </h3>
+
+              <span id="sentCount">
+                0
+              </span>
+
+            </div>
+
+            <div
+              id="sentRequests"
+              class="friend-list"
+            >
+            </div>
 
           </div>
 
         </div>
 
 
-        <div
-          id="friendsList"
-          class="friends-list"
-        >
+        <!-- FRIEND LIST -->
 
-          <p class="empty-state">
-            You don't have any friends yet.
-          </p>
+        <div class="friend-panel friends-list-panel">
+
+          <div class="friend-panel-header">
+
+            <div>
+
+              <h3>
+                People in Your Circle
+              </h3>
+
+              <span>
+                Your accepted friends
+              </span>
+
+            </div>
+
+          </div>
+
+          <div
+            id="friendsList"
+            class="friends-grid"
+          >
+          </div>
 
         </div>
 
@@ -168,7 +285,7 @@
             </h2>
 
             <p>
-              Start a game and see what your circle knows about each other.
+              Create a game and invite people from your circle.
             </p>
 
           </div>
@@ -206,14 +323,33 @@
             </p>
 
             <h2>
-              Game Settings
+              Match Settings
             </h2>
 
             <p>
-              Set up the rules for your circle before starting.
+              Choose how you want your game to play before you start.
             </p>
 
           </div>
+
+        </div>
+
+
+        <!-- MATCH NAME -->
+
+        <div class="game-field">
+
+          <label for="matchName">
+            🏷️ Match Name
+          </label>
+
+          <input
+            id="matchName"
+            type="text"
+            placeholder="Give your match a name..."
+            maxlength="50"
+            autocomplete="off"
+          >
 
         </div>
 
@@ -223,7 +359,7 @@
         <div class="game-field">
 
           <label for="timeLimit">
-            ⏱️ Time Limit
+            ⏱️ Game Time
           </label>
 
           <select id="timeLimit">
@@ -264,7 +400,7 @@
         </div>
 
 
-        <!-- PLAYER LIMIT -->
+        <!-- MAX PLAYERS -->
 
         <div class="game-field">
 
@@ -293,16 +429,8 @@
               6 Players
             </option>
 
-            <option value="7">
-              7 Players
-            </option>
-
             <option value="8">
               8 Players
-            </option>
-
-            <option value="9">
-              9 Players
             </option>
 
             <option value="10">
@@ -314,18 +442,18 @@
         </div>
 
 
-        <!-- CIRCLE MEMBERS ONLY -->
+        <!-- FRIENDS ONLY -->
 
         <div class="game-setting">
 
           <div>
 
             <strong>
-              🔒 Circle Members Only
+              🔒 Friends Only
             </strong>
 
             <p>
-              Only friends in your circle can join this game.
+              Only friends in your circle can join this match.
             </p>
 
           </div>
@@ -345,18 +473,18 @@
         </div>
 
 
-        <!-- LATE JOINING -->
+        <!-- MID GAME JOINING -->
 
         <div class="game-setting">
 
           <div>
 
             <strong>
-              🔄 Allow Players to Join Late
+              🔄 Allow Late Joining
             </strong>
 
             <p>
-              Let friends join even after the game has started.
+              Let players join the match after it has already started.
             </p>
 
           </div>
@@ -375,12 +503,12 @@
         </div>
 
 
-        <!-- WHO CAN JOIN -->
+        <!-- LOBBY VISIBILITY -->
 
         <div class="game-field">
 
           <label for="lobbyVisibility">
-            🏠 Who Can Join?
+            🏠 Match Access
           </label>
 
           <select id="lobbyVisibility">
@@ -389,7 +517,7 @@
               value="friends"
               selected
             >
-              Circle Members Only
+              Friends Only
             </option>
 
             <option value="code">
@@ -401,7 +529,7 @@
         </div>
 
 
-        <!-- ANOTHER ROUND -->
+        <!-- REMATCH -->
 
         <div class="game-setting">
 
@@ -412,7 +540,7 @@
             </strong>
 
             <p>
-              Let everyone start another round when the game ends.
+              Let players start another round when the match ends.
             </p>
 
           </div>
@@ -439,11 +567,11 @@
           <div>
 
             <strong>
-              💬 Chat During the Game
+              💬 Match Chat
             </strong>
 
             <p>
-              Let players talk while the game is in progress.
+              Let players chat with each other during the match.
             </p>
 
           </div>
@@ -470,11 +598,11 @@
           <div>
 
             <strong>
-              🏆 Show Results at the End
+              🏆 Reveal Results
             </strong>
 
             <p>
-              Show the final results when the game is finished.
+              Show the final results when the match is over.
             </p>
 
           </div>
@@ -502,7 +630,7 @@
             id="createMatchButton"
             type="button"
           >
-            🎮 Create Game
+            🎮 Create Match
           </button>
 
           <button
@@ -533,4 +661,3 @@
 </body>
 
 </html>
-```
