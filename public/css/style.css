@@ -973,3 +973,28 @@ a {
   }
 
 }
+
+
+/* ========================================
+   ROLE BADGES
+======================================== */
+
+.role-badge {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+.role-badge.owner {
+  width: 22px;
+  height: 22px;
+}
+
+.role-badge.mod,
+.role-badge.admin {
+  width: 21px;
+  height: 21px;
+}
