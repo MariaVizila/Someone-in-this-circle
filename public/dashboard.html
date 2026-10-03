@@ -304,126 +304,338 @@
       </section>
 
 
-      <!-- =========================
-           MATCH CONFIGURATION
-      ========================= -->
+<!-- =========================
+     MATCH CONFIGURATION
+========================= -->
 
-      <section
-        id="matchConfig"
-        class="game-card"
-        style="display: none;"
+<section
+  id="matchConfig"
+  class="game-card"
+  style="display: none;"
+>
+
+  <div class="game-card-header">
+
+    <div>
+
+      <p class="eyebrow">
+        MATCH SETUP
+      </p>
+
+      <h2>
+        Configure Match
+      </h2>
+
+      <p>
+        Customize your match before creating the lobby.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- TIME LIMIT -->
+
+  <div class="game-field">
+
+    <label for="timeLimit">
+      ⏱️ Time Limit
+    </label>
+
+    <select id="timeLimit">
+
+      <option value="3">
+        3 Minutes
+      </option>
+
+      <option value="5">
+        5 Minutes
+      </option>
+
+      <option value="10" selected>
+        10 Minutes
+      </option>
+
+      <option value="15">
+        15 Minutes
+      </option>
+
+      <option value="20">
+        20 Minutes
+      </option>
+
+      <option value="25">
+        25 Minutes
+      </option>
+
+      <option value="30">
+        30 Minutes
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- MAX PLAYERS -->
+
+  <div class="game-field">
+
+    <label for="maxPlayers">
+      👥 Maximum Players
+    </label>
+
+    <select id="maxPlayers">
+
+      <option value="3">
+        3 Players
+      </option>
+
+      <option
+        value="4"
+        selected
+      >
+        4 Players
+      </option>
+
+      <option value="5">
+        5 Players
+      </option>
+
+      <option value="6">
+        6 Players
+      </option>
+
+      <option value="7">
+        7 Players
+      </option>
+
+      <option value="8">
+        8 Players
+      </option>
+
+      <option value="9">
+        9 Players
+      </option>
+
+      <option value="10">
+        10 Players
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- FRIENDS ONLY -->
+
+  <div class="game-setting">
+
+    <div>
+
+      <strong>
+        🔒 Friends Only
+      </strong>
+
+      <p>
+        Only people in your circle can join this match.
+      </p>
+
+    </div>
+
+    <label class="toggle">
+
+      <input
+        id="friendsOnly"
+        type="checkbox"
+        checked
       >
 
-        <div class="game-card-header">
+      <span class="toggle-slider"></span>
 
-          <div>
+    </label>
 
-            <p class="eyebrow">
-              MATCH SETUP
-            </p>
-
-            <h2>
-              Configure Match
-            </h2>
-
-            <p>
-              Set up your match before creating the lobby.
-            </p>
-
-          </div>
-
-        </div>
+  </div>
 
 
-        <!-- MATCH NAME -->
+  <!-- MID GAME JOINING -->
 
-        <div class="game-field">
+  <div class="game-setting">
 
-          <label for="matchName">
-            Match Name
-          </label>
+    <div>
 
-          <input
-            id="matchName"
-            type="text"
-            placeholder="Enter a match name..."
-            maxlength="50"
-            autocomplete="off"
-          >
+      <strong>
+        🔄 Allow Mid-Game Joining
+      </strong>
 
-        </div>
+      <p>
+        Allow players to join after the match begins.
+      </p>
 
+    </div>
 
-        <!-- MAX PLAYERS -->
+    <label class="toggle">
 
-        <div class="game-field">
+      <input
+        id="midGameJoining"
+        type="checkbox"
+      >
 
-          <label for="maxPlayers">
-            Maximum Players
-          </label>
+      <span class="toggle-slider"></span>
 
-          <select id="maxPlayers">
+    </label>
 
-            <option value="3">
-              3 Players
-            </option>
-
-            <option
-              value="4"
-              selected
-            >
-              4 Players
-            </option>
-
-            <option value="5">
-              5 Players
-            </option>
-
-            <option value="6">
-              6 Players
-            </option>
-
-            <option value="8">
-              8 Players
-            </option>
-
-            <option value="10">
-              10 Players
-            </option>
-
-          </select>
-
-        </div>
+  </div>
 
 
-        <!-- BUTTONS -->
+  <!-- LOBBY VISIBILITY -->
 
-        <div class="game-actions">
+  <div class="game-field">
 
-          <button
-            id="createMatchButton"
-            type="button"
-          >
-            Create Match
-          </button>
+    <label for="lobbyVisibility">
+      🏠 Lobby Visibility
+    </label>
 
-          <button
-            id="cancelMatchButton"
-            type="button"
-            class="secondary-button"
-          >
-            Cancel
-          </button>
+    <select id="lobbyVisibility">
 
-        </div>
+      <option
+        value="friends"
+        selected
+      >
+        Friends Only
+      </option>
+
+      <option value="code">
+        Anyone With Code
+      </option>
+
+    </select>
+
+  </div>
 
 
-        <p
-          id="matchMessage"
-          class="game-message"
-        ></p>
+  <!-- REMATCH -->
 
-      </section>
+  <div class="game-setting">
+
+    <div>
+
+      <strong>
+        🔁 Allow Rematch
+      </strong>
+
+      <p>
+        Allow players to start another round after the game ends.
+      </p>
+
+    </div>
+
+    <label class="toggle">
+
+      <input
+        id="allowRematch"
+        type="checkbox"
+        checked
+      >
+
+      <span class="toggle-slider"></span>
+
+    </label>
+
+  </div>
+
+
+  <!-- CHAT -->
+
+  <div class="game-setting">
+
+    <div>
+
+      <strong>
+        💬 Match Chat
+      </strong>
+
+      <p>
+        Allow players to chat during the match.
+      </p>
+
+    </div>
+
+    <label class="toggle">
+
+      <input
+        id="matchChat"
+        type="checkbox"
+        checked
+      >
+
+      <span class="toggle-slider"></span>
+
+    </label>
+
+  </div>
+
+
+  <!-- RESULTS -->
+
+  <div class="game-setting">
+
+    <div>
+
+      <strong>
+        🏆 Show Results
+      </strong>
+
+      <p>
+        Reveal the results when the match ends.
+      </p>
+
+    </div>
+
+    <label class="toggle">
+
+      <input
+        id="showResults"
+        type="checkbox"
+        checked
+      >
+
+      <span class="toggle-slider"></span>
+
+    </label>
+
+  </div>
+
+
+  <!-- BUTTONS -->
+
+  <div class="game-actions">
+
+    <button
+      id="createMatchButton"
+      type="button"
+    >
+      🎮 Create Match
+    </button>
+
+    <button
+      id="cancelMatchButton"
+      type="button"
+      class="secondary-button"
+    >
+      Cancel
+    </button>
+
+  </div>
+
+
+  <p
+    id="matchMessage"
+    class="game-message"
+  ></p>
+
+</section>
 
   <script src="js/dashboard.js"></script>
 
