@@ -1070,6 +1070,76 @@ if (logoutButton) {
 
 
 /* =========================
+   MATCH CONFIGURATION
+========================= */
+
+const hostMatchButton =
+  document.getElementById(
+    "hostMatchButton"
+  );
+
+
+const matchConfig =
+  document.getElementById(
+    "matchConfig"
+  );
+
+
+const cancelMatchButton =
+  document.getElementById(
+    "cancelMatchButton"
+  );
+
+
+if (
+  hostMatchButton &&
+  matchConfig
+) {
+
+  hostMatchButton.addEventListener(
+    "click",
+    () => {
+
+      matchConfig.style.display =
+        "block";
+
+      hostMatchButton.style.display =
+        "none";
+
+      matchConfig.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+  );
+
+}
+
+
+if (
+  cancelMatchButton &&
+  matchConfig &&
+  hostMatchButton
+) {
+
+  cancelMatchButton.addEventListener(
+    "click",
+    () => {
+
+      matchConfig.style.display =
+        "none";
+
+      hostMatchButton.style.display =
+        "inline-block";
+
+    }
+  );
+
+}
+
+
+/* =========================
    START
 ========================= */
 
