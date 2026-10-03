@@ -1000,3 +1000,118 @@ a {
   width: 19px;
   height: 19px;
 }
+
+
+/* ========================================
+   GAME / MATCH
+======================================== */
+
+.game-card {
+  padding: 24px;
+  margin-top: 20px;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  background: #111827;
+}
+
+.game-card-header {
+  margin-bottom: 20px;
+}
+
+.game-card-header h2 {
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 21px;
+}
+
+.game-card-header p {
+  margin: 0;
+  color: #9ca3af;
+}
+
+.host-match-button,
+#createMatchButton,
+#cancelMatchButton {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.host-match-button,
+#createMatchButton {
+  background: #ffffff;
+  color: #111827;
+}
+
+.host-match-button:hover,
+#createMatchButton:hover {
+  opacity: 0.9;
+}
+
+.secondary-button {
+  background: #374151;
+  color: #ffffff;
+}
+
+.secondary-button:hover {
+  background: #4b5563;
+}
+
+.game-field {
+  margin-top: 16px;
+}
+
+.game-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.game-field input,
+.game-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  background: #1f2937;
+  color: #ffffff;
+  outline: none;
+}
+
+.game-field input:focus,
+.game-field select:focus {
+  border-color: #6b7280;
+}
+
+.game-field input::placeholder {
+  color: #9ca3af;
+}
+
+.game-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.game-message {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+
+  .game-actions {
+    flex-direction: column;
+  }
+
+  .game-actions button {
+    width: 100%;
+  }
+
+}
