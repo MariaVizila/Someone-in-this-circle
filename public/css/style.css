@@ -1110,6 +1110,95 @@ a {
     flex-direction: column;
   }
 
+
+   /* ========================================
+   MATCH SETTINGS
+======================================== */
+
+.game-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid #1f2937;
+}
+
+.game-setting strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.game-setting p {
+  margin: 5px 0 0;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+
+/* TOGGLE */
+
+.toggle {
+  position: relative;
+  display: block;
+  width: 48px;
+  min-width: 48px;
+  height: 26px;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #374151;
+  transition: 0.2s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: 0.2s;
+}
+
+.toggle input:checked + .toggle-slider {
+  background: #ffffff;
+}
+
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+  background: #111827;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .game-setting {
+    align-items: flex-start;
+  }
+
+  .game-setting p {
+    max-width: 230px;
+  }
+
+}
+
   .game-actions button {
     width: 100%;
   }
