@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -17,11 +18,18 @@
     rel="stylesheet"
     href="css/style.css"
   >
+
 </head>
+
 
 <body>
 
   <div class="app">
+
+
+    <!-- =========================
+         TOP NAVIGATION
+    ========================= -->
 
     <header class="topbar">
 
@@ -37,6 +45,7 @@
 
       </div>
 
+
       <nav>
 
         <a
@@ -46,18 +55,22 @@
           Home
         </a>
 
+
         <a href="profile.html">
           Profile
         </a>
+
 
         <a href="#friends">
           Friends
         </a>
 
+
         <a href="#">
           Games
           <small>SOON</small>
         </a>
+
 
         <!-- OWNER PANEL -->
 
@@ -71,6 +84,7 @@
 
       </nav>
 
+
       <button
         id="logoutButton"
         class="logout"
@@ -81,9 +95,17 @@
     </header>
 
 
+
+    <!-- =========================
+         DASHBOARD
+    ========================= -->
+
     <main class="dashboard">
 
-      <!-- WELCOME -->
+
+      <!-- =========================
+           WELCOME
+      ========================= -->
 
       <section class="welcome-card">
 
@@ -91,10 +113,12 @@
           YOUR CIRCLE
         </p>
 
+
         <h1>
           Welcome,
           <span id="displayName">...</span>!
         </h1>
+
 
         <p>
           Your circle is waiting for you.
@@ -103,7 +127,10 @@
       </section>
 
 
-      <!-- FRIENDS -->
+
+      <!-- =========================
+           FRIENDS
+      ========================= -->
 
       <section
         class="friends-section"
@@ -118,15 +145,18 @@
               CONNECTIONS
             </p>
 
+
             <h2>
               Your Friends
             </h2>
+
 
             <p>
               Connect with people and build your circle.
             </p>
 
           </div>
+
 
           <div
             class="friend-count"
@@ -138,6 +168,7 @@
         </div>
 
 
+
         <!-- ADD FRIEND -->
 
         <div class="friend-add-card">
@@ -146,9 +177,11 @@
             Add someone to your circle
           </h3>
 
+
           <p>
             Enter their username to send them a friend request.
           </p>
+
 
           <form
             id="friendRequestForm"
@@ -164,11 +197,13 @@
               required
             >
 
+
             <button type="submit">
               Add Friend
             </button>
 
           </form>
+
 
           <p
             id="friendMessage"
@@ -176,6 +211,7 @@
           ></p>
 
         </div>
+
 
 
         <!-- REQUESTS -->
@@ -193,11 +229,13 @@
                 Friend Requests
               </h3>
 
+
               <span id="requestCount">
                 0
               </span>
 
             </div>
+
 
             <div
               id="friendRequests"
@@ -206,6 +244,7 @@
             </div>
 
           </div>
+
 
 
           <!-- SENT -->
@@ -218,11 +257,13 @@
                 Sent Requests
               </h3>
 
+
               <span id="sentCount">
                 0
               </span>
 
             </div>
+
 
             <div
               id="sentRequests"
@@ -233,6 +274,7 @@
           </div>
 
         </div>
+
 
 
         <!-- FRIEND LIST -->
@@ -247,6 +289,7 @@
                 People in Your Circle
               </h3>
 
+
               <span>
                 Your accepted friends
               </span>
@@ -254,6 +297,7 @@
             </div>
 
           </div>
+
 
           <div
             id="friendsList"
@@ -264,6 +308,7 @@
         </div>
 
       </section>
+
 
 
       <!-- =========================
@@ -280,12 +325,14 @@
               CIRCLE GAME
             </p>
 
+
             <h2>
               Someone in this Circle
             </h2>
 
+
             <p>
-              Create a game and invite people from your circle.
+              Start a game with the people you know.
             </p>
 
           </div>
@@ -298,10 +345,11 @@
           type="button"
           class="host-match-button"
         >
-          🎮 Host a Game
+          🎮 Host a Match
         </button>
 
       </section>
+
 
 
       <!-- =========================
@@ -314,20 +362,25 @@
         style="display: none;"
       >
 
+
+        <!-- HEADER -->
+
         <div class="game-card-header">
 
           <div>
 
             <p class="eyebrow">
-              GAME SETUP
+              MATCH SETUP
             </p>
+
 
             <h2>
-              Match Settings
+              Create Your Match
             </h2>
 
+
             <p>
-              Choose how you want your game to play before you start.
+              Set the rules, invite your circle, and get ready to play.
             </p>
 
           </div>
@@ -335,294 +388,406 @@
         </div>
 
 
-        <!-- MATCH NAME -->
 
-        <div class="game-field">
+        <!-- =========================
+             MATCH DETAILS
+        ========================= -->
 
-          <label for="matchName">
-            🏷️ Match Name
-          </label>
+        <div class="match-settings-section">
 
-          <input
-            id="matchName"
-            type="text"
-            placeholder="Give your match a name..."
-            maxlength="50"
-            autocomplete="off"
-          >
+          <div class="match-settings-heading">
 
-        </div>
+            <h3>
+              Match Details
+            </h3>
 
-
-        <!-- TIME LIMIT -->
-
-        <div class="game-field">
-
-          <label for="timeLimit">
-            ⏱️ Game Time
-          </label>
-
-          <select id="timeLimit">
-
-            <option value="3">
-              3 Minutes
-            </option>
-
-            <option value="5">
-              5 Minutes
-            </option>
-
-            <option
-              value="10"
-              selected
-            >
-              10 Minutes
-            </option>
-
-            <option value="15">
-              15 Minutes
-            </option>
-
-            <option value="20">
-              20 Minutes
-            </option>
-
-            <option value="25">
-              25 Minutes
-            </option>
-
-            <option value="30">
-              30 Minutes
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- MAX PLAYERS -->
-
-        <div class="game-field">
-
-          <label for="maxPlayers">
-            👥 Player Limit
-          </label>
-
-          <select id="maxPlayers">
-
-            <option value="3">
-              3 Players
-            </option>
-
-            <option
-              value="4"
-              selected
-            >
-              4 Players
-            </option>
-
-            <option value="5">
-              5 Players
-            </option>
-
-            <option value="6">
-              6 Players
-            </option>
-
-            <option value="8">
-              8 Players
-            </option>
-
-            <option value="10">
-              10 Players
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- FRIENDS ONLY -->
-
-        <div class="game-setting">
-
-          <div>
-
-            <strong>
-              🔒 Friends Only
-            </strong>
 
             <p>
-              Only friends in your circle can join this match.
+              Give your match a name and decide how many people can play.
             </p>
 
           </div>
 
-          <label class="toggle">
+
+
+          <!-- MATCH NAME -->
+
+          <div class="game-field">
+
+            <label for="matchName">
+              Match Name
+            </label>
+
 
             <input
-              id="friendsOnly"
-              type="checkbox"
-              checked
+              id="matchName"
+              type="text"
+              placeholder="Give your match a name..."
+              maxlength="50"
+              autocomplete="off"
             >
 
-            <span class="toggle-slider"></span>
+          </div>
 
-          </label>
+
+
+          <!-- MAX PLAYERS -->
+
+          <div class="game-field">
+
+            <label for="maxPlayers">
+              Player Limit
+            </label>
+
+
+            <select id="maxPlayers">
+
+              <option value="3">
+                3 Players
+              </option>
+
+
+              <option
+                value="4"
+                selected
+              >
+                4 Players
+              </option>
+
+
+              <option value="5">
+                5 Players
+              </option>
+
+
+              <option value="6">
+                6 Players
+              </option>
+
+
+              <option value="8">
+                8 Players
+              </option>
+
+
+              <option value="10">
+                10 Players
+              </option>
+
+            </select>
+
+          </div>
 
         </div>
 
 
-        <!-- MID GAME JOINING -->
 
-        <div class="game-setting">
+        <!-- =========================
+             GAME RULES
+        ========================= -->
 
-          <div>
+        <div class="match-settings-section">
 
-            <strong>
-              🔄 Allow Late Joining
-            </strong>
+          <div class="match-settings-heading">
+
+            <h3>
+              Game Rules
+            </h3>
+
 
             <p>
-              Let players join the match after it has already started.
+              Decide how the match will run once everyone is ready.
             </p>
 
           </div>
 
-          <label class="toggle">
 
-            <input
-              id="midGameJoining"
-              type="checkbox"
-            >
 
-            <span class="toggle-slider"></span>
+          <!-- TIME LIMIT -->
 
-          </label>
+          <div class="game-field">
+
+            <label for="timeLimit">
+              Game Time
+            </label>
+
+
+            <select id="timeLimit">
+
+              <option value="3">
+                3 Minutes
+              </option>
+
+
+              <option value="5">
+                5 Minutes
+              </option>
+
+
+              <option
+                value="10"
+                selected
+              >
+                10 Minutes
+              </option>
+
+
+              <option value="15">
+                15 Minutes
+              </option>
+
+
+              <option value="20">
+                20 Minutes
+              </option>
+
+
+              <option value="25">
+                25 Minutes
+              </option>
+
+
+              <option value="30">
+                30 Minutes
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+          <!-- FRIENDS ONLY -->
+
+          <div class="game-setting">
+
+            <div>
+
+              <strong>
+                🔒 Friends Only
+              </strong>
+
+
+              <p>
+                Keep the match limited to people in your circle.
+              </p>
+
+            </div>
+
+
+            <label class="toggle">
+
+              <input
+                id="friendsOnly"
+                type="checkbox"
+                checked
+              >
+
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+
+
+          <!-- LATE JOINING -->
+
+          <div class="game-setting">
+
+            <div>
+
+              <strong>
+                🔄 Late Joining
+              </strong>
+
+
+              <p>
+                Allow players to join after the match has started.
+              </p>
+
+            </div>
+
+
+            <label class="toggle">
+
+              <input
+                id="midGameJoining"
+                type="checkbox"
+              >
+
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+
+
+          <!-- MATCH ACCESS -->
+
+          <div class="game-field">
+
+            <label for="lobbyVisibility">
+              Match Access
+            </label>
+
+
+            <select id="lobbyVisibility">
+
+              <option
+                value="friends"
+                selected
+              >
+                Friends Only
+              </option>
+
+
+              <option value="code">
+                Anyone With the Match Code
+              </option>
+
+            </select>
+
+          </div>
 
         </div>
 
 
-        <!-- LOBBY VISIBILITY -->
 
-        <div class="game-field">
+        <!-- =========================
+             EXTRA OPTIONS
+        ========================= -->
 
-          <label for="lobbyVisibility">
-            🏠 Match Access
-          </label>
+        <div class="match-settings-section">
 
-          <select id="lobbyVisibility">
+          <div class="match-settings-heading">
 
-            <option
-              value="friends"
-              selected
-            >
-              Friends Only
-            </option>
+            <h3>
+              Extra Options
+            </h3>
 
-            <option value="code">
-              Anyone With the Match Code
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- REMATCH -->
-
-        <div class="game-setting">
-
-          <div>
-
-            <strong>
-              🔁 Allow Another Round
-            </strong>
 
             <p>
-              Let players start another round when the match ends.
+              Customize what players can do during and after the match.
             </p>
 
           </div>
 
-          <label class="toggle">
-
-            <input
-              id="allowRematch"
-              type="checkbox"
-              checked
-            >
-
-            <span class="toggle-slider"></span>
-
-          </label>
-
-        </div>
 
 
-        <!-- CHAT -->
+          <!-- REMATCH -->
 
-        <div class="game-setting">
+          <div class="game-setting">
 
-          <div>
+            <div>
 
-            <strong>
-              💬 Match Chat
-            </strong>
-
-            <p>
-              Let players chat with each other during the match.
-            </p>
-
-          </div>
-
-          <label class="toggle">
-
-            <input
-              id="matchChat"
-              type="checkbox"
-              checked
-            >
-
-            <span class="toggle-slider"></span>
-
-          </label>
-
-        </div>
+              <strong>
+                🔁 Another Round
+              </strong>
 
 
-        <!-- RESULTS -->
+              <p>
+                Let players start another round when the match ends.
+              </p>
 
-        <div class="game-setting">
+            </div>
 
-          <div>
 
-            <strong>
-              🏆 Reveal Results
-            </strong>
+            <label class="toggle">
 
-            <p>
-              Show the final results when the match is over.
-            </p>
+              <input
+                id="allowRematch"
+                type="checkbox"
+                checked
+              >
+
+
+              <span class="toggle-slider"></span>
+
+            </label>
 
           </div>
 
-          <label class="toggle">
 
-            <input
-              id="showResults"
-              type="checkbox"
-              checked
-            >
 
-            <span class="toggle-slider"></span>
+          <!-- CHAT -->
 
-          </label>
+          <div class="game-setting">
+
+            <div>
+
+              <strong>
+                💬 Match Chat
+              </strong>
+
+
+              <p>
+                Let players chat with each other while playing.
+              </p>
+
+            </div>
+
+
+            <label class="toggle">
+
+              <input
+                id="matchChat"
+                type="checkbox"
+                checked
+              >
+
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
+
+
+
+          <!-- RESULTS -->
+
+          <div class="game-setting">
+
+            <div>
+
+              <strong>
+                🏆 Reveal Results
+              </strong>
+
+
+              <p>
+                Show everyone the final results when the match ends.
+              </p>
+
+            </div>
+
+
+            <label class="toggle">
+
+              <input
+                id="showResults"
+                type="checkbox"
+                checked
+              >
+
+
+              <span class="toggle-slider"></span>
+
+            </label>
+
+          </div>
 
         </div>
 
 
-        <!-- BUTTONS -->
+
+        <!-- =========================
+             ACTIONS
+        ========================= -->
 
         <div class="game-actions">
 
@@ -632,6 +797,7 @@
           >
             🎮 Create Match
           </button>
+
 
           <button
             id="cancelMatchButton"
@@ -654,6 +820,7 @@
     </main>
 
   </div>
+
 
 
   <script src="js/dashboard.js"></script>
