@@ -1007,197 +1007,397 @@ a {
 ======================================== */
 
 .game-card {
-  padding: 24px;
+  padding: 28px;
   margin-top: 20px;
   border: 1px solid #1f2937;
-  border-radius: 16px;
+  border-radius: 18px;
   background: #111827;
 }
 
 .game-card-header {
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .game-card-header h2 {
-  margin: 0 0 6px;
+  margin: 6px 0 8px;
   color: #ffffff;
-  font-size: 21px;
+  font-size: 23px;
+  line-height: 1.3;
 }
 
 .game-card-header p {
   margin: 0;
   color: #9ca3af;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-.host-match-button,
-#createMatchButton,
-#cancelMatchButton {
-  padding: 12px 18px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
+
+/* ========================================
+   MATCH SETTINGS SECTIONS
+======================================== */
+
+.match-settings-section {
+  margin-top: 26px;
+  padding: 22px;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  background: #0f172a;
 }
 
-.host-match-button,
-#createMatchButton {
-  background: #ffffff;
-  color: #111827;
+.match-settings-heading {
+  margin-bottom: 22px;
 }
 
-.host-match-button:hover,
-#createMatchButton:hover {
-  opacity: 0.9;
-}
-
-.secondary-button {
-  background: #374151;
+.match-settings-heading h3 {
+  margin: 0 0 6px;
   color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
 }
 
-.secondary-button:hover {
-  background: #4b5563;
+.match-settings-heading p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
 }
+
+
+/* ========================================
+   GAME FIELDS
+======================================== */
 
 .game-field {
-  margin-top: 16px;
+  margin-top: 20px;
+}
+
+.game-field:first-of-type {
+  margin-top: 0;
 }
 
 .game-field label {
   display: block;
-  margin-bottom: 7px;
-  color: #d1d5db;
+  margin-bottom: 10px;
+  color: #e5e7eb;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.1px;
 }
 
 .game-field input,
 .game-field select {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 46px;
+  padding: 11px 14px;
+
   border: 1px solid #374151;
-  border-radius: 10px;
-  background: #1f2937;
+  border-radius: 11px;
+
+  background: #111827;
   color: #ffffff;
+
+  font-size: 14px;
+  line-height: 1.4;
+
   outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.game-field input::placeholder {
+  color: #6b7280;
+}
+
+.game-field input:hover,
+.game-field select:hover {
+  border-color: #4b5563;
 }
 
 .game-field input:focus,
 .game-field select:focus {
   border-color: #6b7280;
+  background: #151e2e;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
 }
 
-.game-field input::placeholder {
-  color: #9ca3af;
-}
 
-.game-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.game-message {
-  min-height: 20px;
-  margin: 12px 0 0;
-  color: #9ca3af;
-  font-size: 14px;
-}
-
-@media (max-width: 600px) {
-
-  .game-actions {
-    flex-direction: column;
-  }
-
-
-   /* ========================================
-   MATCH SETTINGS
+/* ========================================
+   SETTING ROWS
 ======================================== */
 
 .game-setting {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 16px 0;
-  border-top: 1px solid #1f2937;
+
+  gap: 28px;
+
+  margin-top: 14px;
+  padding: 17px 18px;
+
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+
+  background: #111827;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.game-setting:hover {
+  border-color: #374151;
+  background: #151e2e;
+}
+
+.game-setting > div {
+  flex: 1;
+  min-width: 0;
 }
 
 .game-setting strong {
   display: block;
-  color: #ffffff;
-  font-size: 15px;
-}
 
-.game-setting p {
-  margin: 5px 0 0;
-  color: #9ca3af;
-  font-size: 13px;
+  margin: 0;
+
+  color: #f9fafb;
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1.4;
 }
 
+.game-setting p {
+  margin: 6px 0 0;
 
-/* TOGGLE */
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   MODERN TOGGLE
+======================================== */
 
 .toggle {
   position: relative;
+
   display: block;
+
   width: 48px;
   min-width: 48px;
-  height: 26px;
+  height: 27px;
+
+  margin: 0;
+
   cursor: pointer;
 }
 
 .toggle input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
   opacity: 0;
-  width: 0;
-  height: 0;
+  pointer-events: none;
 }
 
 .toggle-slider {
   position: absolute;
+
   inset: 0;
+
+  border: 1px solid #374151;
   border-radius: 999px;
-  background: #374151;
-  transition: 0.2s;
+
+  background: #1f2937;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .toggle-slider::before {
   content: "";
+
   position: absolute;
-  width: 20px;
-  height: 20px;
+
+  width: 19px;
+  height: 19px;
+
   left: 3px;
   top: 3px;
+
   border-radius: 50%;
-  background: #ffffff;
-  transition: 0.2s;
+
+  background: #9ca3af;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .toggle input:checked + .toggle-slider {
   background: #ffffff;
+  border-color: #ffffff;
 }
 
 .toggle input:checked + .toggle-slider::before {
-  transform: translateX(22px);
+  transform: translateX(21px);
   background: #111827;
 }
 
 
-/* MOBILE */
+/* ========================================
+   TOGGLE FOCUS
+======================================== */
+
+.toggle input:focus-visible + .toggle-slider {
+  outline: 2px solid #9ca3af;
+  outline-offset: 3px;
+}
+
+
+/* ========================================
+   ACTION BUTTONS
+======================================== */
+
+.game-actions {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 26px;
+  padding-top: 4px;
+}
+
+.game-actions button {
+  min-height: 45px;
+
+  padding: 11px 18px;
+
+  border: none;
+  border-radius: 11px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.game-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.game-actions button:active {
+  transform: translateY(0);
+}
+
+#createMatchButton {
+  background: #ffffff;
+  color: #111827;
+}
+
+#createMatchButton:hover {
+  background: #e5e7eb;
+}
+
+.secondary-button {
+  background: #1f2937;
+  color: #ffffff;
+
+  border: 1px solid #374151 !important;
+}
+
+.secondary-button:hover {
+  background: #374151;
+}
+
+
+/* ========================================
+   MATCH MESSAGE
+======================================== */
+
+.game-message {
+  min-height: 20px;
+
+  margin: 14px 0 0;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   HOST BUTTON
+======================================== */
+
+.host-match-button {
+  min-height: 45px;
+
+  padding: 11px 18px;
+
+  border: none;
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #111827;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.host-match-button:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
 
 @media (max-width: 600px) {
 
+  .game-card {
+    padding: 20px;
+  }
+
+  .match-settings-section {
+    padding: 17px;
+  }
+
   .game-setting {
-    align-items: flex-start;
+    align-items: center;
+    gap: 16px;
+    padding: 15px;
   }
 
   .game-setting p {
-    max-width: 230px;
+    max-width: 240px;
   }
 
-}
+  .game-actions {
+    flex-direction: column;
+  }
 
   .game-actions button {
     width: 100%;
