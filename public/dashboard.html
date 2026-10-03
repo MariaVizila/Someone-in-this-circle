@@ -1,7 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -17,249 +19,130 @@
     rel="stylesheet"
     href="css/style.css"
   >
+
 </head>
 
 <body>
 
   <div class="app">
 
+    <!-- =========================
+         TOP NAVIGATION
+    ========================= -->
+
     <header class="topbar">
 
       <div class="brand">
-
-        <div class="logo small">
-          SIC
-        </div>
-
-        <span>
-          Someone in this Circle
-        </span>
-
+        Someone in this Circle
       </div>
 
-      <nav>
+      <nav class="topbar-actions">
 
         <a
-          class="active"
           href="dashboard.html"
+          class="nav-link active"
         >
-          Home
+          Dashboard
         </a>
 
-        <a href="profile.html">
+        <a
+          href="profile.html"
+          class="nav-link"
+        >
           Profile
         </a>
 
-        <a href="#friends">
-          Friends
-        </a>
-
-        <a href="#">
-          Games
-          <small>SOON</small>
-        </a>
-
-        <!-- OWNER PANEL -->
-
         <a
-          id="ownerPanelLink"
           href="owner.html"
+          id="ownerPanelLink"
+          class="nav-link"
           style="display: none;"
         >
-          Owner Panel
+          Owner Panel 👑
         </a>
 
-      </nav>
+        <button
+          id="logoutButton"
+          type="button"
+          class="nav-button"
+        >
+          Logout
+        </button>
 
-      <button
-        id="logoutButton"
-        class="logout"
-      >
-        Log Out
-      </button>
+      </nav>
 
     </header>
 
 
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
     <main class="dashboard">
 
-      <!-- WELCOME -->
+      <!-- =========================
+           WELCOME
+      ========================= -->
 
-      <section class="welcome-card">
+      <section class="welcome-section">
 
         <p class="eyebrow">
           YOUR CIRCLE
         </p>
 
         <h1>
-          Welcome,
-          <span id="displayName">...</span>!
+          Welcome, <span id="displayName">User</span>
         </h1>
 
         <p>
-          Your circle is waiting for you.
+          See who's around, connect with your friends,
+          and start a game together.
         </p>
 
       </section>
 
 
-      <!-- FRIENDS -->
+      <!-- =========================
+           FRIENDS
+      ========================= -->
 
-      <section
-        class="friends-section"
-        id="friends"
-      >
+      <section class="dashboard-section">
 
-        <div class="friends-heading">
+        <div class="section-header">
 
           <div>
 
             <p class="eyebrow">
-              CONNECTIONS
+              YOUR CIRCLE
             </p>
 
             <h2>
-              Your Friends
+              Friends
             </h2>
 
-            <p>
-              Connect with people and build your circle.
-            </p>
-
           </div>
 
-          <div
-            class="friend-count"
-            id="friendCount"
-          >
-            0 Friends
+          <div class="friend-count">
+
+            <span id="friendCount">
+              0
+            </span>
+
+            Friends
+
           </div>
 
         </div>
 
 
-        <!-- ADD FRIEND -->
+        <div
+          id="friendsList"
+          class="friends-list"
+        >
 
-        <div class="friend-add-card">
-
-          <h3>
-            Add someone to your circle
-          </h3>
-
-          <p>
-            Enter their username to send them a friend request.
+          <p class="empty-state">
+            You don't have any friends yet.
           </p>
-
-          <form
-            id="friendRequestForm"
-            class="friend-add-form"
-          >
-
-            <input
-              id="friendUsername"
-              type="text"
-              placeholder="Enter a username..."
-              autocomplete="off"
-              maxlength="20"
-              required
-            >
-
-            <button type="submit">
-              Add Friend
-            </button>
-
-          </form>
-
-          <p
-            id="friendMessage"
-            class="friend-message"
-          ></p>
-
-        </div>
-
-
-        <!-- REQUESTS -->
-
-        <div class="friend-columns">
-
-
-          <!-- INCOMING -->
-
-          <div class="friend-panel">
-
-            <div class="friend-panel-header">
-
-              <h3>
-                Friend Requests
-              </h3>
-
-              <span id="requestCount">
-                0
-              </span>
-
-            </div>
-
-            <div
-              id="friendRequests"
-              class="friend-list"
-            >
-            </div>
-
-          </div>
-
-
-          <!-- SENT -->
-
-          <div class="friend-panel">
-
-            <div class="friend-panel-header">
-
-              <h3>
-                Sent Requests
-              </h3>
-
-              <span id="sentCount">
-                0
-              </span>
-
-            </div>
-
-            <div
-              id="sentRequests"
-              class="friend-list"
-            >
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- FRIEND LIST -->
-
-        <div class="friend-panel friends-list-panel">
-
-          <div class="friend-panel-header">
-
-            <div>
-
-              <h3>
-                People in Your Circle
-              </h3>
-
-              <span>
-                Your accepted friends
-              </span>
-
-            </div>
-
-          </div>
-
-          <div
-            id="friendsList"
-            class="friends-grid"
-          >
-          </div>
 
         </div>
 
@@ -285,7 +168,7 @@
             </h2>
 
             <p>
-              Create a match and invite people from your circle.
+              Start a game and see what your circle knows about each other.
             </p>
 
           </div>
@@ -298,347 +181,356 @@
           type="button"
           class="host-match-button"
         >
-          🎮 Host a Match
+          🎮 Host a Game
         </button>
 
       </section>
 
 
-<!-- =========================
-     MATCH CONFIGURATION
-========================= -->
+      <!-- =========================
+           MATCH CONFIGURATION
+      ========================= -->
 
-<section
-  id="matchConfig"
-  class="game-card"
-  style="display: none;"
->
-
-  <div class="game-card-header">
-
-    <div>
-
-      <p class="eyebrow">
-        MATCH SETUP
-      </p>
-
-      <h2>
-        Configure Match
-      </h2>
-
-      <p>
-        Customize your match before creating the lobby.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <!-- TIME LIMIT -->
-
-  <div class="game-field">
-
-    <label for="timeLimit">
-      ⏱️ Time Limit
-    </label>
-
-    <select id="timeLimit">
-
-      <option value="3">
-        3 Minutes
-      </option>
-
-      <option value="5">
-        5 Minutes
-      </option>
-
-      <option value="10" selected>
-        10 Minutes
-      </option>
-
-      <option value="15">
-        15 Minutes
-      </option>
-
-      <option value="20">
-        20 Minutes
-      </option>
-
-      <option value="25">
-        25 Minutes
-      </option>
-
-      <option value="30">
-        30 Minutes
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <!-- MAX PLAYERS -->
-
-  <div class="game-field">
-
-    <label for="maxPlayers">
-      👥 Maximum Players
-    </label>
-
-    <select id="maxPlayers">
-
-      <option value="3">
-        3 Players
-      </option>
-
-      <option
-        value="4"
-        selected
-      >
-        4 Players
-      </option>
-
-      <option value="5">
-        5 Players
-      </option>
-
-      <option value="6">
-        6 Players
-      </option>
-
-      <option value="7">
-        7 Players
-      </option>
-
-      <option value="8">
-        8 Players
-      </option>
-
-      <option value="9">
-        9 Players
-      </option>
-
-      <option value="10">
-        10 Players
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <!-- FRIENDS ONLY -->
-
-  <div class="game-setting">
-
-    <div>
-
-      <strong>
-        🔒 Friends Only
-      </strong>
-
-      <p>
-        Only people in your circle can join this match.
-      </p>
-
-    </div>
-
-    <label class="toggle">
-
-      <input
-        id="friendsOnly"
-        type="checkbox"
-        checked
+      <section
+        id="matchConfig"
+        class="game-card"
+        style="display: none;"
       >
 
-      <span class="toggle-slider"></span>
+        <div class="game-card-header">
 
-    </label>
+          <div>
+
+            <p class="eyebrow">
+              GAME SETUP
+            </p>
+
+            <h2>
+              Game Settings
+            </h2>
+
+            <p>
+              Set up the rules for your circle before starting.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- TIME LIMIT -->
+
+        <div class="game-field">
+
+          <label for="timeLimit">
+            ⏱️ Time Limit
+          </label>
+
+          <select id="timeLimit">
+
+            <option value="3">
+              3 Minutes
+            </option>
+
+            <option value="5">
+              5 Minutes
+            </option>
+
+            <option
+              value="10"
+              selected
+            >
+              10 Minutes
+            </option>
+
+            <option value="15">
+              15 Minutes
+            </option>
+
+            <option value="20">
+              20 Minutes
+            </option>
+
+            <option value="25">
+              25 Minutes
+            </option>
+
+            <option value="30">
+              30 Minutes
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- PLAYER LIMIT -->
+
+        <div class="game-field">
+
+          <label for="maxPlayers">
+            👥 Player Limit
+          </label>
+
+          <select id="maxPlayers">
+
+            <option value="3">
+              3 Players
+            </option>
+
+            <option
+              value="4"
+              selected
+            >
+              4 Players
+            </option>
+
+            <option value="5">
+              5 Players
+            </option>
+
+            <option value="6">
+              6 Players
+            </option>
+
+            <option value="7">
+              7 Players
+            </option>
+
+            <option value="8">
+              8 Players
+            </option>
+
+            <option value="9">
+              9 Players
+            </option>
+
+            <option value="10">
+              10 Players
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- CIRCLE MEMBERS ONLY -->
+
+        <div class="game-setting">
+
+          <div>
+
+            <strong>
+              🔒 Circle Members Only
+            </strong>
+
+            <p>
+              Only friends in your circle can join this game.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              id="friendsOnly"
+              type="checkbox"
+              checked
+            >
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- LATE JOINING -->
+
+        <div class="game-setting">
+
+          <div>
+
+            <strong>
+              🔄 Allow Players to Join Late
+            </strong>
+
+            <p>
+              Let friends join even after the game has started.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              id="midGameJoining"
+              type="checkbox"
+            >
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- WHO CAN JOIN -->
+
+        <div class="game-field">
+
+          <label for="lobbyVisibility">
+            🏠 Who Can Join?
+          </label>
+
+          <select id="lobbyVisibility">
+
+            <option
+              value="friends"
+              selected
+            >
+              Circle Members Only
+            </option>
+
+            <option value="code">
+              Anyone With the Match Code
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- ANOTHER ROUND -->
+
+        <div class="game-setting">
+
+          <div>
+
+            <strong>
+              🔁 Allow Another Round
+            </strong>
+
+            <p>
+              Let everyone start another round when the game ends.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              id="allowRematch"
+              type="checkbox"
+              checked
+            >
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- CHAT -->
+
+        <div class="game-setting">
+
+          <div>
+
+            <strong>
+              💬 Chat During the Game
+            </strong>
+
+            <p>
+              Let players talk while the game is in progress.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              id="matchChat"
+              type="checkbox"
+              checked
+            >
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- RESULTS -->
+
+        <div class="game-setting">
+
+          <div>
+
+            <strong>
+              🏆 Show Results at the End
+            </strong>
+
+            <p>
+              Show the final results when the game is finished.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              id="showResults"
+              type="checkbox"
+              checked
+            >
+
+            <span class="toggle-slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="game-actions">
+
+          <button
+            id="createMatchButton"
+            type="button"
+          >
+            🎮 Create Game
+          </button>
+
+          <button
+            id="cancelMatchButton"
+            type="button"
+            class="secondary-button"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+
+        <p
+          id="matchMessage"
+          class="game-message"
+        ></p>
+
+      </section>
+
+    </main>
 
   </div>
 
-
-  <!-- MID GAME JOINING -->
-
-  <div class="game-setting">
-
-    <div>
-
-      <strong>
-        🔄 Allow Mid-Game Joining
-      </strong>
-
-      <p>
-        Allow players to join after the match begins.
-      </p>
-
-    </div>
-
-    <label class="toggle">
-
-      <input
-        id="midGameJoining"
-        type="checkbox"
-      >
-
-      <span class="toggle-slider"></span>
-
-    </label>
-
-  </div>
-
-
-  <!-- LOBBY VISIBILITY -->
-
-  <div class="game-field">
-
-    <label for="lobbyVisibility">
-      🏠 Lobby Visibility
-    </label>
-
-    <select id="lobbyVisibility">
-
-      <option
-        value="friends"
-        selected
-      >
-        Friends Only
-      </option>
-
-      <option value="code">
-        Anyone With Code
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <!-- REMATCH -->
-
-  <div class="game-setting">
-
-    <div>
-
-      <strong>
-        🔁 Allow Rematch
-      </strong>
-
-      <p>
-        Allow players to start another round after the game ends.
-      </p>
-
-    </div>
-
-    <label class="toggle">
-
-      <input
-        id="allowRematch"
-        type="checkbox"
-        checked
-      >
-
-      <span class="toggle-slider"></span>
-
-    </label>
-
-  </div>
-
-
-  <!-- CHAT -->
-
-  <div class="game-setting">
-
-    <div>
-
-      <strong>
-        💬 Match Chat
-      </strong>
-
-      <p>
-        Allow players to chat during the match.
-      </p>
-
-    </div>
-
-    <label class="toggle">
-
-      <input
-        id="matchChat"
-        type="checkbox"
-        checked
-      >
-
-      <span class="toggle-slider"></span>
-
-    </label>
-
-  </div>
-
-
-  <!-- RESULTS -->
-
-  <div class="game-setting">
-
-    <div>
-
-      <strong>
-        🏆 Show Results
-      </strong>
-
-      <p>
-        Reveal the results when the match ends.
-      </p>
-
-    </div>
-
-    <label class="toggle">
-
-      <input
-        id="showResults"
-        type="checkbox"
-        checked
-      >
-
-      <span class="toggle-slider"></span>
-
-    </label>
-
-  </div>
-
-
-  <!-- BUTTONS -->
-
-  <div class="game-actions">
-
-    <button
-      id="createMatchButton"
-      type="button"
-    >
-      🎮 Create Match
-    </button>
-
-    <button
-      id="cancelMatchButton"
-      type="button"
-      class="secondary-button"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-
-  <p
-    id="matchMessage"
-    class="game-message"
-  ></p>
-
-</section>
 
   <script src="js/dashboard.js"></script>
 
 </body>
 
 </html>
+```
