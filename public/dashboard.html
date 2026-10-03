@@ -266,6 +266,166 @@
       </section>
 
 
+      <!-- =========================
+           HOST A MATCH
+      ========================= -->
+
+      <section class="game-card">
+
+        <div class="game-card-header">
+
+          <div>
+
+            <p class="eyebrow">
+              CIRCLE GAME
+            </p>
+
+            <h2>
+              Someone in this Circle
+            </h2>
+
+            <p>
+              Create a match and invite people from your circle.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="hostMatchButton"
+          type="button"
+          class="host-match-button"
+        >
+          🎮 Host a Match
+        </button>
+
+      </section>
+
+
+      <!-- =========================
+           MATCH CONFIGURATION
+      ========================= -->
+
+      <section
+        id="matchConfig"
+        class="game-card"
+        style="display: none;"
+      >
+
+        <div class="game-card-header">
+
+          <div>
+
+            <p class="eyebrow">
+              MATCH SETUP
+            </p>
+
+            <h2>
+              Configure Match
+            </h2>
+
+            <p>
+              Set up your match before creating the lobby.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- MATCH NAME -->
+
+        <div class="game-field">
+
+          <label for="matchName">
+            Match Name
+          </label>
+
+          <input
+            id="matchName"
+            type="text"
+            placeholder="Enter a match name..."
+            maxlength="50"
+            autocomplete="off"
+          >
+
+        </div>
+
+
+        <!-- MAX PLAYERS -->
+
+        <div class="game-field">
+
+          <label for="maxPlayers">
+            Maximum Players
+          </label>
+
+          <select id="maxPlayers">
+
+            <option value="3">
+              3 Players
+            </option>
+
+            <option
+              value="4"
+              selected
+            >
+              4 Players
+            </option>
+
+            <option value="5">
+              5 Players
+            </option>
+
+            <option value="6">
+              6 Players
+            </option>
+
+            <option value="8">
+              8 Players
+            </option>
+
+            <option value="10">
+              10 Players
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="game-actions">
+
+          <button
+            id="createMatchButton"
+            type="button"
+          >
+            Create Match
+          </button>
+
+          <button
+            id="cancelMatchButton"
+            type="button"
+            class="secondary-button"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+
+        <p
+          id="matchMessage"
+          class="game-message"
+        ></p>
+
+      </section>
+
+
       <!-- OTHER FEATURES -->
 
       <section class="feature-grid">
