@@ -60,6 +60,21 @@ const submitPromptButton =
     "submitPromptButton"
   );
 
+const promptText =
+  document.getElementById(
+    "promptText"
+  );
+
+const guessPlayers =
+  document.getElementById(
+    "guessPlayers"
+  );
+
+const guessMessage =
+  document.getElementById(
+    "guessMessage"
+  );
+
 const scoreboard =
   document.getElementById(
     "scoreboard"
@@ -69,6 +84,16 @@ const gameMessage =
   document.getElementById(
     "gameMessage"
   );
+
+
+/* =========================
+   GAME STATE
+========================= */
+
+let currentMatch = null;
+let currentPlayers = [];
+let currentUser = null;
+let activePrompt = null;
 
 
 /* =========================
@@ -118,8 +143,18 @@ async function loadGame() {
       data.players || [];
 
 
-    const currentUser =
+    const user =
       data.currentUser;
+
+
+    currentMatch =
+      match;
+
+    currentPlayers =
+      players;
+
+    currentUser =
+      user;
 
 
     /* =========================
@@ -132,7 +167,14 @@ async function loadGame() {
 
 
     /* =========================
-       CHECK MATCH STATUS
+       TIMER
+    ========================= */
+
+    updateGameTimer(match);
+
+
+    /* =========================
+       MATCH ENDED
     ========================= */
 
     if (match.status === "ended") {
@@ -162,6 +204,10 @@ async function loadGame() {
 
     }
 
+
+    /* =========================
+       MATCH NOT STARTED
+    ========================= */
 
     if (match.status !== "playing") {
 
@@ -220,7 +266,68 @@ async function loadGame() {
 
 
     /* =========================
-       TURN DISPLAY
+       CHECK ACTIVE PROMPT
+    ========================= */
+
+    const promptResponse =
+      await fetch(
+        `/api/matches/${encodeURIComponent(matchCode)}/prompt`
+      );
+
+
+    let promptData = null;
+
+
+    if (promptResponse.ok) {
+
+      promptData =
+        await promptResponse.json();
+
+    }
+
+
+    activePrompt =
+      promptData &&
+      promptData.prompt
+        ? promptData.prompt
+        : null;
+
+
+    /* =========================
+       ACTIVE PROMPT EXISTS
+    ========================= */
+
+    if (activePrompt) {
+
+      const isPromptAuthor =
+        currentUser &&
+        Number(currentUser.id) ===
+          Number(activePrompt.author_id);
+
+
+      if (isPromptAuthor) {
+
+        showPromptWaiting();
+
+      } else {
+
+        showGuessArea(
+          activePrompt,
+          players
+        );
+
+      }
+
+
+      renderScoreboard(players);
+
+      return;
+
+    }
+
+
+    /* =========================
+       YOUR TURN
     ========================= */
 
     if (isMyTurn) {
@@ -250,7 +357,14 @@ async function loadGame() {
         currentUser.id
       );
 
-    } else {
+    }
+
+
+    /* =========================
+       SOMEONE ELSE'S TURN
+    ========================= */
+
+    else {
 
       turnStatus.innerHTML = `
         <h2>
@@ -296,6 +410,73 @@ async function loadGame() {
 
 
 /* =========================
+   GAME TIMER
+========================= */
+
+function updateGameTimer(match) {
+
+  if (!match.started_at) {
+
+    gameTimer.textContent =
+      "--:--";
+
+    return;
+
+  }
+
+
+  const startedAt =
+    new Date(match.started_at).getTime();
+
+
+  const duration =
+    Number(match.time_limit) *
+    60 *
+    1000;
+
+
+  const endTime =
+    startedAt + duration;
+
+
+  const remaining =
+    Math.max(
+      0,
+      endTime - Date.now()
+    );
+
+
+  const totalSeconds =
+    Math.floor(
+      remaining / 1000
+    );
+
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+
+  const seconds =
+    totalSeconds % 60;
+
+
+  gameTimer.textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+
+  if (remaining <= 0) {
+
+    gameTimer.textContent =
+      "00:00";
+
+  }
+
+}
+
+
+/* =========================
    TARGET PLAYERS
 ========================= */
 
@@ -317,19 +498,24 @@ function populateTargetPlayers(
       Number(player.user_id) ===
       Number(currentUserId)
     ) {
+
       return;
+
     }
 
 
     const option =
       document.createElement("option");
 
+
     option.value =
       player.user_id;
+
 
     option.textContent =
       player.display_name ||
       player.username;
+
 
     targetPlayer.appendChild(
       option
@@ -341,63 +527,128 @@ function populateTargetPlayers(
 
 
 /* =========================
-   SCOREBOARD
+   SHOW PROMPT WAITING
 ========================= */
 
-function renderScoreboard(players) {
+function showPromptWaiting() {
 
-  scoreboard.innerHTML = "";
+  turnStatus.innerHTML = `
+    <h2>
+      Waiting for guesses
+    </h2>
+
+    <p>
+      Other players are guessing your statement.
+    </p>
+  `;
 
 
-  const sortedPlayers =
-    [...players].sort(
-      (a, b) =>
-        Number(b.score) -
-        Number(a.score)
+  activePlayerArea.style.display =
+    "none";
+
+
+  waitingArea.style.display =
+    "block";
+
+
+  guessArea.style.display =
+    "none";
+
+}
+
+
+/* =========================
+   SHOW GUESS AREA
+========================= */
+
+function showGuessArea(
+  prompt,
+  players
+) {
+
+  turnStatus.innerHTML = `
+    <h2>
+      Make Your Guess
+    </h2>
+
+    <p>
+      Someone in this circle...
+    </p>
+  `;
+
+
+  activePlayerArea.style.display =
+    "none";
+
+
+  waitingArea.style.display =
+    "none";
+
+
+  guessArea.style.display =
+    "block";
+
+
+  promptText.textContent =
+    `Someone in this circle ${prompt.prompt_text}`;
+
+
+  guessMessage.textContent =
+    "";
+
+
+  renderGuessPlayers(
+    players
+  );
+
+}
+
+
+/* =========================
+   RENDER GUESS PLAYERS
+========================= */
+
+function renderGuessPlayers(players) {
+
+  guessPlayers.innerHTML = "";
+
+
+  players.forEach(player => {
+
+    const button =
+      document.createElement("button");
+
+
+    button.type =
+      "button";
+
+
+    button.className =
+      "secondary-button";
+
+
+    button.textContent =
+      player.display_name ||
+      player.username;
+
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        submitGuess(
+          player.user_id
+        );
+
+      }
     );
 
 
-  sortedPlayers.forEach(
-    (player, index) => {
+    guessPlayers.appendChild(
+      button
+    );
 
-      const row =
-        document.createElement("div");
-
-      row.className =
-        "scoreboard-player";
-
-
-      const position =
-        document.createElement("span");
-
-      position.textContent =
-        `#${index + 1}`;
-
-
-      const name =
-        document.createElement("strong");
-
-      name.textContent =
-        player.display_name ||
-        player.username;
-
-
-      const score =
-        document.createElement("span");
-
-      score.textContent =
-        `${player.score} pts`;
-
-
-      row.appendChild(position);
-      row.appendChild(name);
-      row.appendChild(score);
-
-
-      scoreboard.appendChild(row);
-
-    }
-  );
+  });
 
 }
 
@@ -412,6 +663,7 @@ submitPromptButton.addEventListener(
 
     const prompt =
       promptInput.value.trim();
+
 
     const targetId =
       targetPlayer.value;
@@ -441,11 +693,276 @@ submitPromptButton.addEventListener(
     }
 
 
-    gameMessage.textContent =
-      "Prompt system isn't connected yet.";
+    try {
+
+      submitPromptButton.disabled =
+        true;
+
+
+      submitPromptButton.textContent =
+        "Submitting...";
+
+
+      const response =
+        await fetch(
+          `/api/matches/${encodeURIComponent(matchCode)}/prompt`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              prompt,
+              targetId:
+                Number(targetId)
+            })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        gameMessage.textContent =
+          data.error ||
+          "Could not submit your prompt.";
+
+        return;
+
+      }
+
+
+      promptInput.value =
+        "";
+
+      targetPlayer.value =
+        "";
+
+
+      gameMessage.textContent =
+        "Prompt submitted!";
+
+
+      await loadGame();
+
+
+    } catch (error) {
+
+      console.error(
+        "Submit prompt error:",
+        error
+      );
+
+
+      gameMessage.textContent =
+        "Could not connect to the server.";
+
+    } finally {
+
+      submitPromptButton.disabled =
+        false;
+
+      submitPromptButton.textContent =
+        "Submit";
+
+    }
 
   }
 );
+
+
+/* =========================
+   SUBMIT GUESS
+========================= */
+
+async function submitGuess(
+  guessedUserId
+) {
+
+  if (!activePrompt) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const buttons =
+      guessPlayers.querySelectorAll(
+        "button"
+      );
+
+
+    buttons.forEach(button => {
+
+      button.disabled =
+        true;
+
+    });
+
+
+    guessMessage.textContent =
+      "Submitting guess...";
+
+
+    const response =
+      await fetch(
+        `/api/matches/${encodeURIComponent(matchCode)}/guess`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            guessedUserId:
+              Number(guessedUserId)
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      guessMessage.textContent =
+        data.error ||
+        "Could not submit your guess.";
+
+      buttons.forEach(button => {
+
+        button.disabled =
+          false;
+
+      });
+
+      return;
+
+    }
+
+
+    if (data.correct) {
+
+      guessMessage.textContent =
+        "CORRECT!";
+
+    } else {
+
+      guessMessage.textContent =
+        "INCORRECT";
+
+    }
+
+
+    await loadGame();
+
+
+  } catch (error) {
+
+    console.error(
+      "Submit guess error:",
+      error
+    );
+
+
+    guessMessage.textContent =
+      "Could not connect to the server.";
+
+  }
+
+}
+
+
+/* =========================
+   SCOREBOARD
+========================= */
+
+function renderScoreboard(players) {
+
+  scoreboard.innerHTML = "";
+
+
+  const sortedPlayers =
+    [...players].sort(
+      (a, b) =>
+        Number(b.score) -
+        Number(a.score)
+    );
+
+
+  sortedPlayers.forEach(
+    (player, index) => {
+
+      const row =
+        document.createElement("div");
+
+
+      row.className =
+        "scoreboard-player";
+
+
+      const position =
+        document.createElement("span");
+
+
+      position.textContent =
+        `#${index + 1}`;
+
+
+      const name =
+        document.createElement("strong");
+
+
+      name.textContent =
+        player.display_name ||
+        player.username;
+
+
+      const score =
+        document.createElement("span");
+
+
+      score.textContent =
+        `${player.score} pts`;
+
+
+      row.appendChild(
+        position
+      );
+
+
+      row.appendChild(
+        name
+      );
+
+
+      row.appendChild(
+        score
+      );
+
+
+      scoreboard.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
 
 
 /* =========================
@@ -457,8 +974,10 @@ function escapeHtml(value) {
   const div =
     document.createElement("div");
 
+
   div.textContent =
     value;
+
 
   return div.innerHTML;
 
@@ -479,4 +998,24 @@ loadGame();
 setInterval(
   loadGame,
   3000
+);
+
+
+/* =========================
+   TIMER REFRESH
+========================= */
+
+setInterval(
+  () => {
+
+    if (currentMatch) {
+
+      updateGameTimer(
+        currentMatch
+      );
+
+    }
+
+  },
+  1000
 );
