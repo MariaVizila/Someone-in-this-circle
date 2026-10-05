@@ -1754,7 +1754,121 @@ app.post(
 
   }
 );
-      
+
+
+ /* =========================
+    LEAVE MATCH
+ ========================= */
+
+app.post(
+  "/api/matches/:code/leave",
+  async (req, res) => {
+
+    try {
+
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+
+      const matchCode =
+        String(req.params.code || "")
+          .trim()
+          .toUpperCase();
+
+
+      if (!matchCode) {
+        return res.status(400).json({
+          error: "Match code is required."
+        });
+      }
+
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT
+            id,
+            host_id,
+            status
+          FROM matches
+          WHERE match_code = $1
+          LIMIT 1
+          `,
+          [matchCode]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Match not found."
+        });
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         HOST CANNOT LEAVE
+      ========================= */
+
+      if (
+        Number(match.host_id) ===
+        Number(req.session.userId)
+      ) {
+
+        return res.status(400).json({
+          error:
+            "The host cannot leave the match."
+        });
+
+      }
+
+
+      /* =========================
+         REMOVE PLAYER
+      ========================= */
+
+      await pool.query(
+        `
+        DELETE FROM match_players
+        WHERE match_id = $1
+          AND user_id = $2
+        `,
+        [
+          match.id,
+          req.session.userId
+        ]
+      );
+
+
+      res.json({
+        success: true
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Leave match error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not leave the match."
+      });
+
+    }
+
+  }
+);
+
 
 /* =========================
    GET MATCH LOBBY
