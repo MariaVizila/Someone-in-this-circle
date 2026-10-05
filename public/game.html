@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>SIC - Game</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/style.css"
+  >
+
+</head>
+
+<body>
+
+  <nav class="navbar">
+
+    <div class="nav-left">
+
+      <a
+        href="dashboard.html"
+        class="logo"
+      >
+        SIC
+      </a>
+
+      <a href="dashboard.html">
+        Home
+      </a>
+
+      <a href="profile.html">
+        Profile
+      </a>
+
+      <a href="dashboard.html">
+        Friends
+      </a>
+
+      <a href="dashboard.html">
+        Games
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <main class="game-page">
+
+    <section class="game-container">
+
+      <!-- =========================
+           GAME HEADER
+      ========================= -->
+
+      <div class="game-header">
+
+        <div>
+
+          <p class="game-label">
+            SOMEONE IN THIS CIRCLE
+          </p>
+
+          <h1 id="gameMatchName">
+            Match
+          </h1>
+
+        </div>
+
+
+        <div class="game-timer-box">
+
+          <span>
+            TIME LEFT
+          </span>
+
+          <strong id="gameTimer">
+            --:--
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           TURN STATUS
+      ========================= -->
+
+      <div
+        id="turnStatus"
+        class="turn-status"
+      >
+
+        <h2>
+          Loading game...
+        </h2>
+
+        <p>
+          Please wait.
+        </p>
+
+      </div>
+
+
+      <!-- =========================
+           ACTIVE PLAYER AREA
+      ========================= -->
+
+      <section
+        id="activePlayerArea"
+        class="game-card"
+        style="display: none;"
+      >
+
+        <p class="card-label">
+          YOUR TURN
+        </p>
+
+        <h2>
+          Someone in this circle...
+        </h2>
+
+        <textarea
+          id="promptInput"
+          maxlength="250"
+          placeholder="Someone in this circle.."
+        ></textarea>
+
+
+        <label for="targetPlayer">
+          Choose a player
+        </label>
+
+        <select id="targetPlayer">
+
+          <option value="">
+            Select a player
+          </option>
+
+        </select>
+
+
+        <button
+          id="submitPromptButton"
+          class="primary-button"
+        >
+          Submit
+        </button>
+
+      </section>
+
+
+      <!-- =========================
+           GUESSING AREA
+      ========================= -->
+
+      <section
+        id="guessArea"
+        class="game-card"
+        style="display: none;"
+      >
+
+        <p class="card-label">
+          GUESS
+        </p>
+
+        <h2 id="promptText">
+          Someone in this circle...
+        </h2>
+
+        <p>
+          Who do you think this is about?
+        </p>
+
+
+        <div
+          id="guessPlayers"
+          class="guess-players"
+        ></div>
+
+
+        <p
+          id="guessMessage"
+          class="form-message"
+        ></p>
+
+      </section>
+
+
+      <!-- =========================
+           WAITING AREA
+      ========================= -->
+
+      <section
+        id="waitingArea"
+        class="game-card"
+      >
+
+        <p class="card-label">
+          WAIT
+        </p>
+
+        <h2>
+          Wait for your turn
+        </h2>
+
+        <p>
+          Another player is currently taking their turn.
+        </p>
+
+      </section>
+
+
+      <!-- =========================
+           SCOREBOARD
+      ========================= -->
+
+      <section class="game-card">
+
+        <div class="section-heading">
+
+          <h2>
+            Scoreboard
+          </h2>
+
+        </div>
+
+
+        <div
+          id="scoreboard"
+          class="scoreboard"
+        ></div>
+
+      </section>
+
+
+      <p
+        id="gameMessage"
+        class="form-message"
+      ></p>
+
+    </section>
+
+  </main>
+
+
+  <script src="/js/game.js"></script>
+
+</body>
+
+</html>
