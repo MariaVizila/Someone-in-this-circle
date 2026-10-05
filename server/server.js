@@ -2436,6 +2436,411 @@ app.post(
   }
 );
 
+/* =========================
+   SUBMIT GUESS
+========================= */
+
+app.post(
+  "/api/matches/:code/guess",
+  requireLogin,
+  async (req, res) => {
+
+    try {
+
+      const code =
+        req.params.code.toUpperCase();
+
+      const guessedUserId =
+        Number(req.body.guessedUserId);
+
+
+      if (!guessedUserId) {
+
+        return res.status(400).json({
+          error: "You must choose a player."
+        });
+
+      }
+
+
+      /* =========================
+         FIND MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT *
+          FROM matches
+          WHERE match_code = $1
+          `,
+          [code]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+
+        return res.status(404).json({
+          error: "Match not found."
+        });
+
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      if (match.status !== "playing") {
+
+        return res.status(400).json({
+          error: "This match is not currently playing."
+        });
+
+      }
+
+
+      /* =========================
+         CHECK GUESSER IS IN MATCH
+      ========================= */
+
+      const playerResult =
+        await pool.query(
+          `
+          SELECT *
+          FROM match_players
+          WHERE match_id = $1
+          AND user_id = $2
+          `,
+          [
+            match.id,
+            req.session.userId
+          ]
+        );
+
+
+      if (playerResult.rows.length === 0) {
+
+        return res.status(403).json({
+          error: "You are not in this match."
+        });
+
+      }
+
+
+      /* =========================
+         FIND ACTIVE PROMPT
+      ========================= */
+
+      const promptResult =
+        await pool.query(
+          `
+          SELECT *
+          FROM match_prompts
+          WHERE match_id = $1
+          AND status = 'guessing'
+          ORDER BY created_at DESC
+          LIMIT 1
+          `,
+          [match.id]
+        );
+
+
+      if (promptResult.rows.length === 0) {
+
+        return res.status(400).json({
+          error: "There is no active prompt."
+        });
+
+      }
+
+
+      const prompt =
+        promptResult.rows[0];
+
+
+      /* =========================
+         PROMPT AUTHOR CANNOT GUESS
+      ========================= */
+
+      if (
+        Number(prompt.author_id) ===
+        Number(req.session.userId)
+      ) {
+
+        return res.status(400).json({
+          error: "You cannot guess your own prompt."
+        });
+
+      }
+
+
+      /* =========================
+         CHECK GUESSED PLAYER
+      ========================= */
+
+      const guessedPlayerResult =
+        await pool.query(
+          `
+          SELECT *
+          FROM match_players
+          WHERE match_id = $1
+          AND user_id = $2
+          `,
+          [
+            match.id,
+            guessedUserId
+          ]
+        );
+
+
+      if (
+        guessedPlayerResult.rows.length === 0
+      ) {
+
+        return res.status(400).json({
+          error: "That player is not in the match."
+        });
+
+      }
+
+
+      /* =========================
+         CHECK FOR EXISTING GUESS
+      ========================= */
+
+      const existingGuessResult =
+        await pool.query(
+          `
+          SELECT *
+          FROM prompt_guesses
+          WHERE prompt_id = $1
+          AND user_id = $2
+          `,
+          [
+            prompt.id,
+            req.session.userId
+          ]
+        );
+
+
+      if (
+        existingGuessResult.rows.length > 0
+      ) {
+
+        return res.status(400).json({
+          error: "You already guessed this prompt."
+        });
+
+      }
+
+
+      /* =========================
+         CHECK ANSWER
+      ========================= */
+
+      const isCorrect =
+        Number(guessedUserId) ===
+        Number(prompt.target_id);
+
+
+      /* =========================
+         SAVE GUESS
+      ========================= */
+
+      await pool.query(
+        `
+        INSERT INTO prompt_guesses (
+          prompt_id,
+          user_id,
+          guessed_user_id,
+          is_correct
+        )
+        VALUES ($1, $2, $3, $4)
+        `,
+        [
+          prompt.id,
+          req.session.userId,
+          guessedUserId,
+          isCorrect
+        ]
+      );
+
+
+      /* =========================
+         GIVE POINT
+      ========================= */
+
+      if (isCorrect) {
+
+        await pool.query(
+          `
+          UPDATE match_players
+          SET score = score + 1
+          WHERE match_id = $1
+          AND user_id = $2
+          `,
+          [
+            match.id,
+            req.session.userId
+          ]
+        );
+
+      }
+
+
+      /* =========================
+         CHECK IF EVERYONE GUESSED
+      ========================= */
+
+      const eligiblePlayersResult =
+        await pool.query(
+          `
+          SELECT COUNT(*)::integer AS count
+          FROM match_players
+          WHERE match_id = $1
+          AND user_id != $2
+          `,
+          [
+            match.id,
+            prompt.author_id
+          ]
+        );
+
+
+      const guessesResult =
+        await pool.query(
+          `
+          SELECT COUNT(*)::integer AS count
+          FROM prompt_guesses
+          WHERE prompt_id = $1
+          `,
+          [prompt.id]
+        );
+
+
+      const eligiblePlayers =
+        Number(
+          eligiblePlayersResult.rows[0].count
+        );
+
+
+      const totalGuesses =
+        Number(
+          guessesResult.rows[0].count
+        );
+
+
+      let promptFinished = false;
+
+
+      /* =========================
+         FINISH PROMPT
+      ========================= */
+
+      if (
+        totalGuesses >=
+        eligiblePlayers
+      ) {
+
+        promptFinished = true;
+
+
+        await pool.query(
+          `
+          UPDATE match_prompts
+          SET
+            status = 'answered',
+            answered_at = CURRENT_TIMESTAMP
+          WHERE id = $1
+          `,
+          [prompt.id]
+        );
+
+
+        /* =========================
+           MOVE TO NEXT PLAYER
+        ========================= */
+
+        const playersResult =
+          await pool.query(
+            `
+            SELECT user_id
+            FROM match_players
+            WHERE match_id = $1
+            ORDER BY joined_at ASC
+            `,
+            [match.id]
+          );
+
+
+        const players =
+          playersResult.rows;
+
+
+        if (players.length > 0) {
+
+          const currentIndex =
+            players.findIndex(
+              player =>
+                Number(player.user_id) ===
+                Number(match.current_player_id)
+            );
+
+
+          const nextIndex =
+            currentIndex === -1
+              ? 0
+              : (
+                  currentIndex + 1
+                ) % players.length;
+
+
+          const nextPlayer =
+            players[nextIndex];
+
+
+          await pool.query(
+            `
+            UPDATE matches
+            SET current_player_id = $1
+            WHERE id = $2
+            `,
+            [
+              nextPlayer.user_id,
+              match.id
+            ]
+          );
+
+        }
+
+      }
+
+
+      return res.json({
+        success: true,
+        correct: isCorrect,
+        promptFinished
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Submit guess error:",
+        error
+      );
+
+
+      return res.status(500).json({
+        error: "Could not submit your guess."
+      });
+
+    }
+
+  }
+);
+
 
 /* =========================
    GET ACTIVE PROMPT
