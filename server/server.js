@@ -16,6 +16,26 @@ app.set("trust proxy", 1);
 
 
 /* =========================
+   LOGIN CHECK
+========================= */
+
+function requireLogin(req, res, next) {
+
+  if (!req.session.userId) {
+
+    return res.status(401).json({
+      error:
+        "You must be logged in."
+    });
+
+  }
+
+  next();
+
+}
+
+
+/* =========================
    OWNER CHECK
 ========================= */
 
@@ -24,7 +44,8 @@ async function requireOwner(req, res, next) {
   if (!req.session.userId) {
 
     return res.status(401).json({
-      error: "You must be logged in."
+      error:
+        "You must be logged in."
     });
 
   }
@@ -47,7 +68,8 @@ async function requireOwner(req, res, next) {
     if (result.rows.length === 0) {
 
       return res.status(401).json({
-        error: "User not found."
+        error:
+          "User not found."
       });
 
     }
@@ -61,7 +83,8 @@ async function requireOwner(req, res, next) {
     ) {
 
       return res.status(403).json({
-        error: "Owner access required."
+        error:
+          "Owner access required."
       });
 
     }
@@ -378,7 +401,8 @@ app.get(
     if (!req.session.userId) {
 
       return res.status(401).json({
-        error: "Not logged in."
+        error:
+          "Not logged in."
       });
 
     }
@@ -1490,18 +1514,10 @@ app.post(
 
 app.post(
   "/api/matches",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
 
       const {
         matchName,
@@ -1821,19 +1837,10 @@ app.post(
 
 app.post(
   "/api/matches/:code/join",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -2060,19 +2067,10 @@ app.post(
 
 app.post(
   "/api/matches/:code/leave",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -2178,19 +2176,10 @@ app.post(
 
 app.post(
   "/api/matches/:code/prompt",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -2436,6 +2425,7 @@ app.post(
   }
 );
 
+
 /* =========================
    SUBMIT GUESS
 ========================= */
@@ -2448,24 +2438,27 @@ app.post(
     try {
 
       const code =
-        req.params.code.toUpperCase();
+        String(
+          req.params.code || ""
+        )
+          .trim()
+          .toUpperCase();
 
       const guessedUserId =
         Number(req.body.guessedUserId);
 
 
-      if (!guessedUserId) {
+      if (
+        !Number.isInteger(guessedUserId)
+      ) {
 
         return res.status(400).json({
-          error: "You must choose a player."
+          error:
+            "You must choose a player."
         });
 
       }
 
-
-      /* =========================
-         FIND MATCH
-      ========================= */
 
       const matchResult =
         await pool.query(
@@ -2478,10 +2471,13 @@ app.post(
         );
 
 
-      if (matchResult.rows.length === 0) {
+      if (
+        matchResult.rows.length === 0
+      ) {
 
         return res.status(404).json({
-          error: "Match not found."
+          error:
+            "Match not found."
         });
 
       }
@@ -2491,18 +2487,17 @@ app.post(
         matchResult.rows[0];
 
 
-      if (match.status !== "playing") {
+      if (
+        match.status !== "playing"
+      ) {
 
         return res.status(400).json({
-          error: "This match is not currently playing."
+          error:
+            "This match is not currently playing."
         });
 
       }
 
-
-      /* =========================
-         CHECK GUESSER IS IN MATCH
-      ========================= */
 
       const playerResult =
         await pool.query(
@@ -2510,7 +2505,7 @@ app.post(
           SELECT *
           FROM match_players
           WHERE match_id = $1
-          AND user_id = $2
+            AND user_id = $2
           `,
           [
             match.id,
@@ -2519,18 +2514,17 @@ app.post(
         );
 
 
-      if (playerResult.rows.length === 0) {
+      if (
+        playerResult.rows.length === 0
+      ) {
 
         return res.status(403).json({
-          error: "You are not in this match."
+          error:
+            "You are not in this match."
         });
 
       }
 
-
-      /* =========================
-         FIND ACTIVE PROMPT
-      ========================= */
 
       const promptResult =
         await pool.query(
@@ -2538,7 +2532,7 @@ app.post(
           SELECT *
           FROM match_prompts
           WHERE match_id = $1
-          AND status = 'guessing'
+            AND status = 'guessing'
           ORDER BY created_at DESC
           LIMIT 1
           `,
@@ -2546,10 +2540,13 @@ app.post(
         );
 
 
-      if (promptResult.rows.length === 0) {
+      if (
+        promptResult.rows.length === 0
+      ) {
 
         return res.status(400).json({
-          error: "There is no active prompt."
+          error:
+            "There is no active prompt."
         });
 
       }
@@ -2559,25 +2556,18 @@ app.post(
         promptResult.rows[0];
 
 
-      /* =========================
-         PROMPT AUTHOR CANNOT GUESS
-      ========================= */
-
       if (
         Number(prompt.author_id) ===
         Number(req.session.userId)
       ) {
 
         return res.status(400).json({
-          error: "You cannot guess your own prompt."
+          error:
+            "You cannot guess your own prompt."
         });
 
       }
 
-
-      /* =========================
-         CHECK GUESSED PLAYER
-      ========================= */
 
       const guessedPlayerResult =
         await pool.query(
@@ -2585,7 +2575,7 @@ app.post(
           SELECT *
           FROM match_players
           WHERE match_id = $1
-          AND user_id = $2
+            AND user_id = $2
           `,
           [
             match.id,
@@ -2599,15 +2589,12 @@ app.post(
       ) {
 
         return res.status(400).json({
-          error: "That player is not in the match."
+          error:
+            "That player is not in the match."
         });
 
       }
 
-
-      /* =========================
-         CHECK FOR EXISTING GUESS
-      ========================= */
 
       const existingGuessResult =
         await pool.query(
@@ -2615,7 +2602,7 @@ app.post(
           SELECT *
           FROM prompt_guesses
           WHERE prompt_id = $1
-          AND user_id = $2
+            AND user_id = $2
           `,
           [
             prompt.id,
@@ -2629,24 +2616,17 @@ app.post(
       ) {
 
         return res.status(400).json({
-          error: "You already guessed this prompt."
+          error:
+            "You already guessed this prompt."
         });
 
       }
 
 
-      /* =========================
-         CHECK ANSWER
-      ========================= */
-
       const isCorrect =
         Number(guessedUserId) ===
         Number(prompt.target_id);
 
-
-      /* =========================
-         SAVE GUESS
-      ========================= */
 
       await pool.query(
         `
@@ -2667,10 +2647,6 @@ app.post(
       );
 
 
-      /* =========================
-         GIVE POINT
-      ========================= */
-
       if (isCorrect) {
 
         await pool.query(
@@ -2678,7 +2654,7 @@ app.post(
           UPDATE match_players
           SET score = score + 1
           WHERE match_id = $1
-          AND user_id = $2
+            AND user_id = $2
           `,
           [
             match.id,
@@ -2689,17 +2665,13 @@ app.post(
       }
 
 
-      /* =========================
-         CHECK IF EVERYONE GUESSED
-      ========================= */
-
       const eligiblePlayersResult =
         await pool.query(
           `
           SELECT COUNT(*)::integer AS count
           FROM match_players
           WHERE match_id = $1
-          AND user_id != $2
+            AND user_id != $2
           `,
           [
             match.id,
@@ -2734,10 +2706,6 @@ app.post(
       let promptFinished = false;
 
 
-      /* =========================
-         FINISH PROMPT
-      ========================= */
-
       if (
         totalGuesses >=
         eligiblePlayers
@@ -2757,10 +2725,6 @@ app.post(
           [prompt.id]
         );
 
-
-        /* =========================
-           MOVE TO NEXT PLAYER
-        ========================= */
 
         const playersResult =
           await pool.query(
@@ -2803,7 +2767,9 @@ app.post(
           await pool.query(
             `
             UPDATE matches
-            SET current_player_id = $1
+            SET
+              current_player_id = $1,
+              turn_started_at = CURRENT_TIMESTAMP
             WHERE id = $2
             `,
             [
@@ -2831,9 +2797,9 @@ app.post(
         error
       );
 
-
       return res.status(500).json({
-        error: "Could not submit your guess."
+        error:
+          "Could not submit your guess."
       });
 
     }
@@ -2848,19 +2814,10 @@ app.post(
 
 app.get(
   "/api/matches/:code/prompt",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -2987,13 +2944,18 @@ app.get(
 
       res.json({
         prompt: {
-          id: prompt.id,
+          id:
+            prompt.id,
+
           author_id:
             prompt.author_id,
+
           prompt_text:
             prompt.prompt_text,
+
           status:
             prompt.status,
+
           created_at:
             prompt.created_at
         }
@@ -3024,19 +2986,10 @@ app.get(
 
 app.post(
   "/api/matches/:code/start",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -3154,14 +3107,16 @@ app.post(
           SET
             status = 'playing',
             current_player_id = $1,
-            started_at = CURRENT_TIMESTAMP
+            started_at = CURRENT_TIMESTAMP,
+            turn_started_at = CURRENT_TIMESTAMP
           WHERE id = $2
           RETURNING
             id,
             match_code,
             status,
             current_player_id,
-            started_at
+            started_at,
+            turn_started_at
           `,
           [
             firstPlayer.user_id,
@@ -3201,19 +3156,10 @@ app.post(
 
 app.get(
   "/api/matches/:code",
+  requireLogin,
   async (req, res) => {
 
     try {
-
-      if (!req.session.userId) {
-
-        return res.status(401).json({
-          error:
-            "You must be logged in."
-        });
-
-      }
-
 
       const matchCode =
         String(
@@ -3254,6 +3200,7 @@ app.get(
             current_player_id,
             created_at,
             started_at,
+            turn_started_at,
             ended_at
           FROM matches
           WHERE match_code = $1
