@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>SIC - Match Lobby</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+</head>
+
+<body>
+
+  <!-- =========================
+       NAVIGATION
+  ========================= -->
+
+  <nav class="navbar">
+
+    <div class="nav-left">
+
+      <a
+        href="dashboard.html"
+        class="logo"
+      >
+        SIC
+      </a>
+
+      <a href="dashboard.html">
+        Home
+      </a>
+
+      <a href="profile.html">
+        Profile
+      </a>
+
+      <a href="dashboard.html">
+        Friends
+      </a>
+
+      <a href="dashboard.html">
+        Games
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <!-- =========================
+       MATCH LOBBY
+  ========================= -->
+
+  <main class="match-page">
+
+    <section class="match-lobby">
+
+      <div class="match-header">
+
+        <div>
+
+          <p class="match-label">
+            MATCH LOBBY
+          </p>
+
+          <h1 id="matchName">
+            Match Lobby
+          </h1>
+
+          <p id="matchStatus">
+            Waiting for players...
+          </p>
+
+        </div>
+
+
+        <div class="match-code-box">
+
+          <span>
+            MATCH CODE
+          </span>
+
+          <strong id="matchCode">
+            ------
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           PLAYERS
+      ========================= -->
+
+      <div class="lobby-section">
+
+        <div class="section-heading">
+
+          <h2>
+            Players
+          </h2>
+
+          <span id="playerCount">
+            0 / 0
+          </span>
+
+        </div>
+
+
+        <div
+          id="playerList"
+          class="player-list"
+        >
+
+          <div class="empty-players">
+            Waiting for players to join...
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           HOST CONTROLS
+      ========================= -->
+
+      <div
+        id="hostControls"
+        class="lobby-controls"
+        style="display: none;"
+      >
+
+        <button
+          id="startMatchButton"
+          class="primary-button"
+        >
+          Start Match
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           LEAVE
+      ========================= -->
+
+      <div class="lobby-footer">
+
+        <button
+          id="leaveMatchButton"
+          class="secondary-button"
+        >
+          Leave Match
+        </button>
+
+      </div>
+
+
+      <p
+        id="lobbyMessage"
+        class="form-message"
+      ></p>
+
+    </section>
+
+  </main>
+
+
+  <script src="js/match.js"></script>
+
+</body>
+</html>
