@@ -1424,3 +1424,130 @@ if (createMatchButton) {
 ========================= */
 
 loadDashboard();
+
+
+/* =========================
+   JOIN MATCH
+========================= */
+
+const joinMatchCode =
+  document.getElementById("joinMatchCode");
+
+const joinMatchButton =
+  document.getElementById("joinMatchButton");
+
+const joinMatchMessage =
+  document.getElementById("joinMatchMessage");
+
+
+if (
+  joinMatchCode &&
+  joinMatchButton &&
+  joinMatchMessage
+) {
+
+  joinMatchCode.addEventListener(
+    "input",
+    () => {
+
+      joinMatchCode.value =
+        joinMatchCode.value
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, "")
+          .slice(0, 6);
+
+    }
+  );
+
+
+  joinMatchButton.addEventListener(
+    "click",
+    async () => {
+
+      const code =
+        joinMatchCode.value
+          .trim()
+          .toUpperCase();
+
+
+      joinMatchMessage.textContent =
+        "";
+
+
+      if (code.length !== 6) {
+
+        joinMatchMessage.textContent =
+          "Enter a 6-character match code.";
+
+        return;
+
+      }
+
+
+      try {
+
+        joinMatchButton.disabled =
+          true;
+
+        joinMatchButton.textContent =
+          "Joining...";
+
+
+        const response =
+          await fetch(
+            `/api/matches/${encodeURIComponent(code)}/join`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json"
+              }
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          joinMatchMessage.textContent =
+            data.error ||
+            "Could not join the match.";
+
+          return;
+
+        }
+
+
+        window.location.href =
+          `match.html?code=${encodeURIComponent(code)}`;
+
+
+      } catch (error) {
+
+        console.error(
+          "Join match error:",
+          error
+        );
+
+
+        joinMatchMessage.textContent =
+          "Could not connect to the server.";
+
+
+      } finally {
+
+        joinMatchButton.disabled =
+          false;
+
+        joinMatchButton.textContent =
+          "Join Match";
+
+      }
+
+    }
+  );
+
+}
