@@ -365,8 +365,72 @@ leaveMatchButton.addEventListener(
   "click",
   async () => {
 
-    window.location.href =
-      "dashboard.html";
+    try {
+
+      leaveMatchButton.disabled =
+        true;
+
+      leaveMatchButton.textContent =
+        "Leaving...";
+
+
+      const response =
+        await fetch(
+          `/api/matches/${encodeURIComponent(matchCode)}/leave`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json"
+            }
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        lobbyMessage.textContent =
+          data.error ||
+          "Could not leave the match.";
+
+        leaveMatchButton.disabled =
+          false;
+
+        leaveMatchButton.textContent =
+          "Leave Match";
+
+        return;
+
+      }
+
+
+      window.location.href =
+        "dashboard.html";
+
+
+    } catch (error) {
+
+      console.error(
+        "Leave match error:",
+        error
+      );
+
+
+      lobbyMessage.textContent =
+        "Could not connect to the server.";
+
+
+      leaveMatchButton.disabled =
+        false;
+
+      leaveMatchButton.textContent =
+        "Leave Match";
+
+    }
 
   }
 );
