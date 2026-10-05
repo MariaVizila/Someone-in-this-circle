@@ -113,8 +113,20 @@ async function initializeDatabase() {
 
       started_at TIMESTAMPTZ,
 
+      turn_started_at TIMESTAMPTZ,
+
       ended_at TIMESTAMPTZ
     );
+  `);
+
+
+  /* =========================
+     ADD NEW MATCH COLUMNS
+  ========================= */
+
+  await pool.query(`
+    ALTER TABLE matches
+    ADD COLUMN IF NOT EXISTS turn_started_at TIMESTAMPTZ;
   `);
 
 
