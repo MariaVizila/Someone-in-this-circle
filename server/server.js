@@ -1521,6 +1521,144 @@ app.post(
 
       }
 
+      /* =========================
+   GET MATCH LOBBY
+========================= */
+
+app.get(
+  "/api/matches/:code",
+  async (req, res) => {
+
+    try {
+
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+
+      const matchCode =
+        String(req.params.code || "")
+          .trim()
+          .toUpperCase();
+
+
+      if (!matchCode) {
+        return res.status(400).json({
+          error: "Match code is required."
+        });
+      }
+
+
+      /* =========================
+         GET MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT
+            id,
+            match_code,
+            host_id,
+            match_name,
+            time_limit,
+            turn_time,
+            max_players,
+            friends_only,
+            late_joining,
+            match_access,
+            allow_rematch,
+            match_chat,
+            reveal_results,
+            status,
+            current_player_id,
+            created_at,
+            started_at,
+            ended_at
+          FROM matches
+          WHERE match_code = $1
+          LIMIT 1
+          `,
+          [matchCode]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Match not found."
+        });
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         GET PLAYERS
+      ========================= */
+
+      const playersResult =
+        await pool.query(
+          `
+          SELECT
+            mp.id,
+            mp.user_id,
+            mp.score,
+            mp.is_host,
+            mp.joined_at,
+
+            u.username,
+            u.display_name,
+            u.profile_picture,
+            u.role
+
+          FROM match_players mp
+
+          INNER JOIN users u
+            ON u.id = mp.user_id
+
+          WHERE mp.match_id = $1
+
+          ORDER BY
+            mp.is_host DESC,
+            mp.joined_at ASC
+          `,
+          [match.id]
+        );
+
+
+      res.json({
+        success: true,
+
+        match,
+
+        players:
+          playersResult.rows,
+
+        currentUser: {
+          id: req.session.userId
+        }
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Get match error:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          "Could not load the match."
+      });
+
+    }
+
+  }
+);
 
       /* =========================
          GET SETTINGS
