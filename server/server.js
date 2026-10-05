@@ -108,10 +108,6 @@ async function requireOwner(req, res, next) {
 }
 
 
-const PORT =
-  process.env.PORT || 3000;
-
-
 app.use(
   express.json()
 );
@@ -1532,44 +1528,34 @@ app.post(
         revealResults
       } = req.body;
 
-
       const cleanMatchName =
         typeof matchName === "string"
           ? matchName.trim()
           : "";
 
-
       const gameTime =
         Number(timeLimit);
-
 
       const gameTurnTime =
         Number(turnTime);
 
-
       const playerLimit =
         Number(maxPlayers);
-
 
       const isFriendsOnly =
         Boolean(friendsOnly);
 
-
       const canLateJoin =
         Boolean(lateJoining);
-
 
       const canRematch =
         Boolean(allowRematch);
 
-
       const hasChat =
         Boolean(matchChat);
 
-
       const shouldRevealResults =
         Boolean(revealResults);
-
 
       const access =
         String(
@@ -1577,7 +1563,6 @@ app.post(
         )
           .toLowerCase()
           .trim();
-
 
       if (
         cleanMatchName.length > 50
@@ -1589,7 +1574,6 @@ app.post(
         });
 
       }
-
 
       if (
         !Number.isInteger(gameTime) ||
@@ -1603,7 +1587,6 @@ app.post(
         });
 
       }
-
 
       if (
         !Number.isInteger(gameTurnTime) ||
@@ -1622,7 +1605,6 @@ app.post(
         });
 
       }
-
 
       if (
         !Number.isInteger(playerLimit) ||
@@ -1643,7 +1625,6 @@ app.post(
 
       }
 
-
       if (
         access !== "friends" &&
         access !== "code"
@@ -1655,7 +1636,6 @@ app.post(
         });
 
       }
-
 
       function generateMatchCode() {
 
@@ -1685,16 +1665,13 @@ app.post(
 
       }
 
-
       let matchCode;
       let codeExists = true;
-
 
       while (codeExists) {
 
         matchCode =
           generateMatchCode();
-
 
         const existing =
           await pool.query(
@@ -1707,12 +1684,10 @@ app.post(
             [matchCode]
           );
 
-
         codeExists =
           existing.rows.length > 0;
 
       }
-
 
       const matchResult =
         await pool.query(
@@ -1780,10 +1755,8 @@ app.post(
           ]
         );
 
-
       const match =
         matchResult.rows[0];
-
 
       await pool.query(
         `
@@ -1806,12 +1779,10 @@ app.post(
         ]
       );
 
-
       res.status(201).json({
         success: true,
         match
       });
-
 
     } catch (error) {
 
@@ -1849,7 +1820,6 @@ app.post(
           .trim()
           .toUpperCase();
 
-
       if (!matchCode) {
 
         return res.status(400).json({
@@ -1858,7 +1828,6 @@ app.post(
         });
 
       }
-
 
       const matchResult =
         await pool.query(
@@ -1880,7 +1849,6 @@ app.post(
           [matchCode]
         );
 
-
       if (
         matchResult.rows.length === 0
       ) {
@@ -1892,10 +1860,8 @@ app.post(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         match.status !== "lobby"
@@ -1907,7 +1873,6 @@ app.post(
         });
 
       }
-
 
       const existingPlayer =
         await pool.query(
@@ -1924,7 +1889,6 @@ app.post(
           ]
         );
 
-
       if (
         existingPlayer.rows.length > 0
       ) {
@@ -1937,7 +1901,6 @@ app.post(
 
       }
 
-
       const playerCountResult =
         await pool.query(
           `
@@ -1949,10 +1912,8 @@ app.post(
           [match.id]
         );
 
-
       const playerCount =
         playerCountResult.rows[0].count;
-
 
       if (
         playerCount >=
@@ -1965,7 +1926,6 @@ app.post(
         });
 
       }
-
 
       if (
         match.match_access === "friends" ||
@@ -1997,7 +1957,6 @@ app.post(
             ]
           );
 
-
         if (
           friendshipResult.rows.length === 0 &&
           Number(req.session.userId) !==
@@ -2012,7 +1971,6 @@ app.post(
         }
 
       }
-
 
       await pool.query(
         `
@@ -2035,13 +1993,11 @@ app.post(
         ]
       );
 
-
       res.status(201).json({
         success: true,
         alreadyJoined: false,
         match
       });
-
 
     } catch (error) {
 
@@ -2079,7 +2035,6 @@ app.post(
           .trim()
           .toUpperCase();
 
-
       if (!matchCode) {
 
         return res.status(400).json({
@@ -2089,21 +2044,20 @@ app.post(
 
       }
 
-
       const matchResult =
         await pool.query(
           `
           SELECT
             id,
             host_id,
-            status
+            status,
+            current_player_id
           FROM matches
           WHERE match_code = $1
           LIMIT 1
           `,
           [matchCode]
         );
-
 
       if (
         matchResult.rows.length === 0
@@ -2116,10 +2070,8 @@ app.post(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         Number(match.host_id) ===
@@ -2133,7 +2085,6 @@ app.post(
 
       }
 
-
       await pool.query(
         `
         DELETE FROM match_players
@@ -2146,11 +2097,9 @@ app.post(
         ]
       );
 
-
       res.json({
         success: true
       });
-
 
     } catch (error) {
 
@@ -2188,16 +2137,13 @@ app.post(
           .trim()
           .toUpperCase();
 
-
       const promptText =
         typeof req.body.prompt === "string"
           ? req.body.prompt.trim()
           : "";
 
-
       const targetId =
         Number(req.body.targetId);
-
 
       if (!matchCode) {
 
@@ -2208,7 +2154,6 @@ app.post(
 
       }
 
-
       if (!promptText) {
 
         return res.status(400).json({
@@ -2217,7 +2162,6 @@ app.post(
         });
 
       }
-
 
       if (
         promptText.length > 250
@@ -2230,7 +2174,6 @@ app.post(
 
       }
 
-
       if (
         !Number.isInteger(targetId)
       ) {
@@ -2242,13 +2185,11 @@ app.post(
 
       }
 
-
       const matchResult =
         await pool.query(
           `
           SELECT
             id,
-            host_id,
             status,
             current_player_id
           FROM matches
@@ -2257,7 +2198,6 @@ app.post(
           `,
           [matchCode]
         );
-
 
       if (
         matchResult.rows.length === 0
@@ -2270,10 +2210,8 @@ app.post(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         match.status !== "playing"
@@ -2285,7 +2223,6 @@ app.post(
         });
 
       }
-
 
       if (
         Number(match.current_player_id) !==
@@ -2299,7 +2236,6 @@ app.post(
 
       }
 
-
       if (
         Number(targetId) ===
         Number(req.session.userId)
@@ -2311,7 +2247,6 @@ app.post(
         });
 
       }
-
 
       const targetResult =
         await pool.query(
@@ -2328,7 +2263,6 @@ app.post(
           ]
         );
 
-
       if (
         targetResult.rows.length === 0
       ) {
@@ -2339,7 +2273,6 @@ app.post(
         });
 
       }
-
 
       const activePrompt =
         await pool.query(
@@ -2353,7 +2286,6 @@ app.post(
           [match.id]
         );
 
-
       if (
         activePrompt.rows.length > 0
       ) {
@@ -2364,7 +2296,6 @@ app.post(
         });
 
       }
-
 
       const promptResult =
         await pool.query(
@@ -2400,13 +2331,11 @@ app.post(
           ]
         );
 
-
       res.status(201).json({
         success: true,
         prompt:
           promptResult.rows[0]
       });
-
 
     } catch (error) {
 
@@ -2447,7 +2376,6 @@ app.post(
       const guessedUserId =
         Number(req.body.guessedUserId);
 
-
       if (
         !Number.isInteger(guessedUserId)
       ) {
@@ -2459,7 +2387,6 @@ app.post(
 
       }
 
-
       const matchResult =
         await pool.query(
           `
@@ -2469,7 +2396,6 @@ app.post(
           `,
           [code]
         );
-
 
       if (
         matchResult.rows.length === 0
@@ -2482,10 +2408,8 @@ app.post(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         match.status !== "playing"
@@ -2497,7 +2421,6 @@ app.post(
         });
 
       }
-
 
       const playerResult =
         await pool.query(
@@ -2513,7 +2436,6 @@ app.post(
           ]
         );
 
-
       if (
         playerResult.rows.length === 0
       ) {
@@ -2524,7 +2446,6 @@ app.post(
         });
 
       }
-
 
       const promptResult =
         await pool.query(
@@ -2539,7 +2460,6 @@ app.post(
           [match.id]
         );
 
-
       if (
         promptResult.rows.length === 0
       ) {
@@ -2551,10 +2471,8 @@ app.post(
 
       }
 
-
       const prompt =
         promptResult.rows[0];
-
 
       if (
         Number(prompt.author_id) ===
@@ -2567,7 +2485,6 @@ app.post(
         });
 
       }
-
 
       const guessedPlayerResult =
         await pool.query(
@@ -2583,7 +2500,6 @@ app.post(
           ]
         );
 
-
       if (
         guessedPlayerResult.rows.length === 0
       ) {
@@ -2594,7 +2510,6 @@ app.post(
         });
 
       }
-
 
       const existingGuessResult =
         await pool.query(
@@ -2610,7 +2525,6 @@ app.post(
           ]
         );
 
-
       if (
         existingGuessResult.rows.length > 0
       ) {
@@ -2622,11 +2536,9 @@ app.post(
 
       }
 
-
       const isCorrect =
         Number(guessedUserId) ===
         Number(prompt.target_id);
-
 
       await pool.query(
         `
@@ -2646,7 +2558,6 @@ app.post(
         ]
       );
 
-
       if (isCorrect) {
 
         await pool.query(
@@ -2664,7 +2575,6 @@ app.post(
 
       }
 
-
       const eligiblePlayersResult =
         await pool.query(
           `
@@ -2679,7 +2589,6 @@ app.post(
           ]
         );
 
-
       const guessesResult =
         await pool.query(
           `
@@ -2690,21 +2599,17 @@ app.post(
           [prompt.id]
         );
 
-
       const eligiblePlayers =
         Number(
           eligiblePlayersResult.rows[0].count
         );
-
 
       const totalGuesses =
         Number(
           guessesResult.rows[0].count
         );
 
-
       let promptFinished = false;
-
 
       if (
         totalGuesses >=
@@ -2712,7 +2617,6 @@ app.post(
       ) {
 
         promptFinished = true;
-
 
         await pool.query(
           `
@@ -2725,7 +2629,6 @@ app.post(
           [prompt.id]
         );
 
-
         const playersResult =
           await pool.query(
             `
@@ -2737,10 +2640,8 @@ app.post(
             [match.id]
           );
 
-
         const players =
           playersResult.rows;
-
 
         if (players.length > 0) {
 
@@ -2751,7 +2652,6 @@ app.post(
                 Number(match.current_player_id)
             );
 
-
           const nextIndex =
             currentIndex === -1
               ? 0
@@ -2759,10 +2659,8 @@ app.post(
                   currentIndex + 1
                 ) % players.length;
 
-
           const nextPlayer =
             players[nextIndex];
-
 
           await pool.query(
             `
@@ -2782,13 +2680,11 @@ app.post(
 
       }
 
-
       return res.json({
         success: true,
         correct: isCorrect,
         promptFinished
       });
-
 
     } catch (error) {
 
@@ -2826,7 +2722,6 @@ app.get(
           .trim()
           .toUpperCase();
 
-
       if (!matchCode) {
 
         return res.status(400).json({
@@ -2835,7 +2730,6 @@ app.get(
         });
 
       }
-
 
       const matchResult =
         await pool.query(
@@ -2851,7 +2745,6 @@ app.get(
           [matchCode]
         );
 
-
       if (
         matchResult.rows.length === 0
       ) {
@@ -2863,10 +2756,8 @@ app.get(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         match.status !== "playing"
@@ -2877,7 +2768,6 @@ app.get(
         });
 
       }
-
 
       const playerResult =
         await pool.query(
@@ -2894,7 +2784,6 @@ app.get(
           ]
         );
 
-
       if (
         playerResult.rows.length === 0
       ) {
@@ -2905,7 +2794,6 @@ app.get(
         });
 
       }
-
 
       const promptResult =
         await pool.query(
@@ -2926,7 +2814,6 @@ app.get(
           [match.id]
         );
 
-
       if (
         promptResult.rows.length === 0
       ) {
@@ -2937,10 +2824,8 @@ app.get(
 
       }
 
-
       const prompt =
         promptResult.rows[0];
-
 
       res.json({
         prompt: {
@@ -2960,7 +2845,6 @@ app.get(
             prompt.created_at
         }
       });
-
 
     } catch (error) {
 
@@ -2998,7 +2882,6 @@ app.post(
           .trim()
           .toUpperCase();
 
-
       if (!matchCode) {
 
         return res.status(400).json({
@@ -3007,7 +2890,6 @@ app.post(
         });
 
       }
-
 
       const matchResult =
         await pool.query(
@@ -3025,7 +2907,6 @@ app.post(
           [matchCode]
         );
 
-
       if (
         matchResult.rows.length === 0
       ) {
@@ -3037,10 +2918,8 @@ app.post(
 
       }
 
-
       const match =
         matchResult.rows[0];
-
 
       if (
         Number(match.host_id) !==
@@ -3054,7 +2933,6 @@ app.post(
 
       }
 
-
       if (
         match.status !== "lobby"
       ) {
@@ -3065,7 +2943,6 @@ app.post(
         });
 
       }
-
 
       const playersResult =
         await pool.query(
@@ -3079,10 +2956,8 @@ app.post(
           [match.id]
         );
 
-
       const players =
         playersResult.rows;
-
 
       if (
         players.length < 3
@@ -3095,10 +2970,8 @@ app.post(
 
       }
 
-
       const firstPlayer =
         players[0];
-
 
       const startedResult =
         await pool.query(
@@ -3124,13 +2997,11 @@ app.post(
           ]
         );
 
-
       res.json({
         success: true,
         match:
           startedResult.rows[0]
       });
-
 
     } catch (error) {
 
@@ -3168,7 +3039,6 @@ app.get(
           .trim()
           .toUpperCase();
 
-
       if (!matchCode) {
 
         return res.status(400).json({
@@ -3177,7 +3047,6 @@ app.get(
         });
 
       }
-
 
       const matchResult =
         await pool.query(
@@ -3209,7 +3078,6 @@ app.get(
           [matchCode]
         );
 
-
       if (
         matchResult.rows.length === 0
       ) {
@@ -3221,9 +3089,242 @@ app.get(
 
       }
 
-
-      const match =
+      let match =
         matchResult.rows[0];
+
+
+      /* =========================
+         SERVER-SIDE TURN TIMER
+      ========================= */
+
+      if (
+        match.status === "playing" &&
+        match.turn_started_at &&
+        match.turn_time
+      ) {
+
+        const turnStarted =
+          new Date(
+            match.turn_started_at
+          ).getTime();
+
+        const now =
+          Date.now();
+
+        const turnDuration =
+          Number(match.turn_time) *
+          1000;
+
+        const turnExpired =
+          now - turnStarted >=
+          turnDuration;
+
+
+        if (turnExpired) {
+
+          const activePromptResult =
+            await pool.query(
+              `
+              SELECT
+                id,
+                author_id
+              FROM match_prompts
+              WHERE match_id = $1
+                AND status = 'guessing'
+              ORDER BY created_at DESC
+              LIMIT 1
+              `,
+              [match.id]
+            );
+
+
+          /*
+            If a prompt is still waiting for
+            guesses, expire it before moving
+            to the next turn.
+          */
+
+          if (
+            activePromptResult.rows.length > 0
+          ) {
+
+            await pool.query(
+              `
+              UPDATE match_prompts
+              SET
+                status = 'expired',
+                answered_at = CURRENT_TIMESTAMP
+              WHERE id = $1
+              `,
+              [
+                activePromptResult.rows[0].id
+              ]
+            );
+
+          }
+
+
+          const playersForTurn =
+            await pool.query(
+              `
+              SELECT
+                user_id
+              FROM match_players
+              WHERE match_id = $1
+              ORDER BY joined_at ASC
+              `,
+              [match.id]
+            );
+
+
+          const players =
+            playersForTurn.rows;
+
+
+          if (players.length > 0) {
+
+            const currentIndex =
+              players.findIndex(
+                player =>
+                  Number(player.user_id) ===
+                  Number(match.current_player_id)
+              );
+
+
+            const nextIndex =
+              currentIndex === -1
+                ? 0
+                : (
+                    currentIndex + 1
+                  ) % players.length;
+
+
+            const nextPlayer =
+              players[nextIndex];
+
+
+            const updatedMatchResult =
+              await pool.query(
+                `
+                UPDATE matches
+                SET
+                  current_player_id = $1,
+                  turn_started_at = CURRENT_TIMESTAMP
+                WHERE id = $2
+                RETURNING
+                  id,
+                  match_code,
+                  host_id,
+                  match_name,
+                  time_limit,
+                  turn_time,
+                  max_players,
+                  friends_only,
+                  late_joining,
+                  match_access,
+                  allow_rematch,
+                  match_chat,
+                  reveal_results,
+                  status,
+                  current_player_id,
+                  created_at,
+                  started_at,
+                  turn_started_at,
+                  ended_at
+                `,
+                [
+                  nextPlayer.user_id,
+                  match.id
+                ]
+              );
+
+
+            match =
+              updatedMatchResult.rows[0];
+
+          }
+
+        }
+
+      }
+
+
+      /* =========================
+         MATCH TOTAL TIMER
+      ========================= */
+
+      if (
+        match.status === "playing" &&
+        match.started_at &&
+        match.time_limit
+      ) {
+
+        const gameStarted =
+          new Date(
+            match.started_at
+          ).getTime();
+
+        const now =
+          Date.now();
+
+        const gameDuration =
+          Number(match.time_limit) *
+          60 *
+          1000;
+
+        const gameExpired =
+          now - gameStarted >=
+          gameDuration;
+
+
+        if (gameExpired) {
+
+          const endedResult =
+            await pool.query(
+              `
+              UPDATE matches
+              SET
+                status = 'ended',
+                ended_at = CURRENT_TIMESTAMP
+              WHERE id = $1
+                AND status = 'playing'
+              RETURNING
+                id,
+                match_code,
+                host_id,
+                match_name,
+                time_limit,
+                turn_time,
+                max_players,
+                friends_only,
+                late_joining,
+                match_access,
+                allow_rematch,
+                match_chat,
+                reveal_results,
+                status,
+                current_player_id,
+                created_at,
+                started_at,
+                turn_started_at,
+                ended_at
+              `,
+              [match.id]
+            );
+
+
+          if (
+            endedResult.rows.length > 0
+          ) {
+
+            match =
+              endedResult.rows[0];
+
+          }
+
+        }
+
+      }
 
 
       const playersResult =
