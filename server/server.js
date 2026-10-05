@@ -1521,7 +1521,242 @@ app.post(
 
       }
 
+/* =========================
+   JOIN MATCH
+========================= */
+
+app.post(
+  "/api/matches/:code/join",
+  async (req, res) => {
+
+    try {
+
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+
+      const matchCode =
+        String(req.params.code || "")
+          .trim()
+          .toUpperCase();
+
+
+      if (!matchCode) {
+        return res.status(400).json({
+          error: "Match code is required."
+        });
+      }
+
+
       /* =========================
+         FIND MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT
+            id,
+            match_code,
+            host_id,
+            match_name,
+            max_players,
+            friends_only,
+            late_joining,
+            match_access,
+            status
+          FROM matches
+          WHERE match_code = $1
+          LIMIT 1
+          `,
+          [matchCode]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Match not found."
+        });
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         CHECK MATCH STATUS
+      ========================= */
+
+      if (match.status !== "lobby") {
+        return res.status(400).json({
+          error: "This match has already started."
+        });
+      }
+
+
+      /* =========================
+         CHECK IF ALREADY JOINED
+      ========================= */
+
+      const existingPlayer =
+        await pool.query(
+          `
+          SELECT id
+          FROM match_players
+          WHERE match_id = $1
+            AND user_id = $2
+          LIMIT 1
+          `,
+          [
+            match.id,
+            req.session.userId
+          ]
+        );
+
+
+      if (existingPlayer.rows.length > 0) {
+        return res.json({
+          success: true,
+          alreadyJoined: true,
+          match
+        });
+      }
+
+
+      /* =========================
+         CHECK PLAYER COUNT
+      ========================= */
+
+      const playerCountResult =
+        await pool.query(
+          `
+          SELECT COUNT(*)::INTEGER AS count
+          FROM match_players
+          WHERE match_id = $1
+          `,
+          [match.id]
+        );
+
+
+      const playerCount =
+        playerCountResult.rows[0].count;
+
+
+      if (playerCount >= match.max_players) {
+        return res.status(400).json({
+          error: "This match is full."
+        });
+      }
+
+
+      /* =========================
+         FRIENDS-ONLY CHECK
+      ========================= */
+
+      if (
+        match.match_access === "friends" ||
+        match.friends_only === true
+      ) {
+
+        const friendshipResult =
+          await pool.query(
+            `
+            SELECT id
+            FROM friendships
+            WHERE status = 'accepted'
+              AND (
+                (
+                  requester_id = $1
+                  AND receiver_id = $2
+                )
+                OR
+                (
+                  requester_id = $2
+                  AND receiver_id = $1
+                )
+              )
+            LIMIT 1
+            `,
+            [
+              req.session.userId,
+              match.host_id
+            ]
+          );
+
+
+        if (
+          friendshipResult.rows.length === 0 &&
+          Number(req.session.userId) !==
+            Number(match.host_id)
+        ) {
+
+          return res.status(403).json({
+            error:
+              "Only friends of the host can join this match."
+          });
+
+        }
+
+      }
+
+
+      /* =========================
+         ADD PLAYER
+      ========================= */
+
+      await pool.query(
+        `
+        INSERT INTO match_players (
+          match_id,
+          user_id,
+          score,
+          is_host
+        )
+        VALUES (
+          $1,
+          $2,
+          0,
+          FALSE
+        )
+        `,
+        [
+          match.id,
+          req.session.userId
+        ]
+      );
+
+
+      res.status(201).json({
+        success: true,
+        alreadyJoined: false,
+        match
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Join match error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not join the match."
+      });
+
+    }
+
+  }
+);
+      
+
+/* =========================
    GET MATCH LOBBY
 ========================= */
 
