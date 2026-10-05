@@ -1869,6 +1869,257 @@ app.post(
   }
 );
 
+
+/* =========================
+   SUBMIT PROMPT
+========================= */
+
+app.post(
+  "/api/matches/:code/prompt",
+  async (req, res) => {
+
+    try {
+
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+
+      const matchCode =
+        String(req.params.code || "")
+          .trim()
+          .toUpperCase();
+
+
+      const promptText =
+        typeof req.body.prompt === "string"
+          ? req.body.prompt.trim()
+          : "";
+
+
+      const targetId =
+        Number(req.body.targetId);
+
+
+      if (!matchCode) {
+        return res.status(400).json({
+          error: "Match code is required."
+        });
+      }
+
+
+      if (!promptText) {
+        return res.status(400).json({
+          error: "A prompt is required."
+        });
+      }
+
+
+      if (promptText.length > 250) {
+        return res.status(400).json({
+          error:
+            "Prompt must be 250 characters or fewer."
+        });
+      }
+
+
+      if (!Number.isInteger(targetId)) {
+        return res.status(400).json({
+          error: "A valid target player is required."
+        });
+      }
+
+
+      /* =========================
+         FIND MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT
+            id,
+            host_id,
+            status,
+            current_player_id
+          FROM matches
+          WHERE match_code = $1
+          LIMIT 1
+          `,
+          [matchCode]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Match not found."
+        });
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         CHECK MATCH STATUS
+      ========================= */
+
+      if (match.status !== "playing") {
+        return res.status(400).json({
+          error: "This match is not currently playing."
+        });
+      }
+
+
+      /* =========================
+         CHECK CURRENT PLAYER
+      ========================= */
+
+      if (
+        Number(match.current_player_id) !==
+        Number(req.session.userId)
+      ) {
+
+        return res.status(403).json({
+          error: "It is not your turn."
+        });
+
+      }
+
+
+      /* =========================
+         CHECK TARGET
+      ========================= */
+
+      if (
+        Number(targetId) ===
+        Number(req.session.userId)
+      ) {
+
+        return res.status(400).json({
+          error:
+            "You cannot choose yourself as the target."
+        });
+
+      }
+
+
+      const targetResult =
+        await pool.query(
+          `
+          SELECT user_id
+          FROM match_players
+          WHERE match_id = $1
+            AND user_id = $2
+          LIMIT 1
+          `,
+          [
+            match.id,
+            targetId
+          ]
+        );
+
+
+      if (targetResult.rows.length === 0) {
+        return res.status(400).json({
+          error:
+            "That player is not in this match."
+        });
+      }
+
+
+      /* =========================
+         CHECK FOR ACTIVE PROMPT
+      ========================= */
+
+      const activePrompt =
+        await pool.query(
+          `
+          SELECT id
+          FROM match_prompts
+          WHERE match_id = $1
+            AND status = 'guessing'
+          LIMIT 1
+          `,
+          [match.id]
+        );
+
+
+      if (activePrompt.rows.length > 0) {
+        return res.status(400).json({
+          error:
+            "There is already a prompt waiting for guesses."
+        });
+      }
+
+
+      /* =========================
+         CREATE PROMPT
+      ========================= */
+
+      const promptResult =
+        await pool.query(
+          `
+          INSERT INTO match_prompts (
+            match_id,
+            author_id,
+            target_id,
+            prompt_text,
+            status
+          )
+          VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            'guessing'
+          )
+          RETURNING
+            id,
+            match_id,
+            author_id,
+            target_id,
+            prompt_text,
+            status,
+            created_at
+          `,
+          [
+            match.id,
+            req.session.userId,
+            targetId,
+            promptText
+          ]
+        );
+
+
+      res.status(201).json({
+        success: true,
+        prompt: promptResult.rows[0]
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Submit prompt error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not submit the prompt."
+      });
+
+    }
+
+  }
+);      
+
+
 /* =========================
    START MATCH
 ========================= */
