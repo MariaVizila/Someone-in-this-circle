@@ -1869,7 +1869,189 @@ app.post(
   }
 );
 
+/* =========================
+   START MATCH
+========================= */
 
+app.post(
+  "/api/matches/:code/start",
+  async (req, res) => {
+
+    try {
+
+      if (!req.session.userId) {
+        return res.status(401).json({
+          error: "You must be logged in."
+        });
+      }
+
+
+      const matchCode =
+        String(req.params.code || "")
+          .trim()
+          .toUpperCase();
+
+
+      if (!matchCode) {
+        return res.status(400).json({
+          error: "Match code is required."
+        });
+      }
+
+
+      /* =========================
+         FIND MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          SELECT
+            id,
+            match_code,
+            host_id,
+            max_players,
+            status
+          FROM matches
+          WHERE match_code = $1
+          LIMIT 1
+          `,
+          [matchCode]
+        );
+
+
+      if (matchResult.rows.length === 0) {
+        return res.status(404).json({
+          error: "Match not found."
+        });
+      }
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         HOST CHECK
+      ========================= */
+
+      if (
+        Number(match.host_id) !==
+        Number(req.session.userId)
+      ) {
+
+        return res.status(403).json({
+          error:
+            "Only the host can start the match."
+        });
+
+      }
+
+
+      /* =========================
+         STATUS CHECK
+      ========================= */
+
+      if (match.status !== "lobby") {
+        return res.status(400).json({
+          error: "This match has already started."
+        });
+      }
+
+
+      /* =========================
+         GET PLAYERS
+      ========================= */
+
+      const playersResult =
+        await pool.query(
+          `
+          SELECT
+            user_id
+          FROM match_players
+          WHERE match_id = $1
+          ORDER BY joined_at ASC
+          `,
+          [match.id]
+        );
+
+
+      const players =
+        playersResult.rows;
+
+
+      /* =========================
+         MINIMUM PLAYERS
+      ========================= */
+
+      if (players.length < 3) {
+        return res.status(400).json({
+          error:
+            "At least 3 players are required to start the match."
+        });
+      }
+
+
+      /* =========================
+         SELECT FIRST PLAYER
+      ========================= */
+
+      const firstPlayer =
+        players[0];
+
+
+      /* =========================
+         START MATCH
+      ========================= */
+
+      const startedResult =
+        await pool.query(
+          `
+          UPDATE matches
+          SET
+            status = 'playing',
+            current_player_id = $1,
+            started_at = CURRENT_TIMESTAMP
+          WHERE id = $2
+          RETURNING
+            id,
+            match_code,
+            status,
+            current_player_id,
+            started_at
+          `,
+          [
+            firstPlayer.user_id,
+            match.id
+          ]
+        );
+
+
+      res.json({
+        success: true,
+        match: startedResult.rows[0]
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Start match error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not start the match."
+      });
+
+    }
+
+  }
+);
+
+      
 /* =========================
    GET MATCH LOBBY
 ========================= */
