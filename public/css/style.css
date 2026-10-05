@@ -15,7 +15,8 @@ body {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -219,6 +220,44 @@ a {
 
 
 /* ========================================
+   MATCH PAGE NAVBAR
+======================================== */
+
+.navbar {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 30px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-left .logo {
+  margin-right: 18px;
+}
+
+.nav-left > a:not(.logo) {
+  display: flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 9px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.nav-left > a:not(.logo):hover {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+
+/* ========================================
    DASHBOARD
 ======================================== */
 
@@ -389,6 +428,14 @@ a {
   background: #374151;
   color: #ffffff;
   font-weight: 700;
+  overflow: hidden;
+}
+
+.friend-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .friend-info {
@@ -474,24 +521,24 @@ a {
 }
 
 .avatar {
-  width:76px;
-  height:76px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-  background:#374151;
-  color:#fff;
-  font-size:28px;
-  font-weight:800;
-  overflow:hidden;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #374151;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  overflow: hidden;
 }
 
 .avatar img {
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit:cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .profile-header h1 {
@@ -645,104 +692,6 @@ a {
 
 
 /* ========================================
-   MOBILE
-======================================== */
-
-@media (max-width: 900px) {
-
-  .topbar {
-    flex-wrap: wrap;
-    padding: 14px 20px;
-    gap: 12px;
-  }
-
-  .topbar nav {
-    order: 3;
-    width: 100%;
-    overflow-x: auto;
-  }
-
-  .logout {
-    margin-left: auto;
-  }
-
-  .feature-grid,
-  .friends-grid,
-  .profile-info-grid,
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .friend-columns {
-    grid-template-columns: 1fr;
-  }
-
-}
-
-@media (max-width: 600px) {
-
-  .dashboard {
-    width: min(100% - 24px, 1180px);
-    padding-top: 25px;
-  }
-
-  .topbar {
-    padding: 12px;
-  }
-
-  .brand span {
-    display: none;
-  }
-
-  .profile-header {
-    align-items: flex-start;
-  }
-
-  .avatar {
-    width: 62px;
-    height: 62px;
-    font-size: 22px;
-  }
-
-  .profile-header h1 {
-    font-size: 24px;
-  }
-
-  .friend-add-form {
-    flex-direction: column;
-  }
-
-  .friend-add-form button {
-    width: 100%;
-  }
-
-  .friend-item {
-    align-items: flex-start;
-  }
-
-  .friend-actions {
-    flex-direction: column;
-  }
-
-  .friends-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-}
-.friend-avatar {
-  overflow: hidden;
-}
-
-.friend-avatar img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-
-
-/* ========================================
    OWNER PANEL
 ======================================== */
 
@@ -819,7 +768,7 @@ a {
 }
 
 
-/* BUTTONS */
+/* OWNER BUTTONS */
 
 .profile-card button,
 #backButton {
@@ -921,57 +870,13 @@ a {
 }
 
 
-/* MESSAGE */
+/* OWNER MESSAGE */
 
 #ownerMessage {
   min-height: 20px;
   margin: 12px 0 0;
   color: #9ca3af;
   font-size: 14px;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 700px) {
-
-  .profile-page {
-    width: min(100% - 24px, 900px);
-    padding-top: 25px;
-  }
-
-  #userResult .profile-info {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-page .profile-header {
-    align-items: flex-start;
-  }
-
-  #ownerAvatar {
-    width: 62px;
-    height: 62px;
-    min-width: 62px;
-    font-size: 22px;
-  }
-
-}
-
-
-/* ========================================
-   OWNER PANEL MOBILE
-======================================== */
-
-@media (max-width: 700px) {
-
-  #userResult .profile-info {
-    grid-template-columns: 1fr;
-  }
-
-  #userResult .profile-header {
-    align-items: flex-start;
-  }
-
 }
 
 
@@ -1090,16 +995,12 @@ a {
   width: 100%;
   min-height: 46px;
   padding: 11px 14px;
-
   border: 1px solid #374151;
   border-radius: 11px;
-
   background: #111827;
   color: #ffffff;
-
   font-size: 14px;
   line-height: 1.4;
-
   outline: none;
   transition:
     border-color 0.2s ease,
@@ -1132,17 +1033,12 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 28px;
-
   margin-top: 14px;
   padding: 17px 18px;
-
   border: 1px solid #1f2937;
   border-radius: 12px;
-
   background: #111827;
-
   transition:
     border-color 0.2s ease,
     background 0.2s ease;
@@ -1160,9 +1056,7 @@ a {
 
 .game-setting strong {
   display: block;
-
   margin: 0;
-
   color: #f9fafb;
   font-size: 14px;
   font-weight: 700;
@@ -1171,7 +1065,6 @@ a {
 
 .game-setting p {
   margin: 6px 0 0;
-
   color: #6b7280;
   font-size: 13px;
   line-height: 1.5;
@@ -1184,38 +1077,28 @@ a {
 
 .toggle {
   position: relative;
-
   display: block;
-
   width: 48px;
   min-width: 48px;
   height: 27px;
-
   margin: 0;
-
   cursor: pointer;
 }
 
 .toggle input {
   position: absolute;
-
   width: 1px;
   height: 1px;
-
   opacity: 0;
   pointer-events: none;
 }
 
 .toggle-slider {
   position: absolute;
-
   inset: 0;
-
   border: 1px solid #374151;
   border-radius: 999px;
-
   background: #1f2937;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease;
@@ -1253,11 +1136,6 @@ a {
   background: #111827;
 }
 
-
-/* ========================================
-   TOGGLE FOCUS
-======================================== */
-
 .toggle input:focus-visible + .toggle-slider {
   outline: 2px solid #9ca3af;
   outline-offset: 3px;
@@ -1271,24 +1149,18 @@ a {
 .game-actions {
   display: flex;
   gap: 12px;
-
   margin-top: 26px;
   padding-top: 4px;
 }
 
 .game-actions button {
   min-height: 45px;
-
   padding: 11px 18px;
-
   border: none;
   border-radius: 11px;
-
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     transform 0.15s ease,
     opacity 0.15s ease,
@@ -1315,7 +1187,6 @@ a {
 .secondary-button {
   background: #1f2937;
   color: #ffffff;
-
   border: 1px solid #374151 !important;
 }
 
@@ -1330,11 +1201,8 @@ a {
 
 .game-message {
   min-height: 20px;
-
   margin: 14px 0 0;
-
   color: #9ca3af;
-
   font-size: 13px;
   line-height: 1.5;
 }
@@ -1346,20 +1214,14 @@ a {
 
 .host-match-button {
   min-height: 45px;
-
   padding: 11px 18px;
-
   border: none;
   border-radius: 11px;
-
   background: #ffffff;
   color: #111827;
-
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     transform 0.15s ease,
     background 0.15s ease;
@@ -1372,37 +1234,8 @@ a {
 
 
 /* ========================================
-   MOBILE
-======================================== */
-
-@media (max-width: 600px) {
-
-  .game-card {
-    padding: 20px;
-  }
-
-  .match-settings-section {
-    padding: 17px;
-  }
-
-  .game-setting {
-    align-items: center;
-    gap: 16px;
-    padding: 15px;
-  }
-
-  .game-setting p {
-    max-width: 240px;
-  }
-
-  .game-actions {
-    flex-direction: column;
-  }
-
-
-  /* =========================
    MATCH LOBBY
-========================= */
+======================================== */
 
 .match-page {
   min-height: calc(100vh - 70px);
@@ -1415,11 +1248,10 @@ a {
 .match-lobby {
   width: 100%;
   max-width: 900px;
+  padding: 30px;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 18px;
-  padding: 30px;
-  box-sizing: border-box;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
 }
 
@@ -1476,9 +1308,9 @@ a {
 }
 
 
-/* =========================
+/* ========================================
    LOBBY SECTION
-========================= */
+======================================== */
 
 .lobby-section {
   margin-top: 10px;
@@ -1503,9 +1335,9 @@ a {
 }
 
 
-/* =========================
+/* ========================================
    PLAYER LIST
-========================= */
+======================================== */
 
 .player-list {
   display: grid;
@@ -1587,9 +1419,9 @@ a {
 }
 
 
-/* =========================
+/* ========================================
    EMPTY PLAYERS
-========================= */
+======================================== */
 
 .empty-players {
   grid-column: 1 / -1;
@@ -1602,9 +1434,9 @@ a {
 }
 
 
-/* =========================
+/* ========================================
    LOBBY CONTROLS
-========================= */
+======================================== */
 
 .lobby-controls {
   display: flex;
@@ -1614,47 +1446,42 @@ a {
 
 .primary-button,
 .secondary-button {
-  border: none;
   border-radius: 9px;
   padding: 11px 20px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    opacity 0.15s ease,
-    background 0.15s ease;
 }
 
 .primary-button {
+  border: none;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
 }
 
 .primary-button:hover {
   background: #1d4ed8;
-  transform: translateY(-1px);
 }
 
 .primary-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
-  transform: none;
 }
 
-.secondary-button {
+.lobby-controls .secondary-button {
+  border: 1px solid #374151;
   background: #1f2937;
   color: #d1d5db;
 }
 
-.secondary-button:hover {
+.lobby-controls .secondary-button:hover {
   background: #374151;
 }
 
 
-/* =========================
+/* ========================================
    LOBBY FOOTER
-========================= */
+======================================== */
 
 .lobby-footer {
   display: flex;
@@ -1662,6 +1489,16 @@ a {
   margin-top: 18px;
   padding-top: 20px;
   border-top: 1px solid #1f2937;
+}
+
+.lobby-footer .secondary-button {
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #d1d5db;
+}
+
+.lobby-footer .secondary-button:hover {
+  background: #374151;
 }
 
 .form-message {
@@ -1672,11 +1509,93 @@ a {
 }
 
 
-/* =========================
+/* ========================================
    MOBILE
-========================= */
+======================================== */
+
+@media (max-width: 900px) {
+
+  .topbar {
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    gap: 12px;
+  }
+
+  .topbar nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .logout {
+    margin-left: auto;
+  }
+
+  .feature-grid,
+  .friends-grid,
+  .profile-info-grid,
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .friend-columns {
+    grid-template-columns: 1fr;
+  }
+
+  #userResult .profile-info {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-page .profile-header {
+    align-items: flex-start;
+  }
+
+  .player-list {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* ========================================
+   MOBILE - 700
+======================================== */
 
 @media (max-width: 700px) {
+
+  .navbar {
+    padding: 12px;
+  }
+
+  .nav-left {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .nav-left .logo {
+    margin-right: 5px;
+    flex-shrink: 0;
+  }
+
+  .nav-left > a:not(.logo) {
+    flex-shrink: 0;
+  }
+
+  .profile-page {
+    width: min(100% - 24px, 900px);
+    padding-top: 25px;
+  }
+
+  #ownerAvatar {
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    font-size: 22px;
+  }
+
+  .profile-page .profile-header {
+    align-items: flex-start;
+  }
 
   .match-page {
     padding: 20px 12px;
@@ -1693,17 +1612,120 @@ a {
 
   .match-code-box {
     width: 100%;
-    box-sizing: border-box;
-  }
-
-  .player-list {
-    grid-template-columns: 1fr;
   }
 
 }
 
+
+/* ========================================
+   MOBILE - 600
+======================================== */
+
+@media (max-width: 600px) {
+
+  .dashboard {
+    width: min(100% - 24px, 1180px);
+    padding-top: 25px;
+  }
+
+  .topbar {
+    padding: 12px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .profile-header {
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 62px;
+    height: 62px;
+    font-size: 22px;
+  }
+
+  .profile-header h1 {
+    font-size: 24px;
+  }
+
+  .friend-add-form {
+    flex-direction: column;
+  }
+
+  .friend-add-form button {
+    width: 100%;
+  }
+
+  .friend-item {
+    align-items: flex-start;
+  }
+
+  .friend-actions {
+    flex-direction: column;
+  }
+
+  .friends-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .game-card {
+    padding: 20px;
+  }
+
+  .match-settings-section {
+    padding: 17px;
+  }
+
+  .game-setting {
+    align-items: center;
+    gap: 16px;
+    padding: 15px;
+  }
+
+  .game-setting p {
+    max-width: 240px;
+  }
+
+  .game-actions {
+    flex-direction: column;
+  }
+
   .game-actions button {
     width: 100%;
+  }
+
+}
+
+
+/* ========================================
+   MATCH LOBBY - SMALL MOBILE
+======================================== */
+
+@media (max-width: 500px) {
+
+  .match-header h1 {
+    font-size: 25px;
+  }
+
+  .match-lobby {
+    padding: 17px;
+    border-radius: 15px;
+  }
+
+  .match-player {
+    padding: 13px;
+  }
+
+  .match-player-avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .match-code-box strong {
+    font-size: 22px;
   }
 
 }
