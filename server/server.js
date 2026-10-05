@@ -39,6 +39,20 @@ function requireLogin(req, res, next) {
    OWNER CHECK
 ========================= */
 
+function requireLogin(req, res, next) {
+
+  if (!req.session.userId) {
+
+    return res.status(401).json({
+      error: "You must be logged in."
+    });
+
+  }
+
+  next();
+
+}
+
 async function requireOwner(req, res, next) {
 
   if (!req.session.userId) {
