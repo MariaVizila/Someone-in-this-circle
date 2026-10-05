@@ -1499,6 +1499,367 @@ app.post(
 
 
 /* =========================
+   CREATE MATCH
+========================= */
+
+app.post(
+  "/api/matches",
+  async (req, res) => {
+
+    try {
+
+      /* =========================
+         LOGIN CHECK
+      ========================= */
+
+      if (!req.session.userId) {
+
+        return res.status(401).json({
+          error:
+            "You must be logged in."
+        });
+
+      }
+
+
+      /* =========================
+         GET SETTINGS
+      ========================= */
+
+      const {
+        matchName,
+        timeLimit,
+        turnTime,
+        maxPlayers,
+        friendsOnly,
+        lateJoining,
+        matchAccess,
+        allowRematch,
+        matchChat,
+        revealResults
+      } = req.body;
+
+
+      /* =========================
+         CLEAN / CONVERT VALUES
+      ========================= */
+
+      const cleanMatchName =
+        typeof matchName === "string"
+          ? matchName.trim()
+          : "";
+
+
+      const gameTime =
+        Number(timeLimit);
+
+
+      const gameTurnTime =
+        Number(turnTime);
+
+
+      const playerLimit =
+        Number(maxPlayers);
+
+
+      const isFriendsOnly =
+        Boolean(friendsOnly);
+
+
+      const canLateJoin =
+        Boolean(lateJoining);
+
+
+      const canRematch =
+        Boolean(allowRematch);
+
+
+      const hasChat =
+        Boolean(matchChat);
+
+
+      const shouldRevealResults =
+        Boolean(revealResults);
+
+
+      const access =
+        String(
+          matchAccess || "friends"
+        ).toLowerCase().trim();
+
+
+      /* =========================
+         VALIDATION
+      ========================= */
+
+      if (cleanMatchName.length > 50) {
+
+        return res.status(400).json({
+          error:
+            "Match name must be 50 characters or fewer."
+        });
+
+      }
+
+
+      if (
+        !Number.isInteger(gameTime) ||
+        gameTime < 3 ||
+        gameTime > 30
+      ) {
+
+        return res.status(400).json({
+          error:
+            "Game time must be between 3 and 30 minutes."
+        });
+
+      }
+
+
+      if (
+        !Number.isInteger(gameTurnTime) ||
+        ![
+          15,
+          30,
+          45,
+          60,
+          90
+        ].includes(gameTurnTime)
+      ) {
+
+        return res.status(400).json({
+          error:
+            "Invalid turn time."
+        });
+
+      }
+
+
+      if (
+        !Number.isInteger(playerLimit) ||
+        ![
+          3,
+          4,
+          5,
+          6,
+          8,
+          10
+        ].includes(playerLimit)
+      ) {
+
+        return res.status(400).json({
+          error:
+            "Invalid player limit."
+        });
+
+      }
+
+
+      if (
+        access !== "friends" &&
+        access !== "code"
+      ) {
+
+        return res.status(400).json({
+          error:
+            "Invalid match access."
+        });
+
+      }
+
+
+      /* =========================
+         GENERATE MATCH CODE
+      ========================= */
+
+      function generateMatchCode() {
+
+        const characters =
+          "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+        let code = "";
+
+        for (
+          let i = 0;
+          i < 6;
+          i++
+        ) {
+
+          const index =
+            Math.floor(
+              Math.random() *
+              characters.length
+            );
+
+          code +=
+            characters[index];
+
+        }
+
+        return code;
+      }
+
+
+      let matchCode;
+      let codeExists = true;
+
+
+      while (codeExists) {
+
+        matchCode =
+          generateMatchCode();
+
+
+        const existing =
+          await pool.query(
+            `
+            SELECT id
+            FROM matches
+            WHERE match_code = $1
+            LIMIT 1
+            `,
+            [matchCode]
+          );
+
+
+        codeExists =
+          existing.rows.length > 0;
+
+      }
+
+
+      /* =========================
+         CREATE MATCH
+      ========================= */
+
+      const matchResult =
+        await pool.query(
+          `
+          INSERT INTO matches (
+            match_code,
+            host_id,
+            match_name,
+            time_limit,
+            turn_time,
+            max_players,
+            friends_only,
+            late_joining,
+            match_access,
+            allow_rematch,
+            match_chat,
+            reveal_results,
+            status
+          )
+          VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7,
+            $8,
+            $9,
+            $10,
+            $11,
+            $12,
+            'lobby'
+          )
+          RETURNING
+            id,
+            match_code,
+            host_id,
+            match_name,
+            time_limit,
+            turn_time,
+            max_players,
+            friends_only,
+            late_joining,
+            match_access,
+            allow_rematch,
+            match_chat,
+            reveal_results,
+            status,
+            created_at
+          `,
+          [
+            matchCode,
+            req.session.userId,
+            cleanMatchName,
+            gameTime,
+            gameTurnTime,
+            playerLimit,
+            isFriendsOnly,
+            canLateJoin,
+            access,
+            canRematch,
+            hasChat,
+            shouldRevealResults
+          ]
+        );
+
+
+      const match =
+        matchResult.rows[0];
+
+
+      /* =========================
+         ADD HOST TO MATCH
+      ========================= */
+
+      await pool.query(
+        `
+        INSERT INTO match_players (
+          match_id,
+          user_id,
+          score,
+          is_host
+        )
+        VALUES (
+          $1,
+          $2,
+          0,
+          TRUE
+        )
+        `,
+        [
+          match.id,
+          req.session.userId
+        ]
+      );
+
+
+      /* =========================
+         RETURN MATCH
+      ========================= */
+
+      res.status(201).json({
+        success: true,
+        match
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Create match error:",
+        error
+      );
+
+
+      res.status(500).json({
+        error:
+          "Could not create the match."
+      });
+
+    }
+
+  }
+);
+
+
+
+/* =========================
    TEST API
 ========================= */
 
