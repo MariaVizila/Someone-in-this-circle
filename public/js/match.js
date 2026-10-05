@@ -84,6 +84,22 @@ async function loadMatch() {
       data.match;
 
 
+    /* =========================
+       MATCH STARTED
+    ========================= */
+
+    if (match.status === "playing") {
+
+      window.location.href =
+        `game.html?code=${encodeURIComponent(
+          match.match_code
+        )}`;
+
+      return;
+
+    }
+
+
     matchNameElement.textContent =
       match.match_name ||
       "Match Lobby";
