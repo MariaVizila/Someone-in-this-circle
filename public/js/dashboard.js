@@ -1374,13 +1374,14 @@ if (createMatchButton) {
         );
 
 
-        /*
-          We are stopping here for now.
+        /* =========================
+           ENTER MATCH LOBBY
+        ========================= */
 
-          The next step will be sending
-          the host into the match lobby
-          using the returned match ID/code.
-        */
+        window.location.href =
+          `match.html?code=${encodeURIComponent(
+            data.match.match_code
+          )}`;
 
 
       } catch (error) {
