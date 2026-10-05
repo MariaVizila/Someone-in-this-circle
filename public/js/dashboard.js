@@ -1140,6 +1140,285 @@ if (
 
 
 /* =========================
+   CREATE MATCH
+========================= */
+
+const createMatchButton =
+  document.getElementById(
+    "createMatchButton"
+  );
+
+
+const matchMessage =
+  document.getElementById(
+    "matchMessage"
+  );
+
+
+if (createMatchButton) {
+
+  createMatchButton.addEventListener(
+    "click",
+    async () => {
+
+      /* =========================
+         GET SETTINGS
+      ========================= */
+
+      const matchNameInput =
+        document.getElementById(
+          "matchName"
+        );
+
+
+      const timeLimitInput =
+        document.getElementById(
+          "timeLimit"
+        );
+
+
+      const turnTimeInput =
+        document.getElementById(
+          "turnTime"
+        );
+
+
+      const maxPlayersInput =
+        document.getElementById(
+          "maxPlayers"
+        );
+
+
+      const friendsOnlyInput =
+        document.getElementById(
+          "friendsOnly"
+        );
+
+
+      const lateJoiningInput =
+        document.getElementById(
+          "midGameJoining"
+        );
+
+
+      const matchAccessInput =
+        document.getElementById(
+          "lobbyVisibility"
+        );
+
+
+      const allowRematchInput =
+        document.getElementById(
+          "allowRematch"
+        );
+
+
+      const matchChatInput =
+        document.getElementById(
+          "matchChat"
+        );
+
+
+      const revealResultsInput =
+        document.getElementById(
+          "showResults"
+        );
+
+
+      /* =========================
+         MESSAGE
+      ========================= */
+
+      if (matchMessage) {
+
+        matchMessage.textContent =
+          "Creating your match...";
+
+      }
+
+
+      /* =========================
+         DISABLE BUTTON
+      ========================= */
+
+      createMatchButton.disabled =
+        true;
+
+      createMatchButton.style.opacity =
+        "0.6";
+
+
+      try {
+
+        /* =========================
+           SEND TO SERVER
+        ========================= */
+
+        const response =
+          await fetch(
+            "/api/matches",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                matchName:
+                  matchNameInput
+                    ? matchNameInput.value.trim()
+                    : "",
+
+                timeLimit:
+                  timeLimitInput
+                    ? Number(
+                        timeLimitInput.value
+                      )
+                    : 10,
+
+                turnTime:
+                  turnTimeInput
+                    ? Number(
+                        turnTimeInput.value
+                      )
+                    : 30,
+
+                maxPlayers:
+                  maxPlayersInput
+                    ? Number(
+                        maxPlayersInput.value
+                      )
+                    : 4,
+
+                friendsOnly:
+                  friendsOnlyInput
+                    ? friendsOnlyInput.checked
+                    : true,
+
+                lateJoining:
+                  lateJoiningInput
+                    ? lateJoiningInput.checked
+                    : false,
+
+                matchAccess:
+                  matchAccessInput
+                    ? matchAccessInput.value
+                    : "friends",
+
+                allowRematch:
+                  allowRematchInput
+                    ? allowRematchInput.checked
+                    : true,
+
+                matchChat:
+                  matchChatInput
+                    ? matchChatInput.checked
+                    : true,
+
+                revealResults:
+                  revealResultsInput
+                    ? revealResultsInput.checked
+                    : true
+
+              })
+
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        if (!response.ok) {
+
+          if (matchMessage) {
+
+            matchMessage.textContent =
+              data.error ||
+              "Could not create the match.";
+
+          }
+
+
+          return;
+
+        }
+
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        if (
+          matchMessage &&
+          data.match
+        ) {
+
+          matchMessage.textContent =
+            `Match created! Code: ${data.match.match_code}`;
+
+        }
+
+
+        console.log(
+          "Match created:",
+          data.match
+        );
+
+
+        /*
+          We are stopping here for now.
+
+          The next step will be sending
+          the host into the match lobby
+          using the returned match ID/code.
+        */
+
+
+      } catch (error) {
+
+        console.error(
+          "Create match error:",
+          error
+        );
+
+
+        if (matchMessage) {
+
+          matchMessage.textContent =
+            "Something went wrong while creating the match.";
+
+        }
+
+      } finally {
+
+        /* =========================
+           RE-ENABLE BUTTON
+        ========================= */
+
+        createMatchButton.disabled =
+          false;
+
+        createMatchButton.style.opacity =
+          "1";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================
    START
 ========================= */
 
