@@ -10,7 +10,9 @@ const pool = new Pool({
 
 async function initializeDatabase() {
 
-  /* USERS */
+  /* =========================
+     USERS
+  ========================= */
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -28,7 +30,9 @@ async function initializeDatabase() {
   `);
 
 
-  /* ADD NEW PROFILE COLUMNS TO EXISTING USERS */
+  /* =========================
+     ADD NEW PROFILE COLUMNS
+  ========================= */
 
   await pool.query(`
     ALTER TABLE users
@@ -40,14 +44,24 @@ async function initializeDatabase() {
   `);
 
 
-  /* FRIENDSHIPS */
+  /* =========================
+     FRIENDSHIPS
+  ========================= */
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS friendships (
       id SERIAL PRIMARY KEY,
-      requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      receiver_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+      requester_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      receiver_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
       status TEXT NOT NULL DEFAULT 'pending',
+
       created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
       UNIQUE (requester_id, receiver_id)
@@ -127,6 +141,66 @@ async function initializeDatabase() {
       joined_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
       UNIQUE (match_id, user_id)
+    );
+  `);
+
+
+  /* =========================
+     MATCH PROMPTS
+  ========================= */
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS match_prompts (
+      id SERIAL PRIMARY KEY,
+
+      match_id INTEGER NOT NULL
+        REFERENCES matches(id)
+        ON DELETE CASCADE,
+
+      author_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      target_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      prompt_text TEXT NOT NULL,
+
+      status TEXT NOT NULL DEFAULT 'guessing',
+
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+      answered_at TIMESTAMPTZ
+    );
+  `);
+
+
+  /* =========================
+     PROMPT GUESSES
+  ========================= */
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS prompt_guesses (
+      id SERIAL PRIMARY KEY,
+
+      prompt_id INTEGER NOT NULL
+        REFERENCES match_prompts(id)
+        ON DELETE CASCADE,
+
+      user_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      guessed_user_id INTEGER NOT NULL
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      is_correct BOOLEAN,
+
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+      UNIQUE (prompt_id, user_id)
     );
   `);
 
